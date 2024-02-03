@@ -7,6 +7,15 @@ services:
       - POSTGRES_DB=peidi
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+      
+  pgadmin:
+    image: dpage/pgadmin4:8.0
+    ports:
+      - 8080:80
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=olimovier@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=r8eCi(vZ
+
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
