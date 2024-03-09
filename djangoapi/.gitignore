@@ -1,0 +1,14 @@
+.idea/
+main/settings.py
+configs/
+chats/migrations/
+!chats/migrations/__init__.py
+goods/migrations/
+!goods/migrations/__init__.py
+users/migrations/
+!users/migrations/__init__.py
+service/migrations/
+!service/migrations/__init__.py
+orders/migrations
+!orders/migrations/__init__.py
+*.pyc
