@@ -20,11 +20,11 @@ services:
       timeout: 5s
       start_period: 30s
       retries: 60
-  django:
-    build: django
+  djangoapi:
+    build: djangoapi
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./django:/code
+      - ./djangoapi:/code
     ports:
       - "8000:8000"
     environment:

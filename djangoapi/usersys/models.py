@@ -9,7 +9,7 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from djangoapi.utils.customclass import PeiDiError
+from utils.customclass import PeiDiError
 
 
 class PeidiUserBackend(ModelBackend):
@@ -29,6 +29,7 @@ class PeidiUserBackend(ModelBackend):
         return None
 
 class PeidiUserManager(BaseUserManager):
+    use_in_migrations = True
     def create_user(self, username, mobile=None, password=None, **extra_fields):
         user = self.model(username=username, is_superuser=False, **extra_fields)
         user.set_mobile(mobile)
@@ -58,7 +59,8 @@ class PeidiUser(AbstractUser):
     REQUIRED_FIELDS = ["mobile"]
     _mobile = None
     class Meta:
-        db_table = 'tb_users'
+        db_table = 'peidi_users'
+        app_label = 'usersys'
         verbose_name = '用户'
         verbose_name_plural = verbose_name
 
