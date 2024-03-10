@@ -36,7 +36,7 @@ class SpecGoods(models.Model):
     单品列表
     '''
     spec_no = models.CharField(max_length=40, blank=True, verbose_name='商家编码')
-    goods_no = models.CharField(max_length=40, blank=True, verbose_name='商家编码')
+    goods_no = models.CharField(max_length=40, blank=True, verbose_name='货品编号')
     goods_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='货品名称')
     short_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='货品简称')
     goods_type = models.CharField(max_length=40, blank=True, null=True, verbose_name='分类')
