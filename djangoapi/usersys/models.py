@@ -9,7 +9,7 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from utils.customclass import PeiDiError
+from djangoapi.utils.customclass import PeiDiError
 
 
 class PeidiUserBackend(ModelBackend):
