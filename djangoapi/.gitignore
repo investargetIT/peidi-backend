@@ -1,5 +1,4 @@
 .idea/
-main/settings.py
 configs/
 chats/migrations/
 !chats/migrations/__init__.py

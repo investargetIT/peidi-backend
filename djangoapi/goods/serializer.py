@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from djangoapi.goods.models import PlatformGoods, SpecGoods, SuiteGoodsRec
+from goods.models import PlatformGoods, SpecGoods, SuiteGoodsRec
 
 
 class PlatformGoodsSerializer(serializers.ModelSerializer):

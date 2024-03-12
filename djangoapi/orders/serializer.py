@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from djangoapi.orders.models import orders
+from orders.models import orders
 
 
 class OrdersSerializer(serializers.ModelSerializer):

@@ -8,9 +8,9 @@ from django_filters import FilterSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 
-from djangoapi.goods.models import PlatformGoods, SpecGoods, SuiteGoodsRec
-from djangoapi.goods.serializer import PlatformGoodsSerializer, SpecGoodsSerializer, SuiteGoodsRecSerializer
-from djangoapi.utils.customclass import SuccessResponse, PeiDiError, PeiDiErrorResponse, ExceptionResponse
+from goods.models import PlatformGoods, SpecGoods, SuiteGoodsRec
+from goods.serializer import PlatformGoodsSerializer, SpecGoodsSerializer, SuiteGoodsRecSerializer
+from utils.customclass import SuccessResponse, PeiDiError, PeiDiErrorResponse, ExceptionResponse
 
 
 # Create your views here.

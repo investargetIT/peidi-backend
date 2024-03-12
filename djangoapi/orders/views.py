@@ -6,9 +6,9 @@ from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 
-from djangoapi.orders.models import orders
-from djangoapi.orders.serializer import OrdersSerializer
-from djangoapi.utils.customclass import SuccessResponse, PeiDiError, PeiDiErrorResponse, ExceptionResponse
+from orders.models import orders
+from orders.serializer import OrdersSerializer
+from utils.customclass import SuccessResponse, PeiDiError, PeiDiErrorResponse, ExceptionResponse
 
 
 # Create your views here.
@@ -20,7 +20,7 @@ class OrdersView(viewsets.ModelViewSet):
     destroy:删除平台货品（id）
     """
     filter_backends = (DjangoFilterBackend,)
-    queryset = orders.objects.filter(is_deleted=False)
+    queryset = orders.objects.all()
     filter_fields = ('tid', 'oid', 'goods_id', 'spec_id', 'goods_no', 'spec_no', 'goods_name', 'spec_name')
     serializer_class = OrdersSerializer
 
