@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'usersys.apps.UsersysConfig',
     'orders.apps.OrdersConfig',
     'goods.apps.GoodsConfig',
     'chats.apps.ChatsConfig',
@@ -43,7 +44,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+AUTH_USER_MODEL = 'usersys.PeidiUser'
 
+AUTHENTICATION_BACKENDS = [
+    'usersys.peidiuserbackends.PeidiUserBackend',
+    'django.contrib.auth.backends.ModelBackend',
+
+]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -85,7 +92,7 @@ DATABASES = {
         'USER': os.environ.get('MySQL_USERNAME'),
         'PASSWORD': os.environ.get('MYSQL_ROOT_PASSWORD'),
         'HOST': os.environ.get('MYSQL_HOST'),
-        'PORT': 3306,
+        'PORT': '3306',
     }
 }
 

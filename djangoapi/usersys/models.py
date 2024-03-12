@@ -1,5 +1,4 @@
 from django.contrib.auth import password_validation
-from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import (
     check_password, make_password,
@@ -8,25 +7,6 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
-from utils.customclass import PeiDiError
-
-
-class PeidiUserBackend(ModelBackend):
-    def authenticate(self, request, mobile=None, password=None, **kwargs):
-        try:
-            if mobile is None or password is None:
-                return None
-            raw_mobile = make_password(mobile)
-            user = PeidiUser.objects.get(mobile=raw_mobile)
-        except PeidiUser.DoesNotExist:
-            raise PeiDiError(code=2002, msg='用户不存在')
-        except Exception as err:
-            raise PeiDiError(code=9999, msg='UserBackend/authenticate验证失败\n,%s' % err)
-        else:
-            if user.check_password(password):
-                return user
-        return None
 
 class PeidiUserManager(BaseUserManager):
     use_in_migrations = True
