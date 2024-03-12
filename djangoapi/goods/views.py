@@ -24,7 +24,7 @@ class PlatformGoodsView(viewsets.ModelViewSet):
     destroy:删除平台货品（id）
     """
     filter_backends = (DjangoFilterBackend,)
-    queryset = PlatformGoods.objects.filter(is_deleted=False)
+    queryset = PlatformGoods.objects.all()
     filter_fields = ('goods_name','spec_name')
     serializer_class = PlatformGoodsSerializer
 
@@ -103,7 +103,7 @@ class SpecGoodsView(viewsets.ModelViewSet):
     destroy:删除单品（id）
     """
     filter_backends = (DjangoFilterBackend,)
-    queryset = SpecGoods.objects.filter(is_deleted=False)
+    queryset = SpecGoods.objects.all()
     filter_fields = ('spec_no', 'goods_no', 'goods_name', 'spec_name', 'spec_code')
     serializer_class = SpecGoodsSerializer
 
@@ -181,7 +181,7 @@ class SuiteGoodsRecView(viewsets.ModelViewSet):
     destroy:删除平台货品（id）
     """
     filter_backends = (DjangoFilterBackend,)
-    queryset = SuiteGoodsRec.objects.filter(is_deleted=False)
+    queryset = SuiteGoodsRec.objects.all()
     filter_fields = ('goods_name','spec_name')
     serializer_class = SuiteGoodsRecSerializer
 
