@@ -1,13 +1,17 @@
 # 基本操作
-1. 创建并启动容器
+复制 .env.example 文件，并修改相应环境变量的值
+```
+cp .env.example .env
+```
+创建并启动容器
 ```
 docker compose up
 ```
-2. 如果需要运行 migration 等操作，需要进入 Django 容器
+如果需要运行 migration 等操作，需要进入 Django 容器
 ```
 docker exec -ti peidi-django /bin/bash
 ```
-3. 停止并移除容器
+停止并移除容器
 ```
 docker compose down
 ```
