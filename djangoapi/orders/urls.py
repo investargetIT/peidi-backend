@@ -6,7 +6,7 @@ ordersapi = views.OrdersView.as_view({
     'get': 'list',
     'post': 'create',
     'update': 'update',
-    'delete': 'delete'
+    'delete': 'destroy'
 })
 
 

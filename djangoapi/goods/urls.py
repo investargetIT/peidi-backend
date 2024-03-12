@@ -5,21 +5,21 @@ platformGoodsapi = views.PlatformGoodsView.as_view({
     'get': 'list',
     'post': 'create',
     'update': 'update',
-    'delete': 'delete'
+    'delete': 'destroy'
 })
 
 specGoodsapi = views.SpecGoodsView.as_view({
     'get': 'list',
     'post': 'create',
     'update': 'update',
-    'delete': 'delete'
+    'delete': 'destroy'
 })
 
 suiteGoodsRecapi = views.SuiteGoodsRecView.as_view({
     'get': 'list',
     'post': 'create',
     'update': 'update',
-    'delete': 'delete'
+    'delete': 'destroy'
 })
 
 
