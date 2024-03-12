@@ -2,14 +2,16 @@ from django.shortcuts import render
 
 # Create your views here.
 #coding=utf-8
+import os
 import json
 import traceback
 import requests
 from rest_framework.decorators import api_view
 
-from configs.wechatconfig import WX_APPID, WX_APPSECRET
 from utils.customclass import PeiDiError, SuccessResponse, ExceptionResponse, PeiDiErrorResponse
 
+WX_APPID = os.environ.get('WX_APPID')
+WX_APPSECRET = os.environ.get('WX_APPSECRET')
 
 @api_view(['GET'])
 def get_openid(request):

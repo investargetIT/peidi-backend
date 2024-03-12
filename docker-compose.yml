@@ -33,6 +33,8 @@ services:
       - MYSQL_USERNAME=${MYSQL_USERNAME}
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_HOST=${MYSQL_HOST}
+      - WX_APPID=${WX_APPID}
+      - WX_APPSECRET=${WX_APPSECRET}
     depends_on:
       mysql:
         condition: service_healthy
