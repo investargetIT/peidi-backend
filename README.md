@@ -1,7 +1,6 @@
 # TODO
-运行 `docker compose up` 后，`peidi-django` 这个容器没有自动运行
-
-安装 phpmyadmin
+- [x] 运行 `docker compose up` 后，`peidi-django` 这个容器没有自动运行
+- [ ] 安装 phpmyadmin
 
 # 基本操作
 复制 .env.example 文件，并修改相应环境变量的值
