@@ -7,7 +7,7 @@ from django.db import models
 class orders(models.Model):
     platform = models.CharField(max_length=20, blank=True, null=True, verbose_name='平台')
     shop_name = models.CharField(max_length=20, blank=True, null=True, verbose_name='店铺')
-    tid = models.CharField(max_length=40, blank=True, null=True, verbose_name='原始单号')
+    tid = models.CharField(max_length=40, blank=True, null=True, unique=True, verbose_name='原始单号')
     warehouse_no = models.CharField(max_length=20, blank=True, null=True, verbose_name='外部仓库编号')
     trade_status = models.CharField(max_length=40, blank=True, null=True, verbose_name='平台状态')
     pay_status = models.CharField(max_length=40, blank=True, null=True, verbose_name='支付状态')

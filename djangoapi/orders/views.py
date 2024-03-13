@@ -51,7 +51,7 @@ class OrdersView(viewsets.ModelViewSet):
                 if serializer.is_valid():
                     serializer.save()
                 else:
-                    raise PeiDiError(20071, msg='新增组合装失败', detail='%s' % serializer.error_messages)
+                    raise PeiDiError(20071, msg='新增原始订单失败', detail='%s' % serializer.errors)
                 return SuccessResponse(serializer.data)
         except PeiDiError as err:
             return PeiDiErrorResponse(err)
@@ -68,7 +68,7 @@ class OrdersView(viewsets.ModelViewSet):
                 if serializer.is_valid():
                     serializer.save()
                 else:
-                    raise PeiDiError(20071, msg='编辑组合装失败', detail='%s' % serializer.error_messages)
+                    raise PeiDiError(20071, msg='编辑原始订单失败', detail='%s' % serializer.errors)
                 return SuccessResponse(serializer.data)
         except PeiDiError as err:
             return PeiDiErrorResponse(err)
@@ -128,7 +128,7 @@ class TraderOrdersView(viewsets.ModelViewSet):
                 if serializer.is_valid():
                     serializer.save()
                 else:
-                    raise PeiDiError(20071, msg='新增组合装失败', detail='%s' % serializer.error_messages)
+                    raise PeiDiError(20071, msg='新增原始订单子单失败', detail='%s' % serializer.errors)
                 return SuccessResponse(serializer.data)
         except PeiDiError as err:
             return PeiDiErrorResponse(err)
@@ -145,7 +145,7 @@ class TraderOrdersView(viewsets.ModelViewSet):
                 if serializer.is_valid():
                     serializer.save()
                 else:
-                    raise PeiDiError(20071, msg='编辑组合装失败', detail='%s' % serializer.error_messages)
+                    raise PeiDiError(20071, msg='编辑原始订单子单失败', detail='%s' % serializer.errors)
                 return SuccessResponse(serializer.data)
         except PeiDiError as err:
             return PeiDiErrorResponse(err)
