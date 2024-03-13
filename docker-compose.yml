@@ -23,7 +23,7 @@ services:
       retries: 60
   djangoapi:
     build: djangoapi
-    command: python manage.py runserver 0.0.0.0:8000
+    entrypoint: /code/entrypoint.sh
     container_name: peidi-django
     volumes:
       - ./djangoapi:/code
