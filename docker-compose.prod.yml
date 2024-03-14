@@ -1,0 +1,3 @@
+services:
+  djangoapi:
+    image: movier/peidi-django

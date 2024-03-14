@@ -31,3 +31,7 @@ sudo rm -rf mysql/data
 # 环境变量
 所有环境变量全部放入`.env`文件，修改`docker-compose.yml`文件，在 Django 部分添加相关环境变量，使用时通过```os.environ.get('NAME')```获取值
 
+# 生产环境
+```
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
