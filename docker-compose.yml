@@ -22,7 +22,8 @@ services:
       start_period: 30s
       retries: 60
   djangoapi:
-    build: djangoapi
+    image: movier/peidi-django
+    build: ./djangoapi
     entrypoint: /code/entrypoint.sh
     container_name: peidi-django
     volumes:
