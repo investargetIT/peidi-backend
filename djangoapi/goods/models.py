@@ -35,8 +35,8 @@ class SpecGoods(models.Model):
     '''
     单品列表
     '''
-    spec_no = models.CharField(max_length=40, blank=True, verbose_name='商家编码')
-    goods_no = models.CharField(max_length=40, blank=True, verbose_name='货品编号')
+    spec_no = models.CharField(max_length=40, blank=True, null=True, verbose_name='商家编码')
+    goods_no = models.CharField(max_length=40, blank=True, null=True, verbose_name='货品编号')
     goods_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='货品名称')
     short_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='货品简称')
     goods_type = models.CharField(max_length=40, blank=True, null=True, verbose_name='分类')
@@ -82,7 +82,7 @@ class SuiteGoodsRec(models.Model):
     suite_name  = models.CharField(max_length=255, blank=True,  null=True, verbose_name='组合装名称')
     spec_no = models.CharField(max_length=40, blank=True, null=True, verbose_name='商家编码')
     barcode = models.CharField(max_length=50, blank=True,  null=True, verbose_name='条码')
-    goods_no = models.BigIntegerField(blank=True, null=True, verbose_name='货品编号')
+    goods_no = models.CharField(max_length=40, blank=True, null=True, verbose_name='货品编号')
     goods_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='货品名称')
     short_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='货品简称')
     spec_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='规格名称')
