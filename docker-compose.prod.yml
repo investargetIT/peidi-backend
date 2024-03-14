@@ -1,3 +1,4 @@
 services:
   djangoapi:
     image: movier/peidi-django
+    volumes: !reset []
