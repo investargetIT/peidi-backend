@@ -1,7 +1,11 @@
+import json
 import traceback
 
 from django.core.paginator import Paginator, EmptyPage
+from django.core.serializers import serialize
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction
+from django.db.models import Sum, Count
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
@@ -21,7 +25,7 @@ class OrdersView(viewsets.ModelViewSet):
     """
     filter_backends = (DjangoFilterBackend,)
     queryset = orders.objects.all()
-    filter_fields = ('tid',)
+    filterset_fields = ('tid', 'buyer_nick', 'receiver_area')
     serializer_class = OrdersSerializer
 
     def list(self, request, *args, **kwargs):
@@ -89,6 +93,30 @@ class OrdersView(viewsets.ModelViewSet):
         except Exception:
             return ExceptionResponse(traceback.format_exc().split('\n')[-2])
 
+    def testGroupByCount(self, request, *args, **kwargs):
+        try:
+            queryset = self.filter_queryset(self.get_queryset())
+            queryset = queryset.values('buyer_nick', 'receiver_area').annotate(
+                count=Count('pay_id')).order_by('-count')[:5]
+            serializer = json.dumps(list(queryset), cls=DjangoJSONEncoder)
+            print(json.loads(serializer))
+            return SuccessResponse(json.loads(serializer))
+        except PeiDiError as err:
+            return PeiDiErrorResponse(err)
+        except Exception:
+            return ExceptionResponse(traceback.format_exc().split('\n')[-2])
+    def testGroupByAmount(self, request, *args, **kwargs):
+        try:
+            queryset = self.filter_queryset(self.get_queryset())
+            queryset = queryset.values('buyer_nick', 'receiver_area').annotate(
+                sum_amount=Sum('consumer_amount')).order_by('-sum_amount')[:5]
+            serializer = json.dumps(list(queryset), cls=DjangoJSONEncoder)
+            print(json.loads(serializer))
+            return SuccessResponse(json.loads(serializer))
+        except PeiDiError as err:
+            return PeiDiErrorResponse(err)
+        except Exception:
+            return ExceptionResponse(traceback.format_exc().split('\n')[-2])
 class TraderOrdersView(viewsets.ModelViewSet):
     """
     list:获取原始订单明细列表 （子订单）
@@ -98,7 +126,7 @@ class TraderOrdersView(viewsets.ModelViewSet):
     """
     filter_backends = (DjangoFilterBackend,)
     queryset = tradeOrders.objects.all()
-    filter_fields = ('tid', 'oid', 'goods_id', 'spec_id', 'goods_no', 'spec_no', 'goods_name', 'spec_name')
+    filterset_fields = ('tid', 'oid', 'goods_id', 'spec_id', 'goods_no', 'spec_no', 'goods_name', 'spec_name')
     serializer_class = TradeOrdersSerializer
 
     def list(self, request, *args, **kwargs):

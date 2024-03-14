@@ -25,7 +25,7 @@ class PlatformGoodsView(viewsets.ModelViewSet):
     """
     filter_backends = (DjangoFilterBackend,)
     queryset = PlatformGoods.objects.all()
-    filter_fields = ('goods_name','spec_name')
+    filterset_fields = ('goods_name','spec_name')
     serializer_class = PlatformGoodsSerializer
 
     def list(self, request, *args, **kwargs):
@@ -104,7 +104,7 @@ class SpecGoodsView(viewsets.ModelViewSet):
     """
     filter_backends = (DjangoFilterBackend,)
     queryset = SpecGoods.objects.all()
-    filter_fields = ('spec_no', 'goods_no', 'goods_name', 'spec_name', 'spec_code')
+    filterset_fields = ('spec_no', 'goods_no', 'goods_name', 'spec_name', 'spec_code')
     serializer_class = SpecGoodsSerializer
 
     def list(self, request, *args, **kwargs):
@@ -182,7 +182,7 @@ class SuiteGoodsRecView(viewsets.ModelViewSet):
     """
     filter_backends = (DjangoFilterBackend,)
     queryset = SuiteGoodsRec.objects.all()
-    filter_fields = ('goods_name','spec_name')
+    filterset_fields = ('goods_name','spec_name')
     serializer_class = SuiteGoodsRecSerializer
 
     def list(self, request, *args, **kwargs):
@@ -212,7 +212,7 @@ class SuiteGoodsRecView(viewsets.ModelViewSet):
                 if serializer.is_valid():
                     serializer.save()
                 else:
-                    raise PeiDiError(20071, msg='新增组合装失败', detail='%s' % serializer.error_messages)
+                    raise PeiDiError(20071, msg='新增组合装失败', detail='%s' % serializer.errors)
                 return SuccessResponse(serializer.data)
         except PeiDiError as err:
             return PeiDiErrorResponse(err)
