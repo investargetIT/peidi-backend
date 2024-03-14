@@ -79,19 +79,19 @@ class SuiteGoodsRec(models.Model):
     '''
     组合装明细
     '''
-    suite_name  = models.CharField(max_length=255, blank=True, verbose_name='组合装名称')
-    spec_no = models.CharField(max_length=40, blank=True, verbose_name='商家编码')
-    barcode = models.CharField(max_length=50, blank=True, verbose_name='条码')
+    suite_name  = models.CharField(max_length=255, blank=True,  null=True, verbose_name='组合装名称')
+    spec_no = models.CharField(max_length=40, blank=True, null=True, verbose_name='商家编码')
+    barcode = models.CharField(max_length=50, blank=True,  null=True, verbose_name='条码')
     goods_no = models.BigIntegerField(blank=True, null=True, verbose_name='货品编号')
     goods_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='货品名称')
     short_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='货品简称')
     spec_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='规格名称')
-    spec_code = models.CharField(max_length=40, blank=True, verbose_name='规格码')
+    spec_code = models.CharField(max_length=40, blank=True,  null=True, verbose_name='规格码')
     num = models.DecimalField(max_digits=19, decimal_places=4, blank=True, default=0, verbose_name='数量')
     fixed_price = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='固定售价',
                                       help_text='固定售价/单价')
     ratio = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='金额占比')
-    is_fixed_price = models.CharField(max_length=40, blank=True, verbose_name='是否固定价格')
+    is_fixed_price = models.CharField(max_length=40, blank=True,  null=True, verbose_name='是否固定价格')
     modified = models.DateTimeField(blank=True, null=True, help_text='组合装明细修改时间')
     created = models.DateTimeField(blank=True, null=True, help_text='组合装明细创建时间')
 
