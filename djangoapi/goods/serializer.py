@@ -12,7 +12,7 @@ class PlatformGoodsSerializer(serializers.ModelSerializer):
         # exclude = ('is_deleted','datasource')
 
 class SpecGoodsSerializer(serializers.ModelSerializer):
-    url = serializers.SerializerMethodField()
+
 
     class Meta:
         model = SpecGoods
