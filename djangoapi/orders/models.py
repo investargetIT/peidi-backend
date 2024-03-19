@@ -40,6 +40,7 @@ class orders(models.Model):
     cash_on_delivery_amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='货到付款金额')
     refund_amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='退款金额')
     pay_id = models.CharField(max_length=40, blank=True, null=True, verbose_name='支付单号')
+    pay_account = models.CharField(max_length=128, blank=True, null=True, verbose_name='买家支付账号')
     paid = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='已付')
     consumer_amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='消费者实付金额')
     platform_amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='平台承担优惠金额')
