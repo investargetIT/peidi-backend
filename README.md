@@ -34,7 +34,7 @@ sudo rm -rf mysql/data
 # 生产环境
 1. **本地**构建镜像
 ```
-docker build -t movier/peidi-django djangoapi
+docker build -t movier/peidi-django ./djangoapi
 ```
 2. 推送镜像
 ```
@@ -44,7 +44,11 @@ docker push movier/peidi-django
 ```
 docker pull movier/peidi-django
 ```
-4. 重启服务
+4. 拉取最新代码（可选，如果修改了环境变量、docker compose 文件则**必须**拉取代码）
+```
+git pull
+```
+5. 重启服务
 ```
 docker compose down
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
