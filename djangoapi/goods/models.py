@@ -65,8 +65,17 @@ class SpecGoods(models.Model):
                                      help_text='大件类别 0、非大件;1、普通大;2、独立大件（不可和小件一起发）;3、按箱规拆分;-1、非单发件')
     unit_name = models.CharField(max_length=20, blank=True, null=True, verbose_name='基本单位')
     aux_unit_name = models.CharField(max_length=20, blank=True, null=True, verbose_name='辅助单位')
+    u9_no = models.CharField(max_length=20, blank=True, null=True, verbose_name='U9料号')
+    allow_below_cost_price = models.CharField(max_length=20, blank=True, null=True, verbose_name='允许低于成本价')
     img_url = models.CharField(max_length=1024, blank=True, null=True, verbose_name='图片URL')
+    aux_box_volume = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='辅助箱体积')
     tax_rate = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='税率')
+    remark = models.TextField(blank=True, null=True, verbose_name='备注')
+    prop2 = models.TextField(blank=True, null=True, verbose_name='单品属性2')
+    prop3 = models.TextField(blank=True, null=True, verbose_name='单品属性3')
+    prop4 = models.TextField(blank=True, null=True, verbose_name='单品属性4')
+    prop5 = models.TextField(blank=True, null=True, verbose_name='单品属性5')
+    prop6 = models.TextField(blank=True, null=True, verbose_name='单品属性6')
     spec_modified = models.DateTimeField(blank=True, null=True, help_text='最后修改时间')
     spec_created = models.DateTimeField(blank=True, null=True, help_text='创建时间')
 
@@ -79,8 +88,11 @@ class SuiteGoodsRec(models.Model):
     '''
     组合装明细
     '''
-    suite_name  = models.CharField(max_length=255, blank=True,  null=True, verbose_name='组合装名称')
-    spec_no = models.CharField(max_length=40, blank=True, null=True, verbose_name='商家编码')
+    img_url = models.CharField(max_length=1024, blank=True, null=True, verbose_name='图片链接')
+    suite_name = models.CharField(max_length=255, blank=True,  null=True, verbose_name='组合装名称')
+    suite_no = models.CharField(max_length=40, blank=True, null=True, verbose_name='组合装商家编码')
+    suite_barcode = models.CharField(max_length=50, blank=True, null=True, verbose_name='组合装条码')
+    spec_no = models.CharField(max_length=40, blank=True, null=True, verbose_name='组合装明细商家编码')
     barcode = models.CharField(max_length=50, blank=True,  null=True, verbose_name='条码')
     goods_no = models.CharField(max_length=40, blank=True, null=True, verbose_name='货品编号')
     goods_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='货品名称')
@@ -91,7 +103,8 @@ class SuiteGoodsRec(models.Model):
     fixed_price = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='固定售价',
                                       help_text='固定售价/单价')
     ratio = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='金额占比')
-    is_fixed_price = models.CharField(max_length=40, blank=True,  null=True, verbose_name='是否固定价格')
+    is_fixed_price = models.CharField(max_length=40, blank=True, null=True, verbose_name='是否固定价格')
+    stock_num = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='库存')
     modified = models.DateTimeField(blank=True, null=True, help_text='组合装明细修改时间')
     created = models.DateTimeField(blank=True, null=True, help_text='组合装明细创建时间')
 
