@@ -25,7 +25,7 @@ class OrdersView(viewsets.ModelViewSet):
     """
     filter_backends = (DjangoFilterBackend,)
     queryset = orders.objects.all()
-    filterset_fields = ('tid', 'buyer_nick', 'receiver_area')
+    filterset_fields = ('tid', 'buyer_nick', 'receiver_area', 'trade_status', 'pay_status', 'process_status')
     serializer_class = OrdersSerializer
 
     def list(self, request, *args, **kwargs):
