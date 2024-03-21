@@ -25,7 +25,7 @@ class OrdersView(viewsets.ModelViewSet):
     """
     filter_backends = (DjangoFilterBackend,)
     queryset = orders.objects.all()
-    filterset_fields = ('tid', 'buyer_nick', 'receiver_area', 'trade_status', 'pay_status', 'process_status')
+    filterset_fields = ('id', 'tid', 'buyer_nick', 'receiver_area', 'trade_status', 'pay_status', 'process_status')
     serializer_class = OrdersSerializer
 
     def list(self, request, *args, **kwargs):
@@ -125,7 +125,7 @@ class TraderOrdersView(viewsets.ModelViewSet):
     """
     filter_backends = (DjangoFilterBackend,)
     queryset = tradeOrders.objects.all()
-    filterset_fields = ('tid', 'oid', 'goods_id', 'spec_id', 'goods_no', 'spec_no', 'goods_name', 'spec_name')
+    filterset_fields = ('id', 'tid', 'oid', 'goods_id', 'spec_id', 'goods_no', 'spec_no', 'goods_name', 'spec_name')
     serializer_class = TradeOrdersSerializer
 
     def list(self, request, *args, **kwargs):

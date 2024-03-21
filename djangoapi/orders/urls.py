@@ -1,5 +1,4 @@
-from django.urls import path
-
+from django.urls import path, re_path
 
 from . import views
 ordersapi = views.OrdersView.as_view({
@@ -8,8 +7,8 @@ ordersapi = views.OrdersView.as_view({
 })
 
 ordersapione = views.OrdersView.as_view({
-        'put': 'update',
-        'delete': 'destroy',
+    'put': 'update',
+    'delete': 'destroy',
 })
 
 traderordersapi = views.TraderOrdersView.as_view({
@@ -18,8 +17,8 @@ traderordersapi = views.TraderOrdersView.as_view({
 })
 
 traderordersapione = views.TraderOrdersView.as_view({
-        'put': 'update',
-        'delete': 'destroy',
+    'put': 'update',
+    'delete': 'destroy',
 })
 
 testGroupByCount = views.OrdersView.as_view({
@@ -31,9 +30,9 @@ testGroupByAmount = views.OrdersView.as_view({
 
 urlpatterns = [
     path("orders", ordersapi, name="ordersapi"),
-    path("orders/(?P<pk>\d+)/", ordersapione, name='ordersapione'),
+    re_path("orders/(?P<pk>\d+)/", ordersapione, name='ordersapione'),
     path("traderorders", traderordersapi, name="traderordersapi"),
-    path("traderorders/(?P<pk>\d+)/", traderordersapione, name='traderordersapione'),
+    re_path("traderorders/(?P<pk>\d+)/", traderordersapione, name='traderordersapione'),
     path("testcount", testGroupByCount, name="testGroupByCount"),
     path("testamount", testGroupByAmount, name="testGroupByAmount"),
 

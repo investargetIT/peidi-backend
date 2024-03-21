@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 
 from . import views
 platformGoodsapi = views.PlatformGoodsView.as_view({
@@ -33,11 +33,11 @@ suiteGoodsRecapione = views.SuiteGoodsRecView.as_view({
 
 urlpatterns = [
     path("platformGoods", platformGoodsapi, name="PlatformGoods"),
-    path("platformGoods/(?P<pk>\d+)/", platformGoodsapione, name='platformGoodsapione'),
+    re_path("platformGoods/(?P<pk>\d+)/", platformGoodsapione, name='platformGoodsapione'),
     path("specGoods", specGoodsapi, name="specGoodsapi"),
-    path("specGoods/(?P<pk>\d+)/", specGoodsapione, name="specGoodsapione"),
+    re_path("specGoods/(?P<pk>\d+)/", specGoodsapione, name="specGoodsapione"),
     path("suiteGoodsRec", suiteGoodsRecapi, name="suiteGoodsRecapi"),
-    path("suiteGoodsRec/(?P<pk>\d+)/", suiteGoodsRecapione, name="suiteGoodsRecapione"),
+    re_path("suiteGoodsRec/(?P<pk>\d+)/", suiteGoodsRecapione, name="suiteGoodsRecapione"),
 
 
 ]
