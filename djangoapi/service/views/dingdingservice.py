@@ -13,7 +13,7 @@ from rest_framework.decorators import api_view
 
 from utils.customclass import PeiDiError, SuccessResponse, ExceptionResponse, PeiDiErrorResponse
 
-DingDing_AppKey = os.environ.get('DingDing_APPID')
+DingDing_AppKey = os.environ.get('DingDing_APPKEY')
 DingDing_AppSecret = os.environ.get('DingDing_APPSECRET')
 
 
@@ -41,27 +41,35 @@ def getAccessToken():
     return access_token
 
 
-def getUnionid_bycode(code):
-    timestamp = int(time.time() * 1000)
-    sign = compute_sign(DingDing_AppSecret)
-    url = 'https://oapi.dingtalk.com/sns/getuserinfo_bycode?accessKey=%s&timestamp=%s&signature=%s' % (DingDing_AppKey, timestamp,  sign)
-    response = requests.post(url, data={'tmp_auth_code': code}).content
-    res = json.loads(response.decode())
-    errcode = res.get('errcode')
-    if errcode != 0:
-        raise PeiDiError(2050, msg=res['errmsg'])
-    return res['user_info']['unionid']
+# def getUnionid_bycode(code):
+#     timestamp = int(time.time() * 1000)
+#     sign = compute_sign(DingDing_AppSecret)
+#     url = 'https://oapi.dingtalk.com/sns/getuserinfo_bycode?accessKey=%s&timestamp=%s&signature=%s' % (DingDing_AppKey, timestamp,  sign)
+#     response = requests.post(url, data={'tmp_auth_code': code}).content
+#     res = json.loads(response.decode())
+#     errcode = res.get('errcode')
+#     if errcode != 0:
+#         raise PeiDiError(2050, msg=res['errmsg'])
+#     return res['user_info']['unionid']
 
-def getUserid_byUnionid(union_id):
+# def getUserid_byUnionid(union_id):
+#     access_token = getAccessToken()
+#     url = 'https://oapi.dingtalk.com/topapi/user/getbyunionid?access_token=%s' % access_token
+#     response = requests.post(url, data={'unionid': union_id}).content
+#     res = json.loads(response.decode())
+#     errcode = res.get('errcode')
+#     if errcode != 0:
+#         raise PeiDiError(2050, msg=res['errmsg'])
+#     return res['result']['userid']
+def getUserid_byCode(code):
     access_token = getAccessToken()
-    url = 'https://oapi.dingtalk.com/topapi/user/getbyunionid?access_token=%s' % access_token
-    response = requests.post(url, data={'unionid': union_id}).content
+    url = 'https://oapi.dingtalk.com/topapi/v2/user/getuserinfo?access_token=%s' % access_token
+    response = requests.post(url, data={'code': code}).content
     res = json.loads(response.decode())
     errcode = res.get('errcode')
     if errcode != 0:
         raise PeiDiError(2050, msg=res['errmsg'])
     return res['result']['userid']
-
 
 def getUserinfo_byUserid(user_id):
     access_token = getAccessToken()
@@ -78,8 +86,7 @@ def getUserinfo_byUserid(user_id):
 def getUserInfoWithCode(request):
     try:
         code = request.data.get('code')
-        union_id = getUnionid_bycode(code)
-        user_id = getUserid_byUnionid(union_id)
+        user_id = getUserid_byCode(code)
         userinfo = getUserinfo_byUserid(user_id)
         return SuccessResponse(result=userinfo)
     except PeiDiError as err:
