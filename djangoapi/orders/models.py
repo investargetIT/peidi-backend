@@ -85,3 +85,6 @@ class tradeOrders(models.Model):
     end_time = models.DateTimeField(blank=True, null=True, help_text='子单完成时间')
     modified = models.DateTimeField(blank=True, null=True, help_text='修改时间')
     created = models.DateTimeField(blank=True, null=True, help_text='创建时间')
+    image = models.CharField(max_length=128, blank=True, null=True, verbose_name='图片')
+    sys_goods_name = models.CharField(max_length=128, blank=True, null=True, verbose_name='系统货品名称')
+    sys_spec_name = models.CharField(max_length=128, blank=True, null=True, verbose_name='系统规格名称')
