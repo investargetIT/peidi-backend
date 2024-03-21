@@ -32,7 +32,6 @@ class OrdersView(viewsets.ModelViewSet):
         try:
             page_size = request.GET.get('page_size', 10)
             page_index = request.GET.get('page_index', 1)
-            lang = request.GET.get('lang', 'cn')
             queryset = self.filter_queryset(self.get_queryset())
             try:
                 count = queryset.count()
@@ -133,7 +132,6 @@ class TraderOrdersView(viewsets.ModelViewSet):
         try:
             page_size = request.GET.get('page_size', 10)
             page_index = request.GET.get('page_index', 1)
-            lang = request.GET.get('lang', 'cn')
             queryset = self.filter_queryset(self.get_queryset())
             try:
                 count = queryset.count()
@@ -167,7 +165,6 @@ class TraderOrdersView(viewsets.ModelViewSet):
         try:
             instance = self.get_object()
             data = request.data
-
             with transaction.atomic():
                 serializer = self.serializer_class(instance, data=data)
                 if serializer.is_valid():

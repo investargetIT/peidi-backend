@@ -4,6 +4,9 @@ from . import views
 platformGoodsapi = views.PlatformGoodsView.as_view({
     'get': 'list',
     'post': 'create',
+})
+
+platformGoodsapione = views.PlatformGoodsView.as_view({
     'update': 'update',
     'delete': 'destroy'
 })
@@ -11,6 +14,9 @@ platformGoodsapi = views.PlatformGoodsView.as_view({
 specGoodsapi = views.SpecGoodsView.as_view({
     'get': 'list',
     'post': 'create',
+})
+
+specGoodsapione = views.SpecGoodsView.as_view({
     'update': 'update',
     'delete': 'destroy'
 })
@@ -18,15 +24,20 @@ specGoodsapi = views.SpecGoodsView.as_view({
 suiteGoodsRecapi = views.SuiteGoodsRecView.as_view({
     'get': 'list',
     'post': 'create',
+})
+
+suiteGoodsRecapione = views.SuiteGoodsRecView.as_view({
     'update': 'update',
     'delete': 'destroy'
 })
 
-
 urlpatterns = [
     path("platformGoods", platformGoodsapi, name="PlatformGoods"),
+    path("platformGoods/(?P<pk>\d+)/", platformGoodsapione, name='platformGoodsapione'),
     path("specGoods", specGoodsapi, name="specGoodsapi"),
+    path("specGoods/(?P<pk>\d+)/", specGoodsapione, name="specGoodsapione"),
     path("suiteGoodsRec", suiteGoodsRecapi, name="suiteGoodsRecapi"),
+    path("suiteGoodsRec/(?P<pk>\d+)/", suiteGoodsRecapione, name="suiteGoodsRecapione"),
 
 
 ]
