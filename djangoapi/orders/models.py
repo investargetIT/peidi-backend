@@ -62,7 +62,7 @@ class orders(models.Model):
 
 class tradeOrders(models.Model):
     tid = models.CharField(max_length=40, blank=True, null=True, verbose_name='原始单号')
-    oid = models.CharField(max_length=40, blank=True, null=True, verbose_name='原始子订单号')
+    oid = models.CharField(max_length=40, blank=True, null=True, unique=True, verbose_name='原始子订单号')
     status = models.CharField(max_length=40, blank=True, null=True, verbose_name='状态')
     process_status = models.CharField(max_length=40, blank=True, null=True, verbose_name='处理状态')
     refund_status = models.CharField(max_length=40, blank=True, null=True, verbose_name='退款状态')
