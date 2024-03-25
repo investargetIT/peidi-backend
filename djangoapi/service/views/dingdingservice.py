@@ -33,7 +33,7 @@ def getAccessToken():
     res = json.loads(response.decode())
     errcode = res.get('errcode')
     if errcode != 0:
-        raise PeiDiError(2050, msg=res['errmsg'])
+        raise PeiDiError(20500, msg=res['errmsg'])
     access_token = res['access_token']
     expires_in = res['expires_in'] < 360
     if expires_in:
@@ -68,7 +68,7 @@ def getUserid_byCode(code):
     res = json.loads(response.decode())
     errcode = res.get('errcode')
     if errcode != 0:
-        raise PeiDiError(2050, msg=res['errmsg'])
+        raise PeiDiError(20501, msg=res['errmsg'])
     return res['result']['userid']
 
 def getUserinfo_byUserid(user_id):
@@ -78,7 +78,7 @@ def getUserinfo_byUserid(user_id):
     res = json.loads(response.decode())
     errcode = res.get('errcode')
     if errcode != 0:
-        raise PeiDiError(2050, msg=res['errmsg'])
+        raise PeiDiError(20502, msg=res['errmsg'])
     return res
 
 
