@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'orders.apps.OrdersConfig',
     'goods.apps.GoodsConfig',
     'chats.apps.ChatsConfig',
+    'service.apps.ServiceConfig',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -129,7 +130,7 @@ TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
