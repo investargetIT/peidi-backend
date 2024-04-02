@@ -35,7 +35,8 @@ sudo rm -rf mysql/data
 ```
 git pull
 ```
-2. 重启服务
+2. 如果修改了环境变量，则修改`.env`文件进行相应设置
+3. 重启服务
 ```
 docker compose down
 docker compose up --build -d
