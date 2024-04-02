@@ -1,5 +1,5 @@
 # TODO
-- [ ] 安装 phpmyadmin
+- [ ] 更换一个功能丰富一些的 Python 镜像，至少可以使用 nano, vi 等编辑器
 
 # 基本操作
 复制 .env.example 文件，并修改相应环境变量的值
