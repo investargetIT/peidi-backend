@@ -123,7 +123,7 @@ class OrdersView(viewsets.ModelViewSet):
             cursor = connection.cursor()
             pay_time_start = request.data['start']
             pay_time_end = request.data['end']
-            cursor.execute('CALL GetCustomerPurchaseCounts(‘%s’, ‘%s’)' % (pay_time_start, pay_time_end))
+            cursor.callproc('GetCustomerPurchaseCounts', (pay_time_start, pay_time_end))
             row = cursor.fetchone()[0]
             return SuccessResponse(str(row))
         except Exception:
