@@ -11,6 +11,10 @@ ordersapione = views.OrdersView.as_view({
     'delete': 'destroy',
 })
 
+getCustomerPurchaseCounts = views.OrdersView.as_view({
+    'post': 'getCustomerPurchaseCounts',
+})
+
 traderordersapi = views.TraderOrdersView.as_view({
     'get': 'list',
     'post': 'create',
@@ -30,6 +34,7 @@ testGroupByAmount = views.OrdersView.as_view({
 
 urlpatterns = [
     path("orders", ordersapi, name="ordersapi"),
+    path("customercount", getCustomerPurchaseCounts, name="getCustomerPurchaseCounts"),
     re_path("orders/(?P<pk>\d+)/", ordersapione, name='ordersapione'),
     path("traderorders", traderordersapi, name="traderordersapi"),
     re_path("traderorders/(?P<pk>\d+)/", traderordersapione, name='traderordersapione'),

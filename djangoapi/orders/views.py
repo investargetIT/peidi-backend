@@ -4,7 +4,7 @@ import traceback
 from django.core.paginator import Paginator, EmptyPage
 from django.core.serializers import serialize
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db import transaction
+from django.db import transaction, connection
 from django.db.models import Sum, Count
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
@@ -116,6 +116,20 @@ class OrdersView(viewsets.ModelViewSet):
             return PeiDiErrorResponse(err)
         except Exception:
             return ExceptionResponse(traceback.format_exc().split('\n')[-2])
+
+
+    def getCustomerPurchaseCounts(self, request, *args, **kwargs):
+        try:
+            cursor = connection.cursor()
+            pay_time_start = request.data['start']
+            pay_time_end = request.data['end']
+            cursor.execute('CALL GetCustomerPurchaseCounts(‘%s’, ‘%s’)' % (pay_time_start, pay_time_end))
+            row = cursor.fetchone()[0]
+            return SuccessResponse(str(row))
+        except Exception:
+            return ExceptionResponse(traceback.format_exc().split('\n')[-2])
+
+
 class TraderOrdersView(viewsets.ModelViewSet):
     """
     list:获取原始订单明细列表 （子订单）
