@@ -120,12 +120,12 @@ class OrdersView(viewsets.ModelViewSet):
 
     def getCustomerPurchaseCounts(self, request, *args, **kwargs):
         try:
-            cursor = connection.cursor()
-            pay_time_start = request.data['start']
-            pay_time_end = request.data['end']
-            cursor.callproc('GetCustomerPurchaseCounts', (pay_time_start, pay_time_end))
-            row = cursor.fetchone()[0]
-            return SuccessResponse(str(row))
+            with connection.cursor() as cursor:
+                pay_time_start = request.data['start']
+                pay_time_end = request.data['end']
+                cursor.callproc('GetCustomerPurchaseCounts', (pay_time_start, pay_time_end))
+                row = cursor.fetchall()
+                return SuccessResponse(str(row))
         except Exception:
             return ExceptionResponse(traceback.format_exc().split('\n')[-2])
 
