@@ -1,14 +1,15 @@
 # TODO
 - [ ] 更换一个功能丰富一些的 Python 镜像，至少可以使用 nano, vi 等编辑器
+- [ ] CD
 
 # 基本操作
 复制 .env.example 文件，并修改相应环境变量的值
 ```
 cp .env.example .env
 ```
-创建并启动容器
+构建并启动容器
 ```
-docker compose up
+docker compose up --build
 ```
 如果需要运行 Django 相关命令，需要进入 Django 容器
 ```
@@ -24,7 +25,7 @@ docker compose down
 ```
 清空数据库，MySQL 数据全部保存在`mysql/data`这个目录，删除这个目录相当于重置了 MySQL
 ```
-sudo rm -rf mysql/data
+sudo rm -rf ./mysql/data
 ```
 
 # 环境变量
