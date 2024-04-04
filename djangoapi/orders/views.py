@@ -9,13 +9,20 @@ from django.db.models import Sum, Count
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
-
+from django_filters import rest_framework as filters
 from orders.models import orders, tradeOrders
 from orders.serializer import OrdersSerializer, TradeOrdersSerializer
 from utils.customclass import SuccessResponse, PeiDiError, PeiDiErrorResponse, ExceptionResponse
 
 
 # Create your views here.
+class OrdersFilter(filters.FilterSet):
+    pay_time = filters.DateTimeFromToRangeFilter()
+    class Meta:
+        model = orders
+        fields = ('id', 'tid', 'buyer_nick', 'receiver_area', 'trade_status', 'pay_status', 'process_status')
+
+
 class OrdersView(viewsets.ModelViewSet):
     """
     list:获取原始订单列表
@@ -25,7 +32,7 @@ class OrdersView(viewsets.ModelViewSet):
     """
     filter_backends = (DjangoFilterBackend,)
     queryset = orders.objects.all()
-    filterset_fields = ('id', 'tid', 'buyer_nick', 'receiver_area', 'trade_status', 'pay_status', 'process_status')
+    filterset_class = OrdersFilter
     serializer_class = OrdersSerializer
 
     def list(self, request, *args, **kwargs):
