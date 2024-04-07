@@ -1,11 +1,16 @@
+from datetime import datetime
+
 from django.contrib import admin
+from rangefilter.filters import DateTimeRangeFilterBuilder
+
 from .models import orders, tradeOrders
 
 admin.site.register(tradeOrders)
 
+@admin.register(orders)
 class OrderAdmin(admin.ModelAdmin):
     list_display = [
-        "platform", 
+        "platform",
         "shop_name",
         "warehouse_no",
         "tid",
@@ -59,5 +64,14 @@ class OrderAdmin(admin.ModelAdmin):
         "modified",
         "created",
     ]
-
-admin.site.register(orders, OrderAdmin)
+    search_fields = ["tid"]
+    list_filter = (
+        (
+            "pay_time",
+            DateTimeRangeFilterBuilder(
+                title="支付时间",
+                default_start=datetime(2022, 1, 1),
+                default_end=datetime(2022, 12, 31, 23, 59, 59),
+            ),
+        ),
+    )

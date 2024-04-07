@@ -33,6 +33,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'rangefilter',
     'usersys.apps.UsersysConfig',
     'orders.apps.OrdersConfig',
     'goods.apps.GoodsConfig',
