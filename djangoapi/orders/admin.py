@@ -1,6 +1,63 @@
 from django.contrib import admin
-
-# Register your models here.
 from .models import orders, tradeOrders
-admin.site.register(orders)
+
 admin.site.register(tradeOrders)
+
+class OrderAdmin(admin.ModelAdmin):
+    list_display = [
+        "platform", 
+        "shop_name",
+        "warehouse_no",
+        "tid",
+        "trade_status",
+        "guarantee_mode",
+        "pay_status",
+        "delivery_term",
+        "pay_method",
+        "pay_account",
+        "refund_status",
+        "process_status",
+        "bad_reason",
+        "trade_time",
+        "pay_time",
+        "end_time",
+        "buyer_nick",
+        "receiver_name",
+        "receiver_area",
+        "receiver_ring",
+        "receiver_address",
+        "receiver_mobile",
+        "receiver_telno",
+        "receiver_zip",
+        "to_deliver_time",
+        "buyer_message",
+        "remark",
+        "biaoqi",
+        "goods_amount",
+        "post_amount",
+        "other_amount",
+        "discount",
+        "platform_cost",
+        "received",
+        "receivable",
+        "cash_on_delivery_amount",
+        "refund_amount",
+        "logistics_type",
+        "invoice_type",
+        "payer_name",
+        "invoice_content",
+        "is_auto_wms",
+        "is_ware_trade",
+        "trade_from",
+        "logistics_no",
+        "pay_id",
+        "paid",
+        "consumer_amount",
+        "platform_amount",
+        "currency",
+        "id_no",
+        "modified",
+        "created",
+    ]
+
+admin.site.register(orders, OrderAdmin)
