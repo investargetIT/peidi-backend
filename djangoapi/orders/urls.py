@@ -15,6 +15,10 @@ getCustomerPurchaseCounts = views.OrdersView.as_view({
     'post': 'getCustomerPurchaseCounts',
 })
 
+getShopSalesAmount = views.OrdersView.as_view({
+    'post': 'getShopSalesAmount',
+})
+
 traderordersapi = views.TraderOrdersView.as_view({
     'get': 'list',
     'post': 'create',
@@ -35,6 +39,7 @@ testGroupByAmount = views.OrdersView.as_view({
 urlpatterns = [
     path("orders", ordersapi, name="ordersapi"),
     path("customercount", getCustomerPurchaseCounts, name="getCustomerPurchaseCounts"),
+    path("shopsalesamount", getShopSalesAmount, name="getShopSalesAmount"),
     re_path("orders/(?P<pk>\d+)/", ordersapione, name='ordersapione'),
     path("traderorders", traderordersapi, name="traderordersapi"),
     re_path("traderorders/(?P<pk>\d+)/", traderordersapione, name='traderordersapione'),

@@ -135,6 +135,17 @@ class OrdersView(viewsets.ModelViewSet):
                 return SuccessResponse(str(row))
         except Exception:
             return ExceptionResponse(traceback.format_exc().split('\n')[-2])
+    
+    def getShopSalesAmount(self, request, *args, **kwargs):
+        try:
+            with connection.cursor() as cursor:
+                pay_time_start = request.data['start']
+                pay_time_end = request.data['end']
+                cursor.callproc('GetShopSalesAmount', (pay_time_start, pay_time_end))
+                row = cursor.fetchall()
+                return SuccessResponse(str(row))
+        except Exception:
+            return ExceptionResponse(traceback.format_exc().split('\n')[-2])
 
 
 class TraderOrdersView(viewsets.ModelViewSet):
