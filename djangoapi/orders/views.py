@@ -57,7 +57,10 @@ class OrdersView(viewsets.ModelViewSet):
         try:
             data = request.data
             with transaction.atomic():
-                serializer = self.serializer_class(data=data)
+                if isinstance(data, list):
+                    serializer = self.serializer_class(data=data, many=True)
+                else:
+                    serializer = self.serializer_class(data=data)
                 if serializer.is_valid():
                     serializer.save()
                 else:
