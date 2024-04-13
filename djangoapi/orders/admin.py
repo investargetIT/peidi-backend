@@ -8,8 +8,9 @@ from .models import orders, tradeOrders
 admin.site.register(tradeOrders)
 
 @admin.register(orders)
-class OrderAdmin(admin.ModelAdmin):
+class OrderAdmin(admin.ModelAdmin): 
     list_display = [
+        "trade_no",
         "platform",
         "shop_name",
         "warehouse_no",
