@@ -3,9 +3,9 @@ from datetime import datetime
 from django.contrib import admin
 from rangefilter.filters import DateTimeRangeFilterBuilder
 
-from .models import orders, tradeOrders
+from .models import orders, salesOutDetails
 
-admin.site.register(tradeOrders)
+admin.site.register(salesOutDetails)
 
 @admin.register(orders)
 class OrderAdmin(admin.ModelAdmin): 

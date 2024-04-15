@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from orders.models import orders, tradeOrders
+from orders.models import orders, salesOutDetails
 
 
 class OrdersSerializer(serializers.ModelSerializer):
@@ -10,9 +10,9 @@ class OrdersSerializer(serializers.ModelSerializer):
         model = orders
         fields = '__all__'
 
-class TradeOrdersSerializer(serializers.ModelSerializer):
+class SalesOutDetailsSerializer(serializers.ModelSerializer):
 
 
     class Meta:
-        model = tradeOrders
+        model = salesOutDetails
         fields = '__all__'

@@ -19,12 +19,12 @@ getShopSalesAmount = views.OrdersView.as_view({
     'post': 'getShopSalesAmount',
 })
 
-traderordersapi = views.TraderOrdersView.as_view({
+salesOutDetailsapi = views.SalesOutDetailsView.as_view({
     'get': 'list',
     'post': 'create',
 })
 
-traderordersapione = views.TraderOrdersView.as_view({
+salesOutDetailsapione = views.SalesOutDetailsView.as_view({
     'put': 'update',
     'delete': 'destroy',
 })
@@ -41,8 +41,8 @@ urlpatterns = [
     path("customercount", getCustomerPurchaseCounts, name="getCustomerPurchaseCounts"),
     path("shopsalesamount", getShopSalesAmount, name="getShopSalesAmount"),
     re_path("orders/(?P<pk>\d+)/", ordersapione, name='ordersapione'),
-    path("traderorders", traderordersapi, name="traderordersapi"),
-    re_path("traderorders/(?P<pk>\d+)/", traderordersapione, name='traderordersapione'),
+    path("salesout", salesOutDetailsapi, name="salesOutDetailsapi"),
+    re_path("salesout/(?P<pk>\d+)/", salesOutDetailsapione, name='salesOutDetailsapione'),
     path("testcount", testGroupByCount, name="testGroupByCount"),
     path("testamount", testGroupByAmount, name="testGroupByAmount"),
 

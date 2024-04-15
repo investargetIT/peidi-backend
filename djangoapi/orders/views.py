@@ -10,8 +10,8 @@ from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from django_filters import rest_framework as filters
-from orders.models import orders, tradeOrders
-from orders.serializer import OrdersSerializer, TradeOrdersSerializer
+from orders.models import orders, salesOutDetails
+from orders.serializer import OrdersSerializer, SalesOutDetailsSerializer
 from utils.customclass import SuccessResponse, PeiDiError, PeiDiErrorResponse, ExceptionResponse
 
 
@@ -151,17 +151,17 @@ class OrdersView(viewsets.ModelViewSet):
             return ExceptionResponse(traceback.format_exc().split('\n')[-2])
 
 
-class TraderOrdersView(viewsets.ModelViewSet):
+class SalesOutDetailsView(viewsets.ModelViewSet):
     """
-    list:获取原始订单明细列表 （子订单）
-    create:新增原始明细订单（子订单）
-    update:修改原始订单明细（id）（子订单）
-    destroy:删除原始订单明细（id）（子订单）
+    list:获取销售出库明细列表
+    create:新增销售出库明细订单
+    update:修改销售出库明细（id）
+    destroy:删除销售出库明细（id）
     """
     filter_backends = (DjangoFilterBackend,)
-    queryset = tradeOrders.objects.all()
+    queryset = salesOutDetails.objects.all()
     filterset_fields = ('id', 'tid', 'oid', 'goods_id', 'spec_id', 'goods_no', 'spec_no', 'goods_name', 'spec_name')
-    serializer_class = TradeOrdersSerializer
+    serializer_class = SalesOutDetailsSerializer
 
     def list(self, request, *args, **kwargs):
         try:
@@ -183,13 +183,25 @@ class TraderOrdersView(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         try:
-            data = request.data
-            with transaction.atomic():
-                serializer = self.serializer_class(data=data)
-                if serializer.is_valid():
-                    serializer.save()
-                else:
-                    raise PeiDiError(20071, msg='新增原始订单子单失败', detail='%s' % serializer.errors)
+            datas = request.data
+            if isinstance(datas, list):
+                success, fail = [], []
+                for data in datas:
+                    with transaction.atomic():
+                        serializer = self.serializer_class(data=data, many=True)
+                        if serializer.is_valid():
+                            serializer.save()
+                            success.append(serializer.data)
+                        else:
+                            fail.append({'data': data, 'errmsg': serializer.errors})
+                return SuccessResponse({'success': success, 'fail': fail})
+            else:
+                with transaction.atomic():
+                    serializer = self.serializer_class(data=datas)
+                    if serializer.is_valid():
+                        serializer.save()
+                    else:
+                        raise PeiDiError(20071, msg='新增销售出库失败', detail='%s' % serializer.errors)
                 return SuccessResponse(serializer.data)
         except PeiDiError as err:
             return PeiDiErrorResponse(err)
@@ -205,7 +217,7 @@ class TraderOrdersView(viewsets.ModelViewSet):
                 if serializer.is_valid():
                     serializer.save()
                 else:
-                    raise PeiDiError(20071, msg='编辑原始订单子单失败', detail='%s' % serializer.errors)
+                    raise PeiDiError(20071, msg='编辑销售出库失败', detail='%s' % serializer.errors)
                 return SuccessResponse(serializer.data)
         except PeiDiError as err:
             return PeiDiErrorResponse(err)
