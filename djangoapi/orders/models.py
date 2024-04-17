@@ -130,11 +130,11 @@ class salesOutDetails(models.Model):
     gift_method = models.CharField(max_length=128, blank=True, null=True, verbose_name='赠品方式')
     buyer_message = models.CharField(max_length=1024, blank=True, null=True, verbose_name='买家留言/客户备注')
     service_remark = models.CharField(max_length=1024, blank=True, null=True, verbose_name='客服备注')
-    remark = models.CharField(max_length=100, blank=True, null=True, verbose_name='备注')
+    remark = models.CharField(max_length=1024, blank=True, null=True, verbose_name='备注')
     print_remark = models.CharField(max_length=1024, blank=True, null=True, verbose_name='打印备注')
     source_suite_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='来源组合装编码')
     source_suite_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='来源组合装名称')
-    source_suite_num = models.DecimalField(max_digits=19, decimal_places=4, blank=True, default=0, verbose_name='来源组合装数量')
+    source_suite_num = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, default=0, verbose_name='来源组合装数量')
     stockout_tag = models.CharField(max_length=100, blank=True, null=True, verbose_name='出库标签')
     order_tag = models.CharField(max_length=100, blank=True, null=True, verbose_name='订单标签')
     specgoods_price = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='单品零售价')
@@ -145,5 +145,5 @@ class salesOutDetails(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['oid', 'stockout_no', 'goods_no'], name='unique_oid_stockoutno_goodsno')
+            models.UniqueConstraint(fields=['oid', 'stockout_no', 'spec_no', 'goods_no'], name='unique_oid_stockoutno_specno_goodsno')
         ]
