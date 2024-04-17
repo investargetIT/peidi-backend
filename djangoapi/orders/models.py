@@ -78,9 +78,9 @@ class orders(models.Model):
 
 class salesOutDetails(models.Model):
     trade_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='订单编号')
-    tid = models.CharField(max_length=100, blank=True, null=True, unique=True, verbose_name='原始单号')
-    oid = models.CharField(max_length=100, blank=True, null=True, unique=True, verbose_name='原始子订单号')
-    otid = models.CharField(max_length=100, blank=True, null=True, unique=True, verbose_name='子单原始单号')
+    tid = models.CharField(max_length=100, blank=True, null=True, verbose_name='原始单号')
+    oid = models.CharField(max_length=100, blank=True, null=True, verbose_name='原始子订单号')
+    otid = models.CharField(max_length=100, blank=True, null=True, verbose_name='子单原始单号')
     order_type = models.CharField(max_length=40, blank=True, null=True, verbose_name='订单类别')
     trade_from = models.CharField(max_length=40, blank=True, null=True, verbose_name='订单来源')
     pay_account = models.CharField(max_length=128, blank=True, null=True, verbose_name='支付账号/付款账号')
@@ -112,6 +112,7 @@ class salesOutDetails(models.Model):
     goods_discount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='货品总优惠')
     cod_amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='货到付款金额/COD金额')
     receivable = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='应收金额')
+    ori_receivable = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='子单应收金额')
     buyer_nick = models.CharField(max_length=100, blank=True, null=True, verbose_name='客户网名')
     receiver_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='收件人')
     receiver_area = models.CharField(max_length=128, blank=True, null=True, verbose_name='收货地区')
@@ -141,3 +142,8 @@ class salesOutDetails(models.Model):
     distributor_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='分销商编号')
     paid = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='已付')
     distribution_oid = models.CharField(max_length=100, blank=True, null=True, verbose_name='分销原始单号')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['oid', 'stockout_no', 'goods_no'], name='unique_oid_stockoutno_goodsno')
+        ]

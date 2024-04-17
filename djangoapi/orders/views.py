@@ -4,7 +4,7 @@ import traceback
 from django.core.paginator import Paginator, EmptyPage
 from django.core.serializers import serialize
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db import transaction, connection
+from django.db import transaction, connection, IntegrityError
 from django.db.models import Sum, Count
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
@@ -187,13 +187,16 @@ class SalesOutDetailsView(viewsets.ModelViewSet):
             if isinstance(datas, list):
                 success, fail = [], []
                 for data in datas:
-                    with transaction.atomic():
-                        serializer = self.serializer_class(data=data, many=True)
-                        if serializer.is_valid():
-                            serializer.save()
-                            success.append(serializer.data)
-                        else:
-                            fail.append({'data': data, 'errmsg': serializer.errors})
+                    try:
+                        with transaction.atomic():
+                            serializer = self.serializer_class(data=data)
+                            if serializer.is_valid():
+                                serializer.save()
+                                success.append(serializer.data)
+                            else:
+                                fail.append({'data': data, 'errmsg': serializer.errors})
+                    except Exception as err:
+                        fail.append({'data': data, 'errmsg': str(err)})
                 return SuccessResponse({'success': success, 'fail': fail})
             else:
                 with transaction.atomic():
