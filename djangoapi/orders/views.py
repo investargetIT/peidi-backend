@@ -160,7 +160,7 @@ class SalesOutDetailsView(viewsets.ModelViewSet):
     """
     filter_backends = (DjangoFilterBackend,)
     queryset = salesOutDetails.objects.all()
-    filterset_fields = ('id', 'tid', 'oid', 'goods_id', 'spec_id', 'goods_no', 'spec_no', 'goods_name', 'spec_name')
+    filterset_fields = ('id', 'tid', 'oid', 'stockout_no', 'goods_no', 'spec_no')
     serializer_class = SalesOutDetailsSerializer
 
     def list(self, request, *args, **kwargs):
