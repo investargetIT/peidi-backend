@@ -29,6 +29,18 @@ salesOutDetailsapione = views.SalesOutDetailsView.as_view({
     'delete': 'destroy',
 })
 
+
+historySalesOutDetailsapi = views.HistorySalesOutDetailsView.as_view({
+    'get': 'list',
+    'post': 'create',
+})
+
+historySalesOutDetailsapione = views.HistorySalesOutDetailsView.as_view({
+    'put': 'update',
+    'delete': 'destroy',
+})
+
+
 testGroupByCount = views.OrdersView.as_view({
     'get': 'testGroupByCount'
 })
@@ -43,6 +55,8 @@ urlpatterns = [
     re_path("orders/(?P<pk>\d+)/", ordersapione, name='ordersapione'),
     path("salesout", salesOutDetailsapi, name="salesOutDetailsapi"),
     re_path("salesout/(?P<pk>\d+)/", salesOutDetailsapione, name='salesOutDetailsapione'),
+    path("hissalesout", historySalesOutDetailsapi, name="historySalesOutDetailsapi"),
+    re_path("hissalesout/(?P<pk>\d+)/", historySalesOutDetailsapione, name='historySalesOutDetailsapione'),
     path("testcount", testGroupByCount, name="testGroupByCount"),
     path("testamount", testGroupByAmount, name="testGroupByAmount"),
 
