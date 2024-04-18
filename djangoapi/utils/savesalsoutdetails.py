@@ -48,8 +48,6 @@ def saveOrders(excel_path):
     datalist = []
 
     for row in tables:
-        if ',' in row['原始单号']:
-            continue
         time_fields = ['下单时间', '支付时间', '送货时间', '创建时间', '修改时间', '交易时间', '付款时间', '递交时间', '派送时间', '发货时间']
         for time_field in time_fields:
             if time_field in row.keys():
