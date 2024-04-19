@@ -151,7 +151,7 @@ class salesOutDetails(models.Model):
 
 class historySalesOutDetails(models.Model):
     trade_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='订单编号')
-    tid = models.CharField(max_length=100, blank=True, null=True, verbose_name='原始单号')
+    tid = models.CharField(max_length=255, blank=True, null=True, verbose_name='原始单号')
     oid = models.CharField(max_length=100, blank=True, null=True, verbose_name='原始子订单号')
     otid = models.CharField(max_length=100, blank=True, null=True, verbose_name='子单原始单号')
     order_type = models.CharField(max_length=40, blank=True, null=True, verbose_name='订单类别')
