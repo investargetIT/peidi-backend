@@ -23,6 +23,7 @@ class PlatformGoods(models.Model):
     spec_code = models.CharField(max_length=100, blank=True, null=True, verbose_name='规格码')
     spec_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='规格名称')
     retail_price = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='零售价')
+    goods_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='货品名称')
     goods_type = models.CharField(max_length=100, blank=True, null=True, verbose_name='货品分类')
     goods_brand = models.CharField(max_length=100, blank=True, null=True, verbose_name='货品品牌')
     stock_num = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='平台库存')
