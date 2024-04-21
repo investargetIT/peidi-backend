@@ -2,6 +2,8 @@
 import datetime
 import traceback
 
+from django.core.cache import cache
+
 APILOG_PATH = {}
 
 def catchexcption(request):
@@ -19,3 +21,14 @@ def catchexcption(request):
                  'path: '+request.path + 'method:' + request.method +'\n'+
                  traceback.format_exc() + '\n\n\n\n')
     f.close()
+
+
+def read_from_cache(key):
+    value = cache.get(key.encode('utf-8'))
+    return value
+#写
+def write_to_cache(key, value, time_out=3600):
+    cache.set(key.encode('utf-8'), value, time_out)
+
+def cache_delete_key(key):
+    cache.delete(key.encode('utf-8'))

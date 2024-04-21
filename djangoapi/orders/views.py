@@ -1,6 +1,7 @@
 import json
 import traceback
 
+from django.core.cache import cache
 from django.core.paginator import Paginator, EmptyPage
 from django.core.serializers import serialize
 from django.core.serializers.json import DjangoJSONEncoder
@@ -13,6 +14,8 @@ from django_filters import rest_framework as filters
 from orders.models import orders, salesOutDetails, historySalesOutDetails
 from orders.serializer import OrdersSerializer, SalesOutDetailsSerializer, HistorySalesOutDetailsSerializer
 from utils.customclass import SuccessResponse, PeiDiError, PeiDiErrorResponse, ExceptionResponse
+
+from utils.util import read_from_cache, write_to_cache
 
 
 # Create your views here.
@@ -104,12 +107,16 @@ class OrdersView(viewsets.ModelViewSet):
 
     def testGroupByCount(self, request, *args, **kwargs):
         try:
-            queryset = self.filter_queryset(self.get_queryset())
-            queryset = queryset.values('buyer_nick', 'receiver_area').annotate(
-                count=Count('pay_id')).order_by('-count')[:5]
-            serializer = json.dumps(list(queryset), cls=DjangoJSONEncoder)
-            print(json.loads(serializer))
-            return SuccessResponse(json.loads(serializer))
+            key = 'GetCustomerPurchaseCounts'
+            res_data = read_from_cache(key)
+            if not res_data:
+                queryset = self.filter_queryset(self.get_queryset())
+                queryset = queryset.values('buyer_nick', 'receiver_area').annotate(
+                    count=Count('pay_id')).order_by('-count')[:5]
+                serializer = json.dumps(list(queryset), cls=DjangoJSONEncoder)
+                res_data = json.loads(serializer)
+                write_to_cache(key, res_data)
+            return SuccessResponse(res_data)
         except PeiDiError as err:
             return PeiDiErrorResponse(err)
         except Exception:
@@ -130,23 +137,35 @@ class OrdersView(viewsets.ModelViewSet):
 
     def getCustomerPurchaseCounts(self, request, *args, **kwargs):
         try:
-            with connection.cursor() as cursor:
-                pay_time_start = request.data['start']
-                pay_time_end = request.data['end']
-                cursor.callproc('GetCustomerPurchaseCounts', (pay_time_start, pay_time_end))
-                row = cursor.fetchall()
-                return SuccessResponse(str(row))
+            pay_time_start = request.data['start']
+            pay_time_end = request.data['end']
+            key = 'GetCustomerPurchaseCounts%s-%s' % (pay_time_start, pay_time_end)
+            res_data = read_from_cache(key)
+            if not res_data:
+                with connection.cursor() as cursor:
+                    cursor.callproc('GetCustomerPurchaseCounts', (pay_time_start, pay_time_end))
+                    row = cursor.fetchall()
+                    res_data = str(row)
+                    write_to_cache(key, res_data)
+            return SuccessResponse(res_data)
         except Exception:
             return ExceptionResponse(traceback.format_exc().split('\n')[-2])
     
     def getShopSalesAmount(self, request, *args, **kwargs):
         try:
-            with connection.cursor() as cursor:
-                pay_time_start = request.data['start']
-                pay_time_end = request.data['end']
-                cursor.callproc('GetShopSalesAmount', (pay_time_start, pay_time_end))
-                row = cursor.fetchall()
-                return SuccessResponse(str(row))
+            pay_time_start = request.data['start']
+            pay_time_end = request.data['end']
+            key = 'GetShopSalesAmount%s-%s' % (pay_time_start, pay_time_end)
+            res_data = read_from_cache(key)
+            if not res_data:
+                with connection.cursor() as cursor:
+                    pay_time_start = request.data['start']
+                    pay_time_end = request.data['end']
+                    cursor.callproc('GetShopSalesAmount', (pay_time_start, pay_time_end))
+                    row = cursor.fetchall()
+                    res_data = str(row)
+                    write_to_cache(key, res_data)
+            return SuccessResponse(res_data)
         except Exception:
             return ExceptionResponse(traceback.format_exc().split('\n')[-2])
 

@@ -47,3 +47,15 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+  redis:
+    image: redis:latest
+    container_name: peidi-redis
+    command: redis-server /etc/redis/redis.conf
+    volumes:
+      - ./peidi-redis/data:/var/lib/redis/
+      - ./peidi-redis/redis.conf:/etc/redis/redis.conf
+    ports:
+      - "6379:6379"
+    expose:
+      - "6379"
+    restart: always
