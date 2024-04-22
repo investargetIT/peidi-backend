@@ -45,6 +45,8 @@ services:
       - ALIYUNSMS_KEY=${ALIYUNSMS_KEY}
       - ALIYUNSMS_SECRET=${ALIYUNSMS_SECRET}
     depends_on:
+      redis:
+        condition: service_started
       mysql:
         condition: service_healthy
   redis:

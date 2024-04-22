@@ -139,7 +139,7 @@ class OrdersView(viewsets.ModelViewSet):
         try:
             pay_time_start = request.data['start']
             pay_time_end = request.data['end']
-            key = 'GetCustomerPurchaseCounts%s-%s' % (pay_time_start, pay_time_end)
+            key = 'getcustomerpurchasecounts%s%s' % (pay_time_start, pay_time_end)
             res_data = read_from_cache(key)
             if not res_data:
                 with connection.cursor() as cursor:
@@ -155,7 +155,7 @@ class OrdersView(viewsets.ModelViewSet):
         try:
             pay_time_start = request.data['start']
             pay_time_end = request.data['end']
-            key = 'GetShopSalesAmount%s-%s' % (pay_time_start, pay_time_end)
+            key = 'getshopsalesamount%s%s' % (pay_time_start, pay_time_end)
             res_data = read_from_cache(key)
             if not res_data:
                 with connection.cursor() as cursor:

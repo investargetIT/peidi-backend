@@ -124,11 +124,11 @@ AUTH_PASSWORD_VALIDATORS = [
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379",
+        "LOCATION": "redis://redis:6379",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "PICKLE_VERSION": -1,  # Use the latest protocol version
-            "PSAAWORD": "peidi2024!",
+            # "PSAAWORD": "peidi2024!",
             "CONNECTION_POOL_KWARGS": {"max_connections": 100}
         }
     }
