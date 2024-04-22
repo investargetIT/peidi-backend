@@ -1,7 +1,7 @@
 #记录request error
 import datetime
 import traceback
-
+from django.db import connection
 from django.core.cache import cache
 
 APILOG_PATH = {}
@@ -32,3 +32,13 @@ def write_to_cache(key, value, time_out=3600):
 
 def cache_delete_key(key):
     cache.delete(key.encode('utf-8'))
+
+def getMysqlProcessResponseWithRedis(redis_key, proc_name, args):
+    res_data = read_from_cache(redis_key)
+    if not res_data:
+        with connection.cursor() as cursor:
+            cursor.callproc(proc_name, args)
+            row = cursor.fetchall()
+            res_data = str(row)
+            write_to_cache(redis_key, res_data)
+    return res_data

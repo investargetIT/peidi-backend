@@ -15,7 +15,7 @@ from orders.models import orders, salesOutDetails, historySalesOutDetails
 from orders.serializer import OrdersSerializer, SalesOutDetailsSerializer, HistorySalesOutDetailsSerializer
 from utils.customclass import SuccessResponse, PeiDiError, PeiDiErrorResponse, ExceptionResponse
 
-from utils.util import read_from_cache, write_to_cache
+from utils.util import read_from_cache, write_to_cache, getMysqlProcessResponseWithRedis
 
 
 # Create your views here.
@@ -139,14 +139,10 @@ class OrdersView(viewsets.ModelViewSet):
         try:
             pay_time_start = request.data['start']
             pay_time_end = request.data['end']
-            key = 'getcustomerpurchasecounts%s%s' % (pay_time_start, pay_time_end)
-            res_data = read_from_cache(key)
-            if not res_data:
-                with connection.cursor() as cursor:
-                    cursor.callproc('GetCustomerPurchaseCounts', (pay_time_start, pay_time_end))
-                    row = cursor.fetchall()
-                    res_data = str(row)
-                    write_to_cache(key, res_data)
+            proc_name = 'GetCustomerPurchaseCounts'
+            key = '{}{}{}'.format(proc_name, pay_time_start, pay_time_end)
+            res_data = getMysqlProcessResponseWithRedis(redis_key=key, proc_name=proc_name,
+                                                        args=(pay_time_start, pay_time_end))
             return SuccessResponse(res_data)
         except Exception:
             return ExceptionResponse(traceback.format_exc().split('\n')[-2])
@@ -155,16 +151,10 @@ class OrdersView(viewsets.ModelViewSet):
         try:
             pay_time_start = request.data['start']
             pay_time_end = request.data['end']
-            key = 'getshopsalesamount%s%s' % (pay_time_start, pay_time_end)
-            res_data = read_from_cache(key)
-            if not res_data:
-                with connection.cursor() as cursor:
-                    pay_time_start = request.data['start']
-                    pay_time_end = request.data['end']
-                    cursor.callproc('GetShopSalesAmount', (pay_time_start, pay_time_end))
-                    row = cursor.fetchall()
-                    res_data = str(row)
-                    write_to_cache(key, res_data)
+            proc_name = 'GetShopSalesAmount'
+            key = '{}{}{}'.format(proc_name, pay_time_start, pay_time_end)
+            res_data = getMysqlProcessResponseWithRedis(redis_key=key, proc_name=proc_name,
+                                                        args=(pay_time_start, pay_time_end))
             return SuccessResponse(res_data)
         except Exception:
             return ExceptionResponse(traceback.format_exc().split('\n')[-2])
