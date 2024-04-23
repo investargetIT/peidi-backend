@@ -93,4 +93,5 @@ def checkALiYunSmsCode(request):
     except PeiDiError as err:
         return PeiDiErrorResponse(err)
     except Exception:
+        print(traceback.format_exc())
         return ExceptionResponse(traceback.format_exc().split('\n')[-2])

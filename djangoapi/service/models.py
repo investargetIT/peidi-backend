@@ -15,7 +15,9 @@ class MobileAuthCode(models.Model):
     createTime = models.DateTimeField(blank=True, null=True)
     is_used = models.BooleanField(blank=True, default=False, verbose_name='验证码是否已被使用')
     def isexpired(self):
-        return datetime.datetime.now() - self.createTime >= datetime.timedelta(minutes=5)
+        passed_time = datetime.datetime.now() - self.createTime.astimezone().replace(tzinfo=None)
+        available_time = datetime.timedelta(minutes=50)
+        return passed_time >= available_time
     def __str__(self):
         return self.sms_code
     class Meta:
