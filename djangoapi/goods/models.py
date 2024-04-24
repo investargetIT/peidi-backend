@@ -111,3 +111,11 @@ class SuiteGoodsRec(models.Model):
     ratio = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='金额占比')
     is_fixed_price = models.CharField(max_length=100, blank=True, null=True, verbose_name='是否固定价格')
 
+class SPU(models.Model):
+    '''
+    SPU； sku的集合
+    '''
+    brand = models.CharField(max_length=100, blank=True, null=True, verbose_name='品牌')
+    spu = models.CharField(max_length=255, blank=True,  null=True, verbose_name='SPU')
+    suite_no = models.CharField(max_length=255, blank=True, null=True, verbose_name='商家编码/条码')
+    u9_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='料品名称（U9）')

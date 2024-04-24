@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from goods.models import PlatformGoods, SpecGoods, SuiteGoodsRec
+from goods.models import PlatformGoods, SpecGoods, SuiteGoodsRec, SPU
 
 
 class PlatformGoodsSerializer(serializers.ModelSerializer):
@@ -25,3 +25,9 @@ class SuiteGoodsRecSerializer(serializers.ModelSerializer):
         model = SuiteGoodsRec
         fields = '__all__'
 
+class SPUSerializer(serializers.ModelSerializer):
+
+
+    class Meta:
+        model = SPU
+        fields = '__all__'

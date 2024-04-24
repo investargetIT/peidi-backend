@@ -31,6 +31,17 @@ suiteGoodsRecapione = views.SuiteGoodsRecView.as_view({
     'delete': 'destroy'
 })
 
+
+SPUapi = views.SPUView.as_view({
+    'get': 'list',
+    'post': 'create',
+})
+
+SPUapione = views.SPUView.as_view({
+    'update': 'update',
+    'delete': 'destroy'
+})
+
 urlpatterns = [
     path("platformGoods", platformGoodsapi, name="PlatformGoods"),
     re_path("platformGoods/(?P<pk>\d+)/", platformGoodsapione, name='platformGoodsapione'),
@@ -38,6 +49,7 @@ urlpatterns = [
     re_path("specGoods/(?P<pk>\d+)/", specGoodsapione, name="specGoodsapione"),
     path("suiteGoodsRec", suiteGoodsRecapi, name="suiteGoodsRecapi"),
     re_path("suiteGoodsRec/(?P<pk>\d+)/", suiteGoodsRecapione, name="suiteGoodsRecapione"),
-
+    path("spu", SPUapi, name="SPUapi"),
+    re_path("spu/(?P<pk>\d+)/", SPUapione, name="SPUapione"),
 
 ]
