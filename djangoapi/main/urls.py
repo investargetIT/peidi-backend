@@ -15,9 +15,24 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="PeiDiData",
+        default_version="v1",
+        description="PeiDiData-API",
+        terms_of_service="https://www.peidibrand.com/#/",
+        contact=openapi.Contact(email="yangxm@peidibrand.com"),
+        license=openapi.License(name="MIT License"),
+    ),
+    public=True,
+)
 
 urlpatterns = [
+    re_path(r'swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path(r'chats/', include("chats.urls")),
     path(r'service/', include("service.urls")),
     path(r'goods/', include("goods.urls")),

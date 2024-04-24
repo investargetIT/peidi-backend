@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'chats.apps.ChatsConfig',
     'service.apps.ServiceConfig',
     'corsheaders',
+    'drf_yasg',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
