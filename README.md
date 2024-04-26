@@ -17,9 +17,9 @@ docker compose up --build
 ```
 docker exec -ti peidi-django /bin/bash
 ```
-如果要运行 MySQL 相关命令，需要进入 MySQL 容器
+数据库操作
 ```
-docker exec -ti peidi-mysql /bin/bash
+docker exec -ti peidi-mysql mysql -uroot -p
 ```
 停止并移除容器
 ```
