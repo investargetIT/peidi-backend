@@ -37,18 +37,30 @@ def excel_table_byindex(file, colnameindex=0,by_index=0):
     return list
 
 
-def savedatatourl(data, url):
+def savedatatourl(data, url, excel_path):
+    print(excel_path, '总记录数', len(data))
     res = requests.post(url, data=json.dumps(data), headers={"Content-Type": "application/json"}).content.decode()
-    print(res)
+    res = json.loads(res)
+    fails = []
+    if len(res['result']['success']) > 0:
+        print('导入成功', len(res['result']['success']))
+    if len(res['result']['fail']) > 0:
+        print('导入失败', len(res['result']['fail']))
+        for fail in res['result']['fail']:
+            if 'Duplicate' not in fail['errmsg']:
+                fails.append(fail)
+        if len(fails) > 0:
+            print('非重复造成的失败', len(fails), 'fails:', fails)
 
 def saveOrders(excel_path):
 
     tables = excel_table_byindex(excel_path, by_index=0)
-
     datalist = []
 
     for row in tables:
-        time_fields = ['下单时间', '支付时间', '送货时间', '创建时间', '修改时间', '交易时间', '付款时间', '递交时间', '派送时间', '发货时间']
+        # if ',' in row['原始单号']:
+        #     continue
+        time_fields = ['下单时间', '支付时间', '送货时间', '创建时间', '修改时间', '交易时间', '付款时间', '递交时间', '派送时间', '发货时间', '赠品方式']
         for time_field in time_fields:
             if time_field in row.keys():
                 if row[time_field]:
@@ -59,7 +71,76 @@ def saveOrders(excel_path):
                         row[time_field] = None
                 else:
                     row[time_field] = None
+
         ###  销售出库明细
+        data = {
+                    'trade_no': row['订单编号'],
+                    'tid': row['原始单号'],
+                    'oid': row['原始子单号'],
+                    'otid': row['子单原始单号'],
+                    'order_type': row['订单类别'],
+                    'trade_from': row['订单来源'],
+                    'pay_account': row['支付账号'],
+                    'stockout_no': row['出库单编号'].replace('\n', '').replace('\r', ''),
+                    'warehouse': row['仓库'],
+                    'shop_name': row['店铺'],
+                    'status_type': row['出库单状态'],
+                    'stockout_status': row['出库状态'],
+                    'spec_no': row['商家编码'],
+                    'goods_no': row['货品编号'],
+                    'goods_name': row['货品名称'],
+                    'goods_short_name': row['货品简称'],
+                    'brand_name': row['品牌'],
+                    'goods_type': row['分类'],
+                    'spec_id': row['规格码'],
+                    'spec_name': row['规格名称'],
+                    'barcode': row['条码'],
+                    'num': row['货品数量'],
+                    'unit_name': row['单位'],
+                    'aux_num': row['辅助数量'],
+                    'aux_unit_name': row['辅助单位'],
+                    'ori_price': row['货品原单价'],
+                    'ori_total_amount': row['货品原总金额'],
+                    'order_discount': row['订单总优惠'],
+                    'post_amount': row['订单邮费'],
+                    'share_post_amount': row['分摊邮费'],
+                    'deal_price': row['货品成交价'],
+                    'deal_total_price': row['货品成交总价'],
+                    'goods_discount': row['货品总优惠'],
+                    'cod_amount': row['货到付款金额'],
+                    'receivable': row['应收金额'],
+                    'ori_receivable': row['子单应收金额 '],
+                    'buyer_nick': row['客户网名'],
+                    'receiver_name': row['收货人'],
+                    'receiver_area': row['收货地区'],
+                    'receiver_address': row['收货地址'],
+                    'receiver_mobile': row['收件人手机'],
+                    'receiver_telno': row['收件人电话'],
+                    'logistics_name': row['物流公司'],
+                    'invoice_type': row['需开发票'],
+                    'flag_name': row['标记名称'],
+                    'trade_time': row['下单时间'],
+                    'pay_time': row['支付时间'],
+                    'created': row['创建时间'],
+                    'deliver_time': row['发货时间'],
+                    'gift_method': row['赠品方式'] if row['赠品方式'] else '',
+                    'buyer_message': row['买家留言'],
+                    'service_remark': row['客服备注'],
+                    'remark': row['备注'],
+
+                    'print_remark': row['打印备注'],
+                    'source_suite_no': row['来源组合装编码'],
+                    'source_suite_name': row['来源组合装名称'],
+                    'source_suite_num': row['来源组合装数量'],
+                    'stockout_tag': row['出库标签'],
+                    'order_tag': row['订单标签'],
+                    'specgoods_price': row['单品零售价'],
+                    'distributor': row['分销商名称'],
+                    'distributor_no': row['分销商编号'],
+                    'paid': row['已付'],
+                    'distribution_oid': row['分销原始单号'],
+                }
+        ###  旧系统销售出库明细
         # data = {
         #     'trade_no': row['订单编号'],
         #     'tid': row['原始单号'],
@@ -89,7 +170,7 @@ def saveOrders(excel_path):
         #     'ori_price': row['货品原单价'],
         #     'ori_total_amount': row['货品原总金额'],
         #     'order_discount': row['订单总优惠'],
-        #     'post_amount': row['订单邮费'],
+        #     'post_amount': row['订单邮费'] if row['订单邮费'] != '无权限' else None,
         #     'share_post_amount': row['分摊邮费'],
         #     'deal_price': row['货品成交价'],
         #     'deal_total_price': row['货品成交总价'],
@@ -104,11 +185,71 @@ def saveOrders(excel_path):
         #     'receiver_mobile': row['收件人手机'],
         #     'receiver_telno': row['收件人电话'],
         #     'logistics_name': row['物流公司'],
+        #     # 'invoice_type': row['需开发票'],
+        #     'invoice_type': row['标记名称'],
+        #     'flag_name': row['制单人'],
+        #     'pay_time': row['下单时间'],
+        #     'trade_time': row['创建时间'],
+        #     'created': row['发货时间'],
+        #     'deliver_time': row['赠品方式'],
+        #     'gift_method': row['买家留言'],
+        #     'buyer_message': row['客服备注'],
+        #     'service_remark': row['打印备注'],
+        #     'remark': row['包装'],
+        #     'print_remark': row['备注'],
+        #     'source_suite_no': row['来源组合装名称'],
+        #     'source_suite_name': row['来源组合装数量'],
+        #     'source_suite_num': row['出库标签'],
+        #     'stockout_tag': row['订单标签'],
+        #     'order_tag': row['单品零售价'],
+        #     'specgoods_price': row['分销商名称'],
+        #     'distributor': row['分销商编号'],
+        #     'distributor_no': row['已付'],
+        #     'paid': row['分销原始单号'],
+        #     'distribution_oid': row['体积'],
+        # }
+        ###  历史销售出库明细
+        # data = {
+        #     'trade_no': row['订单编号'],
+        #     'tid': row['原始单号'],
+        #     'oid': row['原始子单号'],
+        #     'otid': row['子单原始单号'],
+        #     'order_type': row['订单类别'],
+        #     'pay_account': row['支付账号'],
+        #     'stockout_no': row['出库单编号'].replace('\n', '').replace('\r', ''),
+        #     'warehouse': row['仓库'],
+        #     'shop_name': row['店铺'],
+        #     'status_type': row['出库单状态'],
+        #     'stockout_status': row['出库状态'],
+        #     'spec_no': row['商家编码'],
+        #     'goods_no': row['货品编号'],
+        #     'goods_name': row['货品名称'],
+        #     'goods_short_name': row['货品简称'],
+        #     'brand_name': row['品牌'],
+        #     'goods_type': row['分类'],
+        #     'spec_id': row['规格码'],
+        #     'spec_name': row['规格名称'],
+        #     'barcode': row['条码'],
+        #     'num': row['货品数量'],
+        #     'ori_price': row['货品原单价'],
+        #     'ori_total_amount': row['货品原总金额'],
+        #     'order_discount': row['订单总优惠'],
+        #     'post_amount': row['订单邮费'],
+        #     'share_post_amount': row['分摊邮费'],
+        #     'deal_price': row['货品成交价'],
+        #     'deal_total_price': row['货品成交总价'],
+        #     'goods_discount': row['货品总优惠'],
+        #     'cod_amount': row['货到付款金额'],
+        #     'receivable': row['应收金额'],
+        #     'buyer_nick': row['客户网名'],
+        #     'receiver_name': row['收货人'],
+        #     'receiver_area': row['收货地区'],
+        #     'receiver_address': row['收货地址'],
+        #     'receiver_mobile': row['收件人手机'],
+        #     'receiver_telno': row['收件人电话'],
+        #     'logistics_name': row['物流公司'],
         #     'invoice_type': row['需开发票'],
-        #     'flag_name': row['标记名称'],
-        #     'trade_time': row['下单时间'],
         #     'pay_time': row['支付时间'],
-        #     'created': row['创建时间'],
         #     'deliver_time': row['发货时间'],
         #     'gift_method': row['赠品方式'],
         #     'buyer_message': row['买家留言'],
@@ -119,98 +260,70 @@ def saveOrders(excel_path):
         #     'source_suite_no': row['来源组合装编码'],
         #     'source_suite_name': row['来源组合装名称'],
         #     'source_suite_num': row['来源组合装数量'],
-        #     'stockout_tag': row['出库标签'],
-        #     'order_tag': row['订单标签'],
-        #     'specgoods_price': row['单品零售价'],
-        #     'distributor': row['分销商名称'],
-        #     'distributor_no': row['分销商编号'],
-        #     'paid': row['已付'],
-        #     'distribution_oid': row['分销原始单号'],
         # }
-        ###  历史销售出库明细
-        data = {
-            'trade_no': row['订单编号'],
-            'tid': row['原始单号'],
-            'oid': row['原始子单号'],
-            'otid': row['子单原始单号'],
-            'order_type': row['订单类别'],
-            'pay_account': row['支付账号'],
-            'stockout_no': row['出库单编号'].replace('\n', '').replace('\r', ''),
-            'warehouse': row['仓库'],
-            'shop_name': row['店铺'],
-            'status_type': row['出库单状态'],
-            'stockout_status': row['出库状态'],
-            'spec_no': row['商家编码'],
-            'goods_no': row['货品编号'],
-            'goods_name': row['货品名称'],
-            'goods_short_name': row['货品简称'],
-            'brand_name': row['品牌'],
-            'goods_type': row['分类'],
-            'spec_id': row['规格码'],
-            'spec_name': row['规格名称'],
-            'barcode': row['条码'],
-            'num': row['货品数量'],
-            'ori_price': row['货品原单价'],
-            'ori_total_amount': row['货品原总金额'],
-            'order_discount': row['订单总优惠'],
-            'post_amount': row['订单邮费'],
-            'share_post_amount': row['分摊邮费'],
-            'deal_price': row['货品成交价'],
-            'deal_total_price': row['货品成交总价'],
-            'goods_discount': row['货品总优惠'],
-            'cod_amount': row['货到付款金额'],
-            'receivable': row['应收金额'],
-            'buyer_nick': row['客户网名'],
-            'receiver_name': row['收货人'],
-            'receiver_area': row['收货地区'],
-            'receiver_address': row['收货地址'],
-            'receiver_mobile': row['收件人手机'],
-            'receiver_telno': row['收件人电话'],
-            'logistics_name': row['物流公司'],
-            'invoice_type': row['需开发票'],
-            'pay_time': row['支付时间'],
-            'deliver_time': row['发货时间'],
-            'gift_method': row['赠品方式'],
-            'buyer_message': row['买家留言'],
-            'service_remark': row['客服备注'],
-            'remark': row['备注'],
-
-            'print_remark': row['打印备注'],
-            'source_suite_no': row['来源组合装编码'],
-            'source_suite_name': row['来源组合装名称'],
-            'source_suite_num': row['来源组合装数量'],
-        }
         datalist.append(data)
-    savedatatourl(datalist, base_url + 'orders/salesout')
+    savedatatourl(datalist, base_url + 'orders/salesout', excel_path)
+    return len(tables)
 
 
 
 
 
 
-def saveExcel(excel_path):
 
+def saveExcel(excel_path, err_path, end_path):
+    record_num = 0
     if os.path.isfile(excel_path):
-        print('***** path: ', excel_path)
         try:
-            saveOrders(excel_path)
+            record_num = saveOrders(excel_path)
         except Exception:
-            print(traceback.format_exc())
-            destination_path = os.path.join(err_folder_path, file)
-            os.rename(excel_path, destination_path)
+            os.rename(excel_path, err_path)
         else:
-            end_folder_path = os.path.join(home_path, 'end')
-            destination_path = os.path.join(end_folder_path, file)
-            os.rename(excel_path, destination_path)
+            os.rename(excel_path, end_path)
+    return record_num
 
 
+def split_array(array, num_subarrays):
+    array_length = len(array)
+    subarray_length = array_length // num_subarrays
+
+    subarrays = []
+    start_index = 0
+    end_index = subarray_length
+
+    for i in range(num_subarrays):
+        if end_index + subarray_length > array_length-1:
+            end_index = array_length
+        subarray = array[start_index:end_index]
+        subarrays.append(subarray)
+
+        start_index = end_index
+        end_index += subarray_length
+
+    return subarrays
+
+def task(task_files, file_folder_path, err_folder_path, end_folder_path):
+    total = 0
+    for file in task_files:
+        excel_path = os.path.join(file_folder_path, file)
+        err_path = os.path.join(err_folder_path, file)
+        end_path = os.path.join(end_folder_path, file)
+        total += saveExcel(excel_path, err_path, end_path)
+    print('总行数', total)
 
 
 if __name__=="__main__":
-    home_path = r'C:\Users\wjk13\Desktop\peidi-data\销售出库明细\2022'
+    import threading
+    threading_num = 1
+    # home_path = r'C:\Users\wjk13\Desktop\peidi-data\销售出库明细\2023'
+    home_path = '/code/utils'
     all_folder_path = os.path.join(home_path, 'all')
     err_folder_path = os.path.join(home_path, 'err')
     end_folder_path = os.path.join(home_path, 'end')
-    for file in os.listdir(all_folder_path):
-        excel_path = os.path.join(all_folder_path, file)
-        saveExcel(excel_path)
+    all_files = split_array(os.listdir(all_folder_path), threading_num)
+    for task_files in all_files:
+        thread = threading.Thread(target=task, args=(task_files, all_folder_path, err_folder_path, end_folder_path))
+        thread.start()
+
+
+
