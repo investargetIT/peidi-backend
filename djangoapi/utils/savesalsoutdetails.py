@@ -11,6 +11,7 @@ from xlrd.xldate import xldate_as_datetime
 
 
 base_url = 'http://localhost:8000/'
+auth_token = '60b4cd077a06a4ce0e2f7db048e373f1ca84fe31'
 
 
 def open_excel(file):
@@ -39,7 +40,12 @@ def excel_table_byindex(file, colnameindex=0,by_index=0):
 
 def savedatatourl(data, url, excel_path):
     print(excel_path, '总记录数', len(data))
-    res = requests.post(url, data=json.dumps(data), headers={"Content-Type": "application/json"}).content.decode()
+    res = requests.post(url, data=json.dumps(data), headers={
+        "Content-Type": "application/json",
+        "Authorization": f"Token {auth_token}",
+    })
+    res.raise_for_status()
+    res = res.content.decode()
     res = json.loads(res)
     fails = []
     duplicate_fails = []
@@ -51,7 +57,7 @@ def savedatatourl(data, url, excel_path):
             if 'Duplicate' not in fail['errmsg']:
                 fails.append(fail)
             else:
-                duplicate_fails.append(fail)
+                duplicate_fails.append(fail['errmsg'])
         if len(fails) > 0:
             print('非重复造成的失败', len(fails), fails)
         if len(duplicate_fails) > 0:
@@ -281,7 +287,8 @@ def saveExcel(excel_path, err_path, end_path):
     if os.path.isfile(excel_path):
         try:
             record_num = saveOrders(excel_path)
-        except Exception:
+        except Exception as e:
+            print('异常', e)
             os.rename(excel_path, err_path)
         else:
             os.rename(excel_path, end_path)
