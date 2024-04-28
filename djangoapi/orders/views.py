@@ -10,6 +10,8 @@ from django.db.models import Sum, Count
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from django_filters import rest_framework as filters
 from orders.models import orders, salesOutDetails, historySalesOutDetails
 from orders.serializer import OrdersSerializer, SalesOutDetailsSerializer, HistorySalesOutDetailsSerializer
@@ -171,6 +173,8 @@ class SalesOutDetailsView(viewsets.ModelViewSet):
     queryset = salesOutDetails.objects.all()
     filterset_fields = ('id', 'tid', 'oid', 'stockout_no', 'goods_no', 'spec_no')
     serializer_class = SalesOutDetailsSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
         try:
