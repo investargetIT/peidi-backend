@@ -4,9 +4,10 @@ import time
 import requests
 import xlrd
 
-from peidiexcel import base_url
+# from peidiexcel import base_url
 
 # 平台货品导入
+base_url = 'http://localhost:8000/'
 
 
 def open_excel(file):
@@ -39,7 +40,8 @@ def savedatatourl(data):
     print(json.loads(res)['code'], json.loads(res)['errormsg'])
 
 def main():
-    path = r'C:\Users\wjk13\Desktop\平台货品gbk.xlsx'
+    # path = r'C:\Users\wjk13\Desktop\平台货品gbk.xlsx'
+    path = '/code/utils/平台货品.xlsx'
     tables = excel_table_byindex(path)
     i = 1
 

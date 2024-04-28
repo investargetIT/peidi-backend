@@ -3,10 +3,10 @@ import json
 import requests
 import xlrd
 
-from peidiexcel import base_url
+# from peidiexcel import base_url
 
 # 单品列表导入
-# base_url = 'http://localhost:8000/'
+base_url = 'http://localhost:8000/'
 
 
 def open_excel(file):
@@ -40,7 +40,8 @@ def savedatatourl(data):
 
 
 def main():
-    path = r'C:\Users\wjk13\Desktop\单品列表gbk.xlsx'
+    # path = r'C:\Users\wjk13\Desktop\单品列表gbk.xlsx'
+    path = '/code/utils/单品列表.xlsx'
     tables = excel_table_byindex(path)
     i = 1
 
