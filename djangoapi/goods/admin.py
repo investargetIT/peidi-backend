@@ -1,16 +1,21 @@
 from django.contrib import admin
+from django.utils.html import format_html
 from .models import PlatformGoods, SpecGoods, SuiteGoodsRec, SPU
 
 # Register your models here.
 @admin.register(PlatformGoods)
 class PlatformGoodsAdmin(admin.ModelAdmin):
+    def image_tag(self, obj):
+        return format_html('<img src="{}" style="width:70px;"/>'.format(obj.img_url))
+    image_tag.short_description = '图片'
+
     list_display = [
         "shop_name",
         "platform_goods_name",
         "platform_spec_name",
         "platform_spec_no",
         "platform_outer_id",
-        "img_url",
+        "image_tag",
         "platform_spec_outer_id",
         "platform_spec_type",
         "platform_goods_id",
