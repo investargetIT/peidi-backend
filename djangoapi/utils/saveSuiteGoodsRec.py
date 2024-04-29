@@ -36,14 +36,17 @@ def excel_table_byindex(file, colnameindex=0,by_index=0):
 def savedatatourl(data):
     url = base_url + 'goods/suiteGoodsRec'
     res = requests.post(url, data=data).content.decode()
-    print(json.loads(res)['code'], json.loads(res)['errormsg'])
+    # print(json.loads(res)['code'], json.loads(res)['errormsg'])
+    code = json.loads(res)['code']
+    if code != 1000:
+        detail = json.loads(res)['detail']
+        print(detail)
 
 
 def main():
     # path = r'C:\Users\wjk13\Desktop\组合装gbk.xlsx'
     path = '/code/utils/组合装.xlsx'
     tables = excel_table_byindex(path)
-    i = 1
 
     for row in tables:
         data = {
@@ -71,11 +74,7 @@ def main():
             'ratio': row['金额占比'],
             'is_fixed_price': row['是否固定价格'],
         }
-        if i >= 0:
-            # time.sleep(1)
-            savedatatourl(data)
-        print(i)
-        i = i + 1
+        savedatatourl(data)
 
 
 #

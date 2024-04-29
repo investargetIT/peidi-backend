@@ -29,12 +29,16 @@ class PlatformGoods(models.Model):
     stock_num = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='平台库存')
     hold_stock = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='平台库存占用量')
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['shop_name', 'platform_goods_id', 'platform_spec_id'], name='unique_shopname_platformgoodsid_platformspecid')
+        ]
 
 class SpecGoods(models.Model):
     '''
     单品列表
     '''
-    spec_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='商家编码')
+    spec_no = models.CharField(max_length=100, blank=True, null=True, unique=True, verbose_name='商家编码')
     goods_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='货品编号')
     goods_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='货品名称')
     short_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='简称')
@@ -110,6 +114,11 @@ class SuiteGoodsRec(models.Model):
                                       help_text='固定售价/单价')
     ratio = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='金额占比')
     is_fixed_price = models.CharField(max_length=100, blank=True, null=True, verbose_name='是否固定价格')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['suite_no', 'spec_no'], name='unique_suiteno_specno')
+        ]
 
 class SPU(models.Model):
     '''

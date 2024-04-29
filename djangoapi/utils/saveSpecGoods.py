@@ -36,14 +36,17 @@ def excel_table_byindex(file, colnameindex=0,by_index=0):
 def savedatatourl(data):
     url = base_url + 'goods/specGoods'
     res = requests.post(url, data=data).content.decode()
-    print(json.loads(res)['code'], json.loads(res)['errormsg'])
+    # print(json.loads(res)['code'], json.loads(res)['errormsg'])
+    code = json.loads(res)['code']
+    if code != 1000:
+        detail = json.loads(res)['detail']
+        print(detail)
 
 
 def main():
     # path = r'C:\Users\wjk13\Desktop\单品列表gbk.xlsx'
     path = '/code/utils/单品列表.xlsx'
     tables = excel_table_byindex(path)
-    i = 1
 
 
     for row in tables:
@@ -83,11 +86,7 @@ def main():
             'spec_created': row['创建时间'],
 
         }
-        if i >= 0:
-            # time.sleep(1)
-            savedatatourl(data)
-        print(i)
-        i = i + 1
+        savedatatourl(data)
 
 
 #
