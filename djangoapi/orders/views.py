@@ -39,6 +39,8 @@ class OrdersView(viewsets.ModelViewSet):
     queryset = orders.objects.all()
     filterset_class = OrdersFilter
     serializer_class = OrdersSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
         try:
@@ -266,6 +268,8 @@ class HistorySalesOutDetailsView(viewsets.ModelViewSet):
     queryset = historySalesOutDetails.objects.all()
     filterset_fields = ('id', 'tid', 'oid', 'stockout_no', 'goods_no', 'spec_no')
     serializer_class = HistorySalesOutDetailsSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
         try:
