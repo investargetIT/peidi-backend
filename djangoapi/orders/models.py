@@ -77,7 +77,7 @@ class orders(models.Model):
     created = models.DateTimeField(blank=True, null=True, verbose_name='创建时间/递交时间')
 
 class OrderDetail(models.Model):
-    trade_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='订单编号')
+    trade_no = models.CharField(max_length=100, verbose_name='订单编号')
     shop_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='店铺名称')
     trade_from = models.CharField(max_length=40, blank=True, null=True, verbose_name='订单来源')
     warehouse = models.CharField(max_length=100, blank=True, null=True, verbose_name='仓库')
