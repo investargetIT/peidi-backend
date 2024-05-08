@@ -131,6 +131,7 @@ class OrderDetailAdmin(admin.ModelAdmin):
         "commission",
         "source_suite_name",
         "source_suite_no",
+        "source_suite_num",
         "gift_method",
         "platform_goods_name",
         "platform_spec_name",
