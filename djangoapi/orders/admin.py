@@ -3,7 +3,7 @@ from datetime import datetime
 from django.contrib import admin
 from rangefilter.filters import DateTimeRangeFilterBuilder
 
-from .models import orders, salesOutDetails, historySalesOutDetails
+from .models import orders, salesOutDetails, historySalesOutDetails, OrderDetail
 
 @admin.register(orders)
 class OrderAdmin(admin.ModelAdmin): 
@@ -74,6 +74,75 @@ class OrderAdmin(admin.ModelAdmin):
             ),
         ),
     )
+
+@admin.register(OrderDetail)
+class OrderDetailAdmin(admin.ModelAdmin):
+    list_display = [
+        "trade_no",
+        "shop_name",
+        "trade_from",
+        "warehouse",
+        "tid",
+        "oid",
+        "process_status",
+        "order_type",
+        "delivery_term",
+        "refund_status",
+        "refund_status_of_details",
+        "trade_time",
+        "pay_time",
+        "deliver_time",
+        "buyer_nick",
+        "receiver_name",
+        "receiver_area",
+        "receiver_address",
+        "receiver_mobile",
+        "receiver_telno",
+        "receiver_zip",
+        "logistics_name",
+        "logistics_no",
+        "buyer_message",
+        "service_remark",
+        "print_remark",
+        "remark",
+        "biaoqi",
+        "post_amount",
+        "other_amount",
+        "order_discount",
+        "receivable",
+        "cod_amount",
+        "invoice_type",
+        "payer_name",
+        "invoice_content",
+        "flag_name",
+        "spec_no",
+        "goods_no",
+        "goods_name",
+        "spec_name",
+        "goods_type",
+        "num",
+        "ori_price",
+        "discount",
+        "deal_price",
+        "share_price",
+        "share_post_amount",
+        "discount_rate",
+        "share_total_price",
+        "commission",
+        "source_suite_name",
+        "source_suite_no",
+        "gift_method",
+        "platform_goods_name",
+        "platform_spec_name",
+        "order_tag",
+        "distributor",
+        "distributor_no",
+        "paid",
+        "pay_account",
+        "deadline_deliver_time",
+        "buyer_no",
+        "distribution_oid",   
+    ]
 
 @admin.register(salesOutDetails)
 class SalesOutDetailsAdmin(admin.ModelAdmin):
