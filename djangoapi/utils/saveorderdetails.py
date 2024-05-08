@@ -11,7 +11,7 @@ from xlrd.xldate import xldate_as_datetime
 
 
 base_url = 'http://localhost:8000/'
-auth_token = '20ff6df8cf5281c8243bd4bb07acbc65b3f375a3'
+auth_token = os.environ.get('DJANGO_AUTH_TOKEN')
 
 
 def open_excel(file):

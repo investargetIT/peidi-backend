@@ -44,6 +44,7 @@ services:
       - DingDing_APPSECRET=${DingDing_APPSECRET}
       - ALIYUNSMS_KEY=${ALIYUNSMS_KEY}
       - ALIYUNSMS_SECRET=${ALIYUNSMS_SECRET}
+      - DJANGO_AUTH_TOKEN=${DJANGO_AUTH_TOKEN}
     depends_on:
       redis:
         condition: service_started
