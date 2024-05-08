@@ -11,6 +11,10 @@ ordersapione = views.OrdersView.as_view({
     'delete': 'destroy',
 })
 
+ordeDetailsapi = views.OrderDetailsView.as_view({
+    'post': 'create',
+})
+
 getCustomerPurchaseCounts = views.OrdersView.as_view({
     'post': 'getCustomerPurchaseCounts',
 })
@@ -57,6 +61,7 @@ urlpatterns = [
     re_path("salesout/(?P<pk>\d+)/", salesOutDetailsapione, name='salesOutDetailsapione'),
     path("hissalesout", historySalesOutDetailsapi, name="historySalesOutDetailsapi"),
     re_path("hissalesout/(?P<pk>\d+)/", historySalesOutDetailsapione, name='historySalesOutDetailsapione'),
+    path("orderdetails", ordeDetailsapi, name="ordeDetailsapi"),
     path("testcount", testGroupByCount, name="testGroupByCount"),
     path("testamount", testGroupByAmount, name="testGroupByAmount"),
 
