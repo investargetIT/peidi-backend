@@ -145,7 +145,7 @@ class OrderDetail(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['oid', 'spec_no', 'goods_no', 'num'], name='unique_oid_specno_goodsno_num')
+            models.UniqueConstraint(fields=['trade_no', 'oid', 'spec_no', 'goods_no', 'num'], name='unique_tradeno_oid_specno_goodsno_num')
         ]
 
 class salesOutDetails(models.Model):
