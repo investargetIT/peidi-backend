@@ -5,10 +5,10 @@ class TmallRefund(models.Model):
     refund_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='退款编号')
     alipay_transaction_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='支付宝交易号')
     pay_time = models.DateTimeField(blank=True, null=True, verbose_name='订单付款时间')
-    goods_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='商品编号')
+    goods_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='商品编码')
     refund_close_time = models.DateTimeField(blank=True, null=True, verbose_name='退款完结时间')
     paid = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='买家实际支付金额')
-    goods_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='货品名称')
+    goods_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='宝贝标题')
     refund = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='买家退款金额')
     refund_source = models.CharField(max_length=40, verbose_name='手工退款_系统退款')
     goods_return = models.CharField(max_length=40, verbose_name='是否需要退货')
@@ -29,3 +29,8 @@ class TmallRefund(models.Model):
     logistics_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='退货物流公司')
     refund_reason = models.CharField(max_length=255, blank=True, null=True, verbose_name='买家退款原因')
     refund_explanation = models.CharField(max_length=100, blank=True, null=True, verbose_name='买家退款说明')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['trade_no', 'refund_no', 'alipay_transaction_no', 'goods_no'], name='unique_tradeno_refundno_alipaytransactionno_goodsno')
+        ]
