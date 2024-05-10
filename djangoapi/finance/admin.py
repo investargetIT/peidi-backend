@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import TmallRefund
+from .models import TmallRefund, PddRefund, JdRefund, DouyinRefund
 
 @admin.register(TmallRefund)
 class TmallRefundAdmin(admin.ModelAdmin): 
@@ -32,4 +32,49 @@ class TmallRefundAdmin(admin.ModelAdmin):
         "logistics_name",
         "refund_reason",
         "refund_explanation",
+    ]
+
+@admin.register(PddRefund)
+class PddRefundAdmin(admin.ModelAdmin):
+    list_display = [
+        "shop_name",
+        "trade_no",
+        "goods_id",
+        "goods_name",
+        "refund_reason",
+        "applicant",
+        "apply_time",
+        "refund",
+        "refund_status"
+    ]
+
+@admin.register(JdRefund)
+class JdRefundAdmin(admin.ModelAdmin):
+    list_display = [
+        "shop_name",
+        "apply_time",
+        "refund_no",
+        "trade_no",
+        "service_no",
+        "refund",
+        "refund_reason",
+        "refund_status",
+        "applicant",
+    ]
+
+@admin.register(DouyinRefund)
+class DouyinRefundAdmin(admin.ModelAdmin):
+    list_display = [
+        "shop_name",
+        "pay_transaction_no",
+        "trade_no",
+        "goods_name",
+        "goods_id",
+        "refund_reason",
+        "refund",
+        "applicant",
+        "apply_time",
+        "refund_time",
+        "refund_status",
+        "refund_remark",
     ]
