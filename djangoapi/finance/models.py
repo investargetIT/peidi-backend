@@ -29,17 +29,63 @@ class TmallRefund(models.Model):
     logistics_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='退货物流单号')
     logistics_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='退货物流公司')
     refund_reason = models.CharField(max_length=255, blank=True, null=True, verbose_name='买家退款原因')
-    refund_explanation = models.CharField(max_length=100, blank=True, null=True, verbose_name='买家退款说明')
+    refund_explanation = models.CharField(max_length=1024, blank=True, null=True, verbose_name='买家退款说明')
 
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['trade_no', 'refund_no', 'alipay_transaction_no', 'goods_no'], name='unique_tradeno_refundno_alipaytransactionno_goodsno')
         ]
 
-# # 拼多多仅退款
-# class PddRefund(models.Model):
-#     shop_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='店铺名称')
-#     trade_no = models.CharField(max_length=100, verbose_name='订单号')
-#     goods_id = models.CharField(max_length=100, blank=True, null=True, verbose_name='商品ID')
-#     goods_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='商品名称')
-#     refund_reason = models.CharField(max_length=255, blank=True, null=True, verbose_name='扣款原因')
+# 拼多多仅退款
+class PddRefund(models.Model):
+    shop_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='店铺名称')
+    trade_no = models.CharField(max_length=100, verbose_name='订单号')
+    goods_id = models.CharField(max_length=100, blank=True, null=True, verbose_name='商品ID')
+    goods_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='商品名称')
+    refund_reason = models.CharField(max_length=255, blank=True, null=True, verbose_name='扣款原因')
+    applicant = models.CharField(max_length=100, blank=True, null=True, verbose_name='申请人')    
+    apply_time = models.DateTimeField(blank=True, null=True, verbose_name='申请时间')
+    refund = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='申请扣款金额')
+    refund_status = models.CharField(max_length=40, blank=True, null=True, verbose_name='打款状态')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['trade_no', 'goods_id'], name='unique_tradeno_goodsid')
+        ]
+
+# 京东仅退款
+class JdRefund(models.Model):
+    shop_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='店铺名称')
+    apply_time = models.DateTimeField(blank=True, null=True, verbose_name='申请时间')
+    refund_no = models.CharField(max_length=100, verbose_name='赔付单号')
+    trade_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='关联订单号')
+    service_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='关联服务单号')
+    refund = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='赔付金额')
+    refund_reason = models.CharField(max_length=255, blank=True, null=True, verbose_name='赔付原因')
+    refund_status = models.CharField(max_length=40, blank=True, null=True, verbose_name='赔付状态')
+    applicant = models.CharField(max_length=100, blank=True, null=True, verbose_name='申请人')    
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['refund_no', 'trade_no', 'service_no'], name='unique_refundno_tradeno_serviceno')
+        ]
+
+# 抖音仅退款
+class DouyinRefund(models.Model):
+    shop_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='店铺名称')
+    pay_transaction_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='支付流水号')
+    trade_no = models.CharField(max_length=100, verbose_name='订单编号')
+    goods_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='商品名称')
+    goods_id = models.CharField(max_length=100, blank=True, null=True, verbose_name='商品ID')
+    refund_reason = models.CharField(max_length=255, blank=True, null=True, verbose_name='打款类型')
+    refund = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='打款金额')
+    applicant = models.CharField(max_length=100, blank=True, null=True, verbose_name='打款申请人')
+    apply_time = models.DateTimeField(blank=True, null=True, verbose_name='打款申请时间')
+    refund_time = models.DateTimeField(blank=True, null=True, verbose_name='打款到账时间')
+    refund_status = models.CharField(max_length=40, blank=True, null=True, verbose_name='打款状态')
+    refund_remark = models.CharField(max_length=1024, blank=True, null=True, verbose_name='打款备注')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['pay_transaction_no', 'trade_no', 'goods_id'], name='unique_paytransactionno_tradeno_goodsid')
+        ]
