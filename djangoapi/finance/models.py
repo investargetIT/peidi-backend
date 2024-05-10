@@ -1,5 +1,6 @@
 from django.db import models
 
+# 天猫仅退款
 class TmallRefund(models.Model):
     trade_no = models.CharField(max_length=100, verbose_name='订单编号')
     refund_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='退款编号')
@@ -10,8 +11,8 @@ class TmallRefund(models.Model):
     paid = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='买家实际支付金额')
     goods_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='宝贝标题')
     refund = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='买家退款金额')
-    refund_source = models.CharField(max_length=40, verbose_name='手工退款_系统退款')
-    goods_return = models.CharField(max_length=40, verbose_name='是否需要退货')
+    refund_source = models.CharField(max_length=40, blank=True, null=True, verbose_name='手工退款_系统退款')
+    goods_return = models.CharField(max_length=40, blank=True, null=True, verbose_name='是否需要退货')
     refund_apply_time = models.DateTimeField(blank=True, null=True, verbose_name='退款的申请时间')
     refund_deadline = models.DateTimeField(blank=True, null=True, verbose_name='超时时间')
     refund_status = models.CharField(max_length=40, blank=True, null=True, verbose_name='退款状态')
@@ -34,3 +35,11 @@ class TmallRefund(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['trade_no', 'refund_no', 'alipay_transaction_no', 'goods_no'], name='unique_tradeno_refundno_alipaytransactionno_goodsno')
         ]
+
+# # 拼多多仅退款
+# class PddRefund(models.Model):
+#     shop_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='店铺名称')
+#     trade_no = models.CharField(max_length=100, verbose_name='订单号')
+#     goods_id = models.CharField(max_length=100, blank=True, null=True, verbose_name='商品ID')
+#     goods_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='商品名称')
+#     refund_reason = models.CharField(max_length=255, blank=True, null=True, verbose_name='扣款原因')
