@@ -90,7 +90,7 @@ class DouyinRefund(models.Model):
             models.UniqueConstraint(fields=['pay_transaction_no', 'trade_no', 'goods_id'], name='unique_paytransactionno_tradeno_goodsid')
         ]
 
-# 抖音仅退款
+# 发票
 class Invoice(models.Model):
     trade_no = models.CharField(max_length=100, verbose_name='订单id')
     invoice_time = models.DateTimeField(blank=True, null=True, verbose_name='开票日期')
@@ -118,5 +118,5 @@ class Invoice(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['trade_no', 'goods_model', 'goods_price'], name='unique_tradeno_goodsmodel_goodsprice')
+            models.UniqueConstraint(fields=['trade_no', 'goods_model', 'goods_total_amount'], name='unique_tradeno_goodsmodel_goodstotalamount')
         ]

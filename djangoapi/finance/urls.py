@@ -13,8 +13,12 @@ jdRefundapi = views.JdRefundView.as_view({
 douyinRefundapi = views.DouyinRefundView.as_view({
     'post': 'create',
 })
+invoiceapi = views.InvoiceView.as_view({
+    'post': 'create',
+})
 
 urlpatterns = [
+    path("invoice", invoiceapi, name="invoiceapi"),
     path("refund/tmall", tmallRefundapi, name="tmallRefundapi"),
     path("refund/pdd", pddRefundapi, name="pddRefundapi"),
     path("refund/jd", jdRefundapi, name="jdRefundapi"),
