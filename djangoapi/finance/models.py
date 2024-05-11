@@ -50,7 +50,7 @@ class PddRefund(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['trade_no', 'goods_id'], name='unique_tradeno_goodsid')
+            models.UniqueConstraint(fields=['trade_no', 'goods_id', 'applicant'], name='unique_tradeno_goodsid_applicant')
         ]
 
 # 京东仅退款
