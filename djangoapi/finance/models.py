@@ -89,3 +89,34 @@ class DouyinRefund(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['pay_transaction_no', 'trade_no', 'goods_id'], name='unique_paytransactionno_tradeno_goodsid')
         ]
+
+# 抖音仅退款
+class Invoice(models.Model):
+    trade_no = models.CharField(max_length=100, verbose_name='订单id')
+    invoice_time = models.DateTimeField(blank=True, null=True, verbose_name='开票日期')
+    shop_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='店铺名称')
+    invoice_category = models.CharField(max_length=40, blank=True, null=True, verbose_name='发票种类')
+    invoice_type = models.CharField(max_length=40, blank=True, null=True, verbose_name='发票类型')
+    invoice_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='发票号码发票代码')
+    seller_tax_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='税号')
+    seller_corp_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='企业名称')
+    invoice_title = models.CharField(max_length=100, blank=True, null=True, verbose_name='发票抬头')
+    payer_tax_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='付款人税号')
+    invoice_tax = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='总税额')
+    invoice_amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='发票总金额')
+    red_to_blue = models.CharField(max_length=100, blank=True, null=True, verbose_name='红票对应蓝票')
+    remark = models.CharField(max_length=1024, blank=True, null=True, verbose_name='备注')
+    goods_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='商品名称')
+    goods_model = models.CharField(max_length=100, blank=True, null=True, verbose_name='商品型号')
+    goods_unit = models.CharField(max_length=40, blank=True, null=True, verbose_name='商品单位')
+    goods_price = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='单价')
+    goods_num = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='数量')
+    goods_amount_without_tax = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='不含税金额')
+    goods_tax = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='税额')
+    goods_total_amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='总金额')
+    tax_rate = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='税率')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['trade_no', 'goods_model', 'goods_price'], name='unique_tradeno_goodsmodel_goodsprice')
+        ]
