@@ -38,5 +38,6 @@ urlpatterns = [
     path(r'goods/', include("goods.urls")),
     path(r'orders/', include("orders.urls")),
     path(r'finance/', include("finance.urls")),
+    path(r'schedulers/', include("schedulers.urls")),
     path(r'admin/', admin.site.urls),
 ]
