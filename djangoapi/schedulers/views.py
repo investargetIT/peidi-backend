@@ -1,6 +1,9 @@
 import os, json, requests
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+
 from apscheduler.schedulers.background import BackgroundScheduler
 from django_apscheduler.jobstores import DjangoJobStore
 from utils.customclass import SuccessResponse, PeiDiError, ExceptionResponse, PeiDiErrorResponse
@@ -49,6 +52,8 @@ def send_dingtalk_msg(content, mobiles):
         raise PeiDiError(20501, msg=res['errmsg'])
 
 @api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def schedule_send_dingtalk_msg(request):
     content = request.data.get('content')
     at_mobiles = request.data.get('at_mobiles')
