@@ -45,6 +45,7 @@ services:
       - ALIYUNSMS_KEY=${ALIYUNSMS_KEY}
       - ALIYUNSMS_SECRET=${ALIYUNSMS_SECRET}
       - DJANGO_AUTH_TOKEN=${DJANGO_AUTH_TOKEN}
+      - DINGTALK_IMROBOT_WEBHOOK=${DINGTALK_IMROBOT_WEBHOOK}
     depends_on:
       redis:
         condition: service_started
