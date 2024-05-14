@@ -55,8 +55,8 @@ class DingTalkIMRobot(viewsets.ModelViewSet):
     def test_add_task(self, request):
         content = request.data.get('content')
         at_mobiles = request.data.get('at_mobiles')
-
-        # 创建任务
+        scheduled_time = request.data.get('scheduled_time')
+        
         # scheduler.add_job(
         #     test,
         #     trigger=CronTrigger(second="*/10"),  # Every 10 seconds
@@ -65,20 +65,21 @@ class DingTalkIMRobot(viewsets.ModelViewSet):
         #     replace_existing=True,
         # )
 
-        # scheduler.add_job(
-        #     test1,
-        #     trigger=DateTrigger('2024-05-14 09:06:00'),
-        #     id='job_id1',
-        #     args=['date_job3'],
-        #     max_instances=1,
-        #     replace_existing=True,
-        # )
-
-        scheduler.add_job(
-            send_dingtalk_msg,
-            args=[content, at_mobiles],
-            max_instances=1,
-            replace_existing=True,
-        )
+        if scheduled_time:
+            scheduler.add_job(
+                send_dingtalk_msg,
+                trigger=DateTrigger(scheduled_time),
+                id='job_name',
+                args=[content, at_mobiles],
+                max_instances=1,
+                replace_existing=True,
+            )
+        else:
+            scheduler.add_job(
+                send_dingtalk_msg,
+                args=[content, at_mobiles],
+                max_instances=1,
+                replace_existing=True,
+            )
 
         return SuccessResponse('定时任务创建成功')
