@@ -41,13 +41,12 @@ def send_dingtalk_msg(content, mobiles):
 	        "atMobiles": mobiles.split(',')
         }
     }
-    response = requests.post(url, data=data).content
+    response = requests.post(url, json=data).content
     res = json.loads(response.decode())
     print(res)
     errcode = res.get('errcode')
     if errcode != 0:
         raise PeiDiError(20501, msg=res['errmsg'])
-    return res['result']['userid']
 
 class DingTalkIMRobot(viewsets.ModelViewSet):
 
