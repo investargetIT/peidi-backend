@@ -1,6 +1,6 @@
 import os, json, requests
 
-from rest_framework import viewsets
+from rest_framework.decorators import api_view
 from apscheduler.schedulers.background import BackgroundScheduler
 from django_apscheduler.jobstores import DjangoJobStore
 from utils.customclass import SuccessResponse, PeiDiError, ExceptionResponse, PeiDiErrorResponse
@@ -48,37 +48,35 @@ def send_dingtalk_msg(content, mobiles):
     if errcode != 0:
         raise PeiDiError(20501, msg=res['errmsg'])
 
-class DingTalkIMRobot(viewsets.ModelViewSet):
-
-    # 与前端的接口
-    def test_add_task(self, request):
-        content = request.data.get('content')
-        at_mobiles = request.data.get('at_mobiles')
-        scheduled_time = request.data.get('scheduled_time')
+@api_view(['POST'])
+def schedule_send_dingtalk_msg(request):
+    content = request.data.get('content')
+    at_mobiles = request.data.get('at_mobiles')
+    scheduled_time = request.data.get('scheduled_time')
         
-        # scheduler.add_job(
-        #     test,
-        #     trigger=CronTrigger(second="*/10"),  # Every 10 seconds
-        #     id="my_job1",  # The `id` assigned to each job MUST be unique
-        #     max_instances=1,
-        #     replace_existing=True,
-        # )
+    # scheduler.add_job(
+    #     test,
+    #     trigger=CronTrigger(second="*/10"),  # Every 10 seconds
+    #     id="my_job1",  # The `id` assigned to each job MUST be unique
+    #     max_instances=1,
+    #     replace_existing=True,
+    # )
 
-        if scheduled_time:
-            scheduler.add_job(
-                send_dingtalk_msg,
-                trigger=DateTrigger(scheduled_time),
-                id='job_name',
-                args=[content, at_mobiles],
-                max_instances=1,
-                replace_existing=True,
-            )
-        else:
-            scheduler.add_job(
-                send_dingtalk_msg,
-                args=[content, at_mobiles],
-                max_instances=1,
-                replace_existing=True,
-            )
+    if scheduled_time:
+        scheduler.add_job(
+            send_dingtalk_msg,
+            trigger=DateTrigger(scheduled_time),
+            id='job_name',
+            args=[content, at_mobiles],
+            max_instances=1,
+            replace_existing=True,
+        )
+    else:
+        scheduler.add_job(
+            send_dingtalk_msg,
+            args=[content, at_mobiles],
+            max_instances=1,
+            replace_existing=True,
+        )
 
-        return SuccessResponse('定时任务创建成功')
+    return SuccessResponse('定时任务创建成功')
