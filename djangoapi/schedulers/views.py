@@ -26,6 +26,12 @@ def test1(content):
     f.close()
     pass
 
+def test2(content):
+    f = open("/code/utils/demo2.txt", "w")
+    f.write(content)
+    f.close()
+    pass
+
 class DingTalkIMRobot(viewsets.ModelViewSet):
 
     # 与前端的接口
@@ -39,11 +45,20 @@ class DingTalkIMRobot(viewsets.ModelViewSet):
             #     max_instances=1,
             #     replace_existing=True,
             # )
+
+            # scheduler.add_job(
+            #     test1,
+            #     trigger=DateTrigger('2024-05-14 09:06:00'),
+            #     id='job_id1',
+            #     args=['date_job3'],
+            #     max_instances=1,
+            #     replace_existing=True,
+            # )
+
             scheduler.add_job(
-                test1,
-                trigger=DateTrigger('2024-05-14 09:06:00'),
-                id='job_id1',
-                args=['date_job3'],
+                test2,
+                id='job_id2',
+                args=['date_job2'],
                 max_instances=1,
                 replace_existing=True,
             )
