@@ -55,6 +55,7 @@ def send_dingtalk_msg(content, mobiles):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def schedule_send_dingtalk_msg(request):
+    job_id = request.data.get('job_id')
     content = request.data.get('content')
     at_mobiles = request.data.get('at_mobiles')
     scheduled_time = request.data.get('scheduled_time')
@@ -71,7 +72,7 @@ def schedule_send_dingtalk_msg(request):
         scheduler.add_job(
             send_dingtalk_msg,
             trigger=DateTrigger(scheduled_time),
-            id='job_name',
+            id=job_id,
             args=[content, at_mobiles],
             max_instances=1,
             replace_existing=True,
