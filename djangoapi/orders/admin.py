@@ -3,7 +3,7 @@ from datetime import datetime
 from django.contrib import admin
 from rangefilter.filters import DateTimeRangeFilterBuilder
 
-from .models import orders, salesOutDetails, historySalesOutDetails, OrderDetail
+from .models import orders, salesOutDetails, historySalesOutDetails, OrderDetail, WMSShipData, StockDetail
 
 @admin.register(orders)
 class OrderAdmin(admin.ModelAdmin): 
@@ -304,3 +304,44 @@ class HistorySalesOutDetailsAdmin(admin.ModelAdmin):
             ),
         ),
     )
+
+@admin.register(StockDetail)
+class StockDetailAdmin(admin.ModelAdmin):
+    list_display = [
+        "spec_no",
+        "barcode",
+        "goods_no",
+        "goods_name",
+        "goods_short_name",
+        "goods_tag",
+        "spec_name",
+        "spec_id",
+        "brand_name",
+        "qa_num",
+        "todeliver_order_num",
+        "retail_price",
+        "wholesale_price",
+        "market_price",
+        "member_price",
+        "lowest_price",
+        "goods_type",
+        "stock",
+        "weight",
+        "total_weight",
+        "is_defective",
+        "unit_name",
+        "aux_unit_name",
+        "aux_remark",
+        "deliverable_stock",
+        "usable_stock",
+        "min_alert_stock",
+        "max_alert_stock",
+        "unpaid_num",
+        "preorder_num",
+    ]
+
+@admin.register(WMSShipData)
+class WMSShipDataAdmin(admin.ModelAdmin):
+    list_display = [
+
+    ]
