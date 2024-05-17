@@ -8,6 +8,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction, connection, IntegrityError
 from django.db.models import Sum, Count
 from django.shortcuts import render
+from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
@@ -206,12 +207,14 @@ class SalesOutDetailsView(viewsets.ModelViewSet):
     update:修改销售出库明细（id）
     destroy:删除销售出库明细（id）
     """
-    filter_backends = (DjangoFilterBackend,)
+    filter_backends = (DjangoFilterBackend, OrderingFilter,)
     queryset = salesOutDetails.objects.all()
     filterset_fields = ('id', 'tid', 'oid', 'stockout_no', 'goods_no', 'spec_no')
     serializer_class = SalesOutDetailsSerializer
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
+    ordering_fields = ['trade_time']
+    ordering = ['-trade_time']
 
     def list(self, request, *args, **kwargs):
         try:
