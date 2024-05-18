@@ -295,7 +295,7 @@ class historySalesOutDetails(models.Model):
 class StockDetail(models.Model):
     spec_no = models.CharField(max_length=100, verbose_name='商家编码')
     barcode = models.CharField(max_length=50, blank=True, null=True, verbose_name='条码')
-    goods_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='货品编码')
+    goods_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='货品编号')
     goods_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='货品名称')
     goods_short_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='货品简称')
     goods_tag = models.CharField(max_length=100, blank=True, null=True, verbose_name='货品标签')
@@ -360,7 +360,7 @@ class StockDetail(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['spec_no', 'barcode', 'goods_no'], name='stockdetail_unique_specno_barcode_goodsno')
+            models.UniqueConstraint(fields=['spec_no', 'barcode', 'goods_no', 'qa_num'], name='stockdetail_unique_specno_barcode_goodsno_qanum')
         ]
 
 class WMSShipData(models.Model):

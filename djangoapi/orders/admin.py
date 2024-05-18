@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.contrib import admin
+from django.utils.html import format_html
 from rangefilter.filters import DateTimeRangeFilterBuilder
 
 from .models import orders, salesOutDetails, historySalesOutDetails, OrderDetail, WMSShipData, StockDetail
@@ -307,6 +308,15 @@ class HistorySalesOutDetailsAdmin(admin.ModelAdmin):
 
 @admin.register(StockDetail)
 class StockDetailAdmin(admin.ModelAdmin):
+    
+    def image_tag_1(self, obj):
+        return format_html('<img src="{}" style="width:70px;"/>'.format(obj.img_url))
+    image_tag_1.short_description = '图片链接'
+
+    def image_tag_2(self, obj):
+        return format_html('<img src="{}" style="width:70px;"/>'.format(obj.img))
+    image_tag_2.short_description = '图片'
+
     list_display = [
         "spec_no",
         "barcode",
@@ -364,8 +374,8 @@ class StockDetailAdmin(admin.ModelAdmin):
         "last_inventory_time",
         "actual_stock_num",
         "actual_todelivery_stock_num",
-        "img_url",
-        "img",
+        "image_tag_1",
+        "image_tag_2",
         "major_supplier",
         "custom_stock_one",
         "custom_stock_two",
