@@ -14,8 +14,8 @@ from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django_filters import rest_framework as filters
-from orders.models import orders, salesOutDetails, historySalesOutDetails
-from orders.serializer import OrdersSerializer, SalesOutDetailsSerializer, HistorySalesOutDetailsSerializer, OrderDetailSerializer, StockDetailSerializer, WMSShipDataSerializer
+from orders.models import orders, salesOutDetails, historySalesOutDetails, ExchangeManagement
+from orders.serializer import OrdersSerializer, SalesOutDetailsSerializer, HistorySalesOutDetailsSerializer, OrderDetailSerializer, StockDetailSerializer, WMSShipDataSerializer, ExchangeManagementSerializer
 from utils.customclass import SuccessResponse, PeiDiError, PeiDiErrorResponse, ExceptionResponse
 
 from utils.util import read_from_cache, write_to_cache, getMysqlProcessResponseWithRedis
@@ -449,6 +449,64 @@ class WMSShipDataView(viewsets.ModelViewSet):
                         serializer.save()
                     else:
                         raise PeiDiError(20071, msg='新增WMS发货数据失败', detail='%s' % serializer.errors)
+                return SuccessResponse(serializer.data)
+        except PeiDiError as err:
+            return PeiDiErrorResponse(err)
+        except Exception:
+            return ExceptionResponse(traceback.format_exc().split('\n')[-2])
+
+class ExchangeManagementView(viewsets.ModelViewSet):
+
+    filter_backends = (DjangoFilterBackend, OrderingFilter,)
+    queryset = ExchangeManagement.objects.all()
+    filterset_fields = ('id', 'exchange_no', 'tid', 'trade_no', 'original_exchange_no')
+    serializer_class = ExchangeManagementSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]    
+    ordering_fields = ['created_time', 'updated_time']
+
+    def list(self, request, *args, **kwargs):
+        try:
+            page_size = request.GET.get('page_size', 10)
+            page_index = request.GET.get('page_index', 1)
+            queryset = self.filter_queryset(self.get_queryset())
+            try:
+                count = queryset.count()
+                queryset = Paginator(queryset, page_size)
+                queryset = queryset.page(page_index)
+            except EmptyPage:
+                return SuccessResponse({'count': 0, 'data': []})
+            serializer = self.serializer_class(queryset, many=True)
+            return SuccessResponse({'count': count, 'data': serializer.data})
+        except PeiDiError as err:
+            return PeiDiErrorResponse(err)
+        except Exception:
+            return ExceptionResponse(traceback.format_exc().split('\n')[-2])
+
+    def create(self, request, *args, **kwargs):
+        try:
+            datas = request.data
+            if isinstance(datas, list):
+                success, fail = [], []
+                for data in datas:
+                    try:
+                        with transaction.atomic():
+                            serializer = self.serializer_class(data=data)
+                            if serializer.is_valid():
+                                serializer.save()
+                                success.append(serializer.data)
+                            else:
+                                fail.append({'data': data, 'errmsg': serializer.errors})
+                    except Exception as err:
+                        fail.append({'data': data, 'errmsg': str(err)})
+                return SuccessResponse({'success': success, 'fail': fail})
+            else:
+                with transaction.atomic():
+                    serializer = self.serializer_class(data=datas)
+                    if serializer.is_valid():
+                        serializer.save()
+                    else:
+                        raise PeiDiError(20071, msg='新增退换管理失败', detail='%s' % serializer.errors)
                 return SuccessResponse(serializer.data)
         except PeiDiError as err:
             return PeiDiErrorResponse(err)

@@ -23,6 +23,11 @@ WMSShipDataAPI = views.WMSShipDataView.as_view({
     'post': 'create',
 })
 
+ExchangeManagementAPI = views.ExchangeManagementView.as_view({
+    'get': 'list',
+    'post': 'create',
+})
+
 getCustomerPurchaseCounts = views.OrdersView.as_view({
     'post': 'getCustomerPurchaseCounts',
 })
@@ -71,6 +76,7 @@ urlpatterns = [
     path("orderdetails", orderDetailsapi, name="orderDetailsapi"),
     path("stockdetails", stockDetailsapi, name="stockDetailsapi"),
     path("wmsshipdata", WMSShipDataAPI, name="WMSShipDataAPI"),
+    path('exchangemanagement', ExchangeManagementAPI, name="ExchangeManagementAPI"),
     path("testcount", testGroupByCount, name="testGroupByCount"),
     path("testamount", testGroupByAmount, name="testGroupByAmount"),
 ]

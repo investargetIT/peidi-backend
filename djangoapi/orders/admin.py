@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from rangefilter.filters import DateTimeRangeFilterBuilder
 
-from .models import orders, salesOutDetails, historySalesOutDetails, OrderDetail, WMSShipData, StockDetail
+from .models import orders, salesOutDetails, historySalesOutDetails, OrderDetail, WMSShipData, StockDetail, ExchangeManagement
 
 @admin.register(orders)
 class OrderAdmin(admin.ModelAdmin): 
@@ -393,4 +393,45 @@ class WMSShipDataAdmin(admin.ModelAdmin):
         "to_ship",
         "shipped",
         "created_at",
+    ]
+
+@admin.register(ExchangeManagement)
+class ExchangeManagementAdmin(admin.ModelAdmin):
+    list_display = [
+        "exchange_no",
+        "shop_name",
+        "type",
+        "status",
+        "stock_status",
+        "tid",
+        "trade_no",
+        "original_exchange_no",
+        "buyer_nick",
+        "receiver_name",
+        "receiver_telno",
+        "refund_amount",
+        "platform_refund",
+        "offline_refund",
+        "collection_amount",
+        "refund",
+        "logistics_name",
+        "logistics_no",
+        "warehouse",
+        "data_source",
+        "exchange_remark",
+        "refuse_reason",
+        "mark",
+        "creater",
+        "remark",
+        "created_time",
+        "updated_time",
+        "exchange_info",
+        "distributor_exchange_no",
+        "refund_num",
+        "distributor_name",
+        "distributor_no",
+        "refund_reason",
+        "wms_no",
+        "error_msg",
+        "distributor_tid",
     ]

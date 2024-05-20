@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from orders.models import orders, salesOutDetails, historySalesOutDetails, OrderDetail, WMSShipData, StockDetail
+from orders.models import orders, salesOutDetails, historySalesOutDetails, OrderDetail, WMSShipData, StockDetail, ExchangeManagement
 
 
 class OrdersSerializer(serializers.ModelSerializer):
@@ -31,4 +31,9 @@ class StockDetailSerializer(serializers.ModelSerializer):
 class WMSShipDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = WMSShipData
+        fields = '__all__'
+
+class ExchangeManagementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExchangeManagement
         fields = '__all__'
