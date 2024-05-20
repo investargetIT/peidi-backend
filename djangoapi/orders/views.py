@@ -212,8 +212,7 @@ class SalesOutDetailsView(viewsets.ModelViewSet):
     serializer_class = SalesOutDetailsSerializer
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    ordering_fields = ['trade_time']
-    ordering = ['-trade_time']
+    ordering_fields = ['trade_time', 'pay_time', 'created', 'deliver_time']
 
     def list(self, request, *args, **kwargs):
         try:
