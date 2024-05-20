@@ -76,7 +76,7 @@ urlpatterns = [
     path("orderdetails", orderDetailsapi, name="orderDetailsapi"),
     path("stockdetails", stockDetailsapi, name="stockDetailsapi"),
     path("wmsshipdata", WMSShipDataAPI, name="WMSShipDataAPI"),
-    path('exchangemanagement', ExchangeManagementAPI, name="ExchangeManagementAPI"),
+    path('exchange', ExchangeManagementAPI, name="ExchangeManagementAPI"),
     path("testcount", testGroupByCount, name="testGroupByCount"),
     path("testamount", testGroupByAmount, name="testGroupByAmount"),
 ]

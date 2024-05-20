@@ -368,7 +368,7 @@ class WMSShipData(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
 
 class ExchangeManagement(models.Model):
-    exchange_no = models.CharField(max_length=100, verbose_name='退换单号')
+    exchange_no = models.CharField(unique=True, max_length=100, verbose_name='退换单号')
     shop_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='店铺')
     type = models.CharField(max_length=40, blank=True, null=True, verbose_name='类型')
     status = models.CharField(max_length=40, blank=True, null=True, verbose_name='状态')
@@ -404,8 +404,3 @@ class ExchangeManagement(models.Model):
     wms_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='wms业务单号')
     error_msg = models.CharField(max_length=255, blank=True, null=True, verbose_name='错误信息')
     distributor_tid = models.CharField(max_length=100, blank=True, null=True, verbose_name='分销原始单号')
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['exchange_no', 'tid', 'trade_no', 'original_exchange_no'], name='exchangemag_unique_exchangeno_tid_tradeno_oriexchangeno')
-        ]
