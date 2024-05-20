@@ -278,7 +278,6 @@ class SalesOutDetailsView(viewsets.ModelViewSet):
         except Exception:
             return ExceptionResponse(traceback.format_exc().split('\n')[-2])
 
-
     def destroy(self, request, *args, **kwargs):
         try:
 

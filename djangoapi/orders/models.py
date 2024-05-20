@@ -1,9 +1,5 @@
 from django.db import models
 
-# Create your models here.
-
-
-
 class orders(models.Model):
     trade_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='订单编号')
     platform = models.CharField(max_length=100, blank=True, null=True, verbose_name='平台')
@@ -370,3 +366,46 @@ class WMSShipData(models.Model):
     to_ship = models.IntegerField(blank=True, null=True, verbose_name='实时订单待发货')
     shipped = models.IntegerField(blank=True, null=True, verbose_name='实时今日己发货')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+
+class ExchangeManagement(models.Model):
+    exchange_no = models.CharField(max_length=100, verbose_name='退换单号')
+    shop_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='店铺')
+    type = models.CharField(max_length=40, blank=True, null=True, verbose_name='类型')
+    status = models.CharField(max_length=40, blank=True, null=True, verbose_name='状态')
+    stock_status = models.CharField(max_length=40, blank=True, null=True, verbose_name='入库状态')
+    tid = models.CharField(max_length=512, blank=True, null=True, verbose_name='原始订单')
+    trade_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='系统订单')
+    original_exchange_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='原始退换单号')
+    buyer_nick = models.CharField(max_length=100, blank=True, null=True, verbose_name='网名')
+    receiver_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='姓名')
+    receiver_telno = models.CharField(max_length=40, blank=True, null=True, verbose_name='电话')
+    refund_amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='退货金额')
+    platform_refund = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='平台退款金额')
+    offline_refund = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='线下退款金额')
+    collection_amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='收款金额')
+    refund = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='实际退款')
+    logistics_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='退回物流公司')
+    logistics_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='退回物流单号')
+    warehouse = models.CharField(max_length=100, blank=True, null=True, verbose_name='退货仓库')
+    data_source = models.CharField(max_length=40, blank=True, null=True, verbose_name='建单方式')
+    exchange_remark = models.CharField(max_length=1024, blank=True, null=True, verbose_name='退换说明')
+    refuse_reason = models.CharField(max_length=1024, blank=True, null=True, verbose_name='驳回原因')
+    mark = models.CharField(max_length=1024, blank=True, null=True, verbose_name='标记')
+    creater = models.CharField(max_length=40, blank=True, null=True, verbose_name='建单者')
+    remark = models.CharField(max_length=1024, blank=True, null=True, verbose_name='备注')
+    created_time = models.DateTimeField(blank=True, null=True, verbose_name='建单时间')
+    updated_time = models.DateTimeField(blank=True, null=True, verbose_name='最后修改时间')
+    exchange_info = models.CharField(max_length=40, blank=True, null=True, verbose_name='退换信息')
+    distributor_exchange_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='分销商退换单号')
+    refund_num = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='退款数量')
+    distributor_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='分销商名称')
+    distributor_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='分销商编号')
+    refund_reason = models.CharField(max_length=255, blank=True, null=True, verbose_name='退款原因')
+    wms_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='wms业务单号')
+    error_msg = models.CharField(max_length=255, blank=True, null=True, verbose_name='错误信息')
+    distributor_tid = models.CharField(max_length=100, blank=True, null=True, verbose_name='分销原始单号')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['exchange_no', 'tid', 'trade_no', 'original_exchange_no'], name='exchangemag_unique_exchangeno_tid_tradeno_oriexchangeno')
+        ]
