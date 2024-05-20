@@ -105,7 +105,7 @@ def saveOrders(excel_path):
                     'exchange_remark': row['退换说明'],
                     'refuse_reason': row['驳回原因'],
                     'mark': row['标记'],
-                    'creater': row['建单时间'],
+                    'creater': row['建单者'],
                     'remark': row['备注'],
                     'created_time': row['建单时间'],
                     'updated_time': row['最后修改时间'],
