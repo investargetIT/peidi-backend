@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from finance.models import TmallRefund, PddRefund, JdRefund, DouyinRefund, Invoice
+from finance.models import TmallRefund, PddRefund, JdRefund, DouyinRefund, Invoice, GoodsSalesSummary
 
 class TmallRefundSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,4 +24,9 @@ class DouyinRefundSerializer(serializers.ModelSerializer):
 class InvoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Invoice
+        fields = '__all__'
+
+class GoodsSalesSummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GoodsSalesSummary
         fields = '__all__'
