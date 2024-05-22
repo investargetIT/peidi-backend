@@ -36,6 +36,7 @@ class PlatformGoodsAdmin(admin.ModelAdmin):
     ]
     search_fields = ["platform_spec_no"]
     list_filter = ("shop_name",)
+
 @admin.register(SpecGoods)
 class SpecGoodsAdmin(admin.ModelAdmin):
     list_display = [
@@ -81,7 +82,7 @@ class SpecGoodsAdmin(admin.ModelAdmin):
         "spec_modified",
         "spec_created",
     ]
-    search_fields = ["goods_no"]
+    search_fields = ["spec_no", "goods_no", "goods_name"]
     list_filter = ("brand_name", "goods_type")
 
 @admin.register(SuiteGoodsRec)
@@ -110,7 +111,7 @@ class SuiteGoodsRecAdmin(admin.ModelAdmin):
         "ratio",
         "is_fixed_price",
     ]
-    search_fields = ["suite_no"]
+    search_fields = ["suite_name", "suite_no", "goods_name", "goods_no", "spec_no"]
     list_filter = ("brand_name", "goods_type")
 
 @admin.register(SPU)
