@@ -156,3 +156,30 @@ class GoodsSalesSummary(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['start_date', 'spec_no', 'shop_name'], name='unique_startdate_specno_shopname')
         ]
+
+class FinanceSalesAndInvoice(models.Model):
+    invoice_time = models.DateTimeField(verbose_name='日期')
+    shop_name = models.CharField(max_length=100, verbose_name='订货客户')
+    goods_no = models.CharField(max_length=100, verbose_name='货号')
+    u9_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='料号')
+    goods_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='品名')
+    num = models.IntegerField(blank=True, null=True, verbose_name='数量')
+    price_with_tax = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='价税合计')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['invoice_time', 'shop_name', 'goods_no'], name='unique_invoicetime_shopname_goodsno')
+        ]
+
+class PDMaterialNOList(models.Model):
+    type = models.CharField(max_length=100, blank=True, null=True, verbose_name='采购分类.分类名称')
+    material_no = models.CharField(max_length=100, unique=True, verbose_name='料号')
+    goods_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='品名')
+    invoice_goods_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='开票品名')
+    goods_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='货号')
+    no_product_series = models.CharField(max_length=100, blank=True, null=True, verbose_name='重编编号(产品系列)')
+    barcode = models.CharField(max_length=100, blank=True, null=True, verbose_name='条码')
+    unit = models.CharField(max_length=40, blank=True, null=True, verbose_name='库存单位.名称')
+    feature = models.CharField(max_length=40, blank=True, null=True, verbose_name='料品形态属性')
+    brand = models.CharField(max_length=255, blank=True, null=True, verbose_name='品牌')
+    weight = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='(单件重)')
