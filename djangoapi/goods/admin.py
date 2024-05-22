@@ -88,17 +88,17 @@ class SpecGoodsAdmin(admin.ModelAdmin):
 @admin.register(SuiteGoodsRec)
 class SuiteGoodsRecAdmin(admin.ModelAdmin):
     list_display = [
-        "img_url",
+        # "img_url",
+        "suite_no",
         "suite_name",
         "suite_short_name",
-        "suite_no",
         "barcode",
         "brand_name",
         "goods_type",
-        "retail_price",
-        "wholesale_price",
-        "member_price",
-        "market_price",
+        # "retail_price",
+        # "wholesale_price",
+        # "member_price",
+        # "market_price",
         "weight",
         "remark",
         "goods_name",
