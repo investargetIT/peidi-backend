@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from rangefilter.filters import DateTimeRangeFilterBuilder
 
-from .models import orders, salesOutDetails, historySalesOutDetails, OrderDetail, WMSShipData, StockDetail, ExchangeManagement
+from .models import orders, salesOutDetails, historySalesOutDetails, OrderDetail, WMSShipData, StockDetail, ExchangeManagement, ShopTarget
 
 @admin.register(orders)
 class OrderAdmin(admin.ModelAdmin): 
@@ -435,3 +435,16 @@ class ExchangeManagementAdmin(admin.ModelAdmin):
         "error_msg",
         "distributor_tid",
     ]
+
+@admin.register(ShopTarget)
+class ShopTargetAdmin(admin.ModelAdmin):
+    list_display = [
+        "shop_name",
+        "wdt_name",
+        "channel",
+        "platform",
+        "principal",
+        "year",
+        "target",
+    ]
+    list_filter = ["year"]

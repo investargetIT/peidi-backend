@@ -15,7 +15,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django_filters import rest_framework as filters
 from orders.models import orders, salesOutDetails, historySalesOutDetails, ExchangeManagement
-from orders.serializer import OrdersSerializer, SalesOutDetailsSerializer, HistorySalesOutDetailsSerializer, OrderDetailSerializer, StockDetailSerializer, WMSShipDataSerializer, ExchangeManagementSerializer
+from orders.serializer import OrdersSerializer, SalesOutDetailsSerializer, HistorySalesOutDetailsSerializer, OrderDetailSerializer, StockDetailSerializer, WMSShipDataSerializer, ExchangeManagementSerializer, ShopTargetSerializer
 from utils.customclass import SuccessResponse, PeiDiError, PeiDiErrorResponse, ExceptionResponse
 
 from utils.util import read_from_cache, write_to_cache, getMysqlProcessResponseWithRedis
@@ -507,6 +507,42 @@ class ExchangeManagementView(viewsets.ModelViewSet):
                         serializer.save()
                     else:
                         raise PeiDiError(20071, msg='新增退换管理失败', detail='%s' % serializer.errors)
+                return SuccessResponse(serializer.data)
+        except PeiDiError as err:
+            return PeiDiErrorResponse(err)
+        except Exception:
+            return ExceptionResponse(traceback.format_exc().split('\n')[-2])
+
+class ShopTargetView(viewsets.ModelViewSet):
+
+    serializer_class = ShopTargetSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]    
+
+    def create(self, request, *args, **kwargs):
+        try:
+            datas = request.data
+            if isinstance(datas, list):
+                success, fail = [], []
+                for data in datas:
+                    try:
+                        with transaction.atomic():
+                            serializer = self.serializer_class(data=data)
+                            if serializer.is_valid():
+                                serializer.save()
+                                success.append(serializer.data)
+                            else:
+                                fail.append({'data': data, 'errmsg': serializer.errors})
+                    except Exception as err:
+                        fail.append({'data': data, 'errmsg': str(err)})
+                return SuccessResponse({'success': success, 'fail': fail})
+            else:
+                with transaction.atomic():
+                    serializer = self.serializer_class(data=datas)
+                    if serializer.is_valid():
+                        serializer.save()
+                    else:
+                        raise PeiDiError(20071, msg='新增店铺年度目标失败', detail='%s' % serializer.errors)
                 return SuccessResponse(serializer.data)
         except PeiDiError as err:
             return PeiDiErrorResponse(err)

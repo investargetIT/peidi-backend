@@ -404,3 +404,17 @@ class ExchangeManagement(models.Model):
     wms_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='wms业务单号')
     error_msg = models.CharField(max_length=255, blank=True, null=True, verbose_name='错误信息')
     distributor_tid = models.CharField(max_length=100, blank=True, null=True, verbose_name='分销原始单号')
+
+class ShopTarget(models.Model):
+    channel = models.CharField(max_length=40, blank=True, null=True, verbose_name='渠道')
+    platform = models.CharField(max_length=40, blank=True, null=True, verbose_name='平台')
+    principal = models.CharField(max_length=40, blank=True, null=True, verbose_name='负责人')
+    shop_name = models.CharField(max_length=100, verbose_name='店铺名称')
+    wdt_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='旺店通名称')
+    year = models.IntegerField(blank=True, null=True, verbose_name='年份')
+    target = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='年度目标')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['shop_name', 'year'], name='shoptarget_unique_name_year')
+        ]
