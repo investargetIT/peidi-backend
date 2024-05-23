@@ -12,8 +12,7 @@ class Command(BaseCommand):
         # for invoice in all_invoices:
         #     if invoice.goods_model:
         #         self.goods_model_to_spec_goods(invoice.goods_model)
-        finance_sales_and_invoice = self.merge_original_invoice('3848946120620204220')
-        print(finance_sales_and_invoice.invoice_time)
+        self.merge_original_invoice('2102048365776056051')
     
     def goods_model_to_spec_goods(self, goods_model):
         try:
@@ -30,6 +29,7 @@ class Command(BaseCommand):
                 # 作为单品处理
 
     def merge_original_invoice(self, trade_no):
+        result = []
         # 以订单 id 和商品型号为唯一数据，合并发票总金额，即对冲掉优惠返现等负的发票总金额
         invoices = Invoice.objects.values("trade_no", "goods_model").filter(trade_no=trade_no).annotate(Sum("goods_total_amount"))
         for invoice in invoices:
@@ -46,5 +46,7 @@ class Command(BaseCommand):
             shop_name = target_item[0]['shop_name']
             goods_no = target_item[0]['goods_model']
             num = target_item[0]['goods_num']
+            print(invoice_time, shop_name, goods_no, num, price_with_tax)
+            result.append(FinanceSalesAndInvoice(invoice_time=invoice_time, shop_name=shop_name, goods_no=goods_no, num=num, price_with_tax=price_with_tax))
 
-            return FinanceSalesAndInvoice(invoice_time=invoice_time, shop_name=shop_name, goods_no=goods_no, num=num, price_with_tax=price_with_tax)
+        return result
