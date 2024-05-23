@@ -11,13 +11,15 @@ class Command(BaseCommand):
         for i in distinct_trade_no:
             merged_invoice = self.merge_original_invoice(i['trade_no'])
             for invoice in merged_invoice:
-                self.goods_model_to_spec_goods(invoice.goods_no)
-        # self.merge_original_invoice("2060010087897970097")
+                self.goods_model_to_spec_goods(invoice)
     
-    def goods_model_to_spec_goods(self, goods_model):
+    def goods_model_to_spec_goods(self, finance_sales_and_invoice):
+        goods_model = finance_sales_and_invoice.goods_no
         try:
             spec_goods = SpecGoods.objects.get(spec_no=goods_model)
             print(spec_goods.spec_no, '是单品', spec_goods.goods_name)
+            finance_sales_and_invoice.goods_name = spec_goods.goods_name
+            finance_sales_and_invoice.save()
             print()
         except SpecGoods.DoesNotExist:
             suite_goods = SuiteGoodsRec.objects.filter(suite_no=goods_model)
@@ -25,10 +27,13 @@ class Command(BaseCommand):
                 print(goods_model, '是组合装，包括以下单品：')
                 for goods in suite_goods:
                     print(goods.spec_no, goods.goods_name, goods.num, goods.ratio)
+                    f = FinanceSalesAndInvoice(invoice_time=finance_sales_and_invoice.invoice_time, shop_name=finance_sales_and_invoice.shop_name, goods_no=goods.spec_no, goods_name=goods.goods_name, num=finance_sales_and_invoice.num*goods.num, price_with_tax=finance_sales_and_invoice.price_with_tax*goods.ratio)
+                    f.save()
                 print()
             else:
                 print('该商品不存在', goods_model)
                 # 作为单品处理
+                finance_sales_and_invoice.save()
 
     def merge_original_invoice(self, trade_no):
         result = []
@@ -43,7 +48,6 @@ class Command(BaseCommand):
 
             print(invoice_time, shop_name, goods_no, num, price_with_tax)
             f = FinanceSalesAndInvoice(invoice_time=invoice_time, shop_name=shop_name, goods_no=goods_no, num=num, price_with_tax=price_with_tax)
-            # f.save()
             result.append(f)
         print()
         return result
