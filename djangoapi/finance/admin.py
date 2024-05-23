@@ -106,7 +106,7 @@ class InvoiceAdmin(admin.ModelAdmin):
         "goods_total_amount",
         "tax_rate",
     ]
-    search_fields = ["trade_no"]
+    search_fields = ["trade_no", "goods_model"]
 
 @admin.register(GoodsSalesSummary)
 class GoodsSalesSummaryAdmin(admin.ModelAdmin):
@@ -153,6 +153,7 @@ class FinanceSalesAndInvoiceAdmin(admin.ModelAdmin):
         "num",
         "price_with_tax",
     ]
+    search_fields = ["goods_no"]
 
 @admin.register(PDMaterialNOList)
 class PDMaterialNOListAdmin(admin.ModelAdmin):

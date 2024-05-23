@@ -7,12 +7,12 @@ from finance.models import Invoice, FinanceSalesAndInvoice
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        # all_invoices = Invoice.objects.all()
-        # print(len(all_invoices))
-
-        merged_invoice = self.merge_original_invoice('2102048365776056051')
-        for invoice in merged_invoice:
-            self.goods_model_to_spec_goods(invoice.goods_no)
+        distinct_trade_no = Invoice.objects.values("trade_no").distinct()
+        for i in distinct_trade_no:
+            merged_invoice = self.merge_original_invoice(i['trade_no'])
+            for invoice in merged_invoice:
+                self.goods_model_to_spec_goods(invoice.goods_no)
+        # self.merge_original_invoice("2060010087897970097")
     
     def goods_model_to_spec_goods(self, goods_model):
         try:
@@ -32,23 +32,18 @@ class Command(BaseCommand):
 
     def merge_original_invoice(self, trade_no):
         result = []
-        # 以订单 id 和商品型号为唯一数据，合并发票总金额，即对冲掉优惠返现等负的发票总金额
-        invoices = Invoice.objects.values("trade_no", "goods_model").filter(trade_no=trade_no).annotate(Sum("goods_total_amount"))
+        # 以订单id、商品型号、开票日期和店铺名称为唯一数据，合并发票总金额，即对冲掉优惠返现等负的发票总金额
+        invoices = Invoice.objects.values("trade_no", "goods_model", "invoice_time", "shop_name").filter(trade_no=trade_no).annotate(Sum("goods_total_amount"), Sum("goods_num"))
         for invoice in invoices:
-            no = invoice['trade_no']
-            model = invoice['goods_model']
+            invoice_time = invoice['invoice_time']
+            shop_name = invoice['shop_name']
+            goods_no = invoice['goods_model']
+            num = invoice['goods_num__sum']
             price_with_tax = invoice['goods_total_amount__sum']
 
-            # 根据合并结果中的订单 id 和 商品型号拿到商品数量
-            target_item = Invoice.objects.filter(trade_no=no).filter(goods_model=model).exclude(goods_num=None).values()
-            if len(target_item) > 1:
-                raise Exception("根据该订单 id 和商品型号找到了2条或2条以上商品数量不为空的记录", no, model)
-            
-            invoice_time = target_item[0]['invoice_time']
-            shop_name = target_item[0]['shop_name']
-            goods_no = target_item[0]['goods_model']
-            num = target_item[0]['goods_num']
             print(invoice_time, shop_name, goods_no, num, price_with_tax)
-            result.append(FinanceSalesAndInvoice(invoice_time=invoice_time, shop_name=shop_name, goods_no=goods_no, num=num, price_with_tax=price_with_tax))
+            f = FinanceSalesAndInvoice(invoice_time=invoice_time, shop_name=shop_name, goods_no=goods_no, num=num, price_with_tax=price_with_tax)
+            # f.save()
+            result.append(f)
         print()
         return result
