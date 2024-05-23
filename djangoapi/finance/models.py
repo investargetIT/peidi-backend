@@ -166,11 +166,6 @@ class FinanceSalesAndInvoice(models.Model):
     num = models.IntegerField(blank=True, null=True, verbose_name='数量')
     price_with_tax = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='价税合计')
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['invoice_time', 'shop_name', 'goods_no'], name='unique_invoicetime_shopname_goodsno')
-        ]
-
 class PDMaterialNOList(models.Model):
     type = models.CharField(max_length=100, blank=True, null=True, verbose_name='采购分类.分类名称')
     material_no = models.CharField(max_length=100, unique=True, verbose_name='料号')

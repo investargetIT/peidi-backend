@@ -19,10 +19,18 @@ invoiceapi = views.InvoiceView.as_view({
 GoodsSalesSummaryAPI = views.GoodsSalesSummaryView.as_view({
     'post': 'create',
 })
+FinanceSalesAndInvoiceAPI = views.FinanceSalesAndInvoiceView.as_view({
+    'post': 'create',
+})
+PDMaterialNOListAPI = views.PDMaterialNOListView.as_view({
+    'post': 'create',
+})
 
 urlpatterns = [
     path("invoice", invoiceapi, name="invoiceapi"),
     path("goods_sales_summary", GoodsSalesSummaryAPI, name="GoodsSalesSummaryAPI"),
+    path("sales_and_invoice", FinanceSalesAndInvoiceAPI, name="FinanceSalesAndInvoiceAPI"),
+    path("pd_material_no", PDMaterialNOListAPI, name="PDMaterialNOListAPI"),
     path("refund/tmall", tmallRefundapi, name="tmallRefundapi"),
     path("refund/pdd", pddRefundapi, name="pddRefundapi"),
     path("refund/jd", jdRefundapi, name="jdRefundapi"),

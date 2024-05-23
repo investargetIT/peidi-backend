@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import TmallRefund, PddRefund, JdRefund, DouyinRefund, Invoice, GoodsSalesSummary
+from .models import TmallRefund, PddRefund, JdRefund, DouyinRefund, Invoice, GoodsSalesSummary, FinanceSalesAndInvoice, PDMaterialNOList
 
 @admin.register(TmallRefund)
 class TmallRefundAdmin(admin.ModelAdmin): 
@@ -108,7 +108,7 @@ class InvoiceAdmin(admin.ModelAdmin):
     ]
 
 @admin.register(GoodsSalesSummary)
-class GoodsSalesSummary(admin.ModelAdmin):
+class GoodsSalesSummaryAdmin(admin.ModelAdmin):
     list_display = [
         "start_date",
         "end_date",
@@ -140,3 +140,32 @@ class GoodsSalesSummary(admin.ModelAdmin):
         "abnormal_warehouse_sales_num",
         "refund_stockin",
     ]
+
+@admin.register(FinanceSalesAndInvoice)
+class FinanceSalesAndInvoiceAdmin(admin.ModelAdmin):
+    list_display = [
+        "invoice_time",
+        "shop_name",
+        "goods_no",
+        "u9_no",
+        "goods_name",
+        "num",
+        "price_with_tax",
+    ]
+
+@admin.register(PDMaterialNOList)
+class PDMaterialNOListAdmin(admin.ModelAdmin):
+    list_display = [
+        "type",
+        "material_no",
+        "goods_name",
+        "invoice_goods_name",
+        "goods_no",
+        "no_product_series",
+        "barcode",
+        "unit",
+        "feature",
+        "brand",
+        "weight",
+    ]
+    search_fields = ["material_no", "goods_name", "goods_no", "barcode"]

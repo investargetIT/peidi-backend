@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from finance.models import TmallRefund, PddRefund, JdRefund, DouyinRefund, Invoice, GoodsSalesSummary
+from finance.models import TmallRefund, PddRefund, JdRefund, DouyinRefund, Invoice, GoodsSalesSummary, FinanceSalesAndInvoice, PDMaterialNOList
 
 class TmallRefundSerializer(serializers.ModelSerializer):
     class Meta:
@@ -29,4 +29,14 @@ class InvoiceSerializer(serializers.ModelSerializer):
 class GoodsSalesSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = GoodsSalesSummary
+        fields = '__all__'
+
+class FinanceSalesAndInvoiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FinanceSalesAndInvoice
+        fields = '__all__'
+
+class PDMaterialNOListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PDMaterialNOList
         fields = '__all__'
