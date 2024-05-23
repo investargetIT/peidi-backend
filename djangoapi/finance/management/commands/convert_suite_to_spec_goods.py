@@ -1,15 +1,18 @@
 from django.core.management.base import BaseCommand
+from django.db.models import Sum
+
 from goods.models import SpecGoods, SuiteGoodsRec
 from finance.models import Invoice
 
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        all_invoices = Invoice.objects.all()
-        print(len(all_invoices))
-        for invoice in all_invoices:
-            if invoice.goods_model:
-                self.goods_model_to_spec_goods(invoice.goods_model)
+        # all_invoices = Invoice.objects.all()
+        # print(len(all_invoices))
+        # for invoice in all_invoices:
+        #     if invoice.goods_model:
+        #         self.goods_model_to_spec_goods(invoice.goods_model)
+        self.trim_original_invoice('3848946120620204220')
     
     def goods_model_to_spec_goods(self, goods_model):
         try:
@@ -24,3 +27,8 @@ class Command(BaseCommand):
             else:
                 print('该商品不存在', goods_model)
                 # 作为单品处理
+
+    def trim_original_invoice(self, trade_no):
+        invoices = Invoice.objects.values("trade_no", "goods_model").filter(trade_no=trade_no).annotate(Sum("goods_total_amount"))
+        for invoice in invoices:
+            print(invoice)

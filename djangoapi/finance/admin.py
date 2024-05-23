@@ -106,6 +106,7 @@ class InvoiceAdmin(admin.ModelAdmin):
         "goods_total_amount",
         "tax_rate",
     ]
+    search_fields = ["trade_no"]
 
 @admin.register(GoodsSalesSummary)
 class GoodsSalesSummaryAdmin(admin.ModelAdmin):
