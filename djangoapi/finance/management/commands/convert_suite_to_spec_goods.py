@@ -2,11 +2,12 @@ from django.core.management.base import BaseCommand
 from django.db.models import Sum
 
 from goods.models import SpecGoods, SuiteGoodsRec
-from finance.models import Invoice, FinanceSalesAndInvoice
+from finance.models import Invoice, FinanceSalesAndInvoice, PDMaterialNOList
 
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
+        # print(self.goods_no_to_material_no("6971758277324"))
         distinct_trade_no = Invoice.objects.values("trade_no").distinct()
         for i in distinct_trade_no:
             merged_invoice = self.merge_original_invoice(i['trade_no'])
@@ -17,19 +18,21 @@ class Command(BaseCommand):
         goods_model = finance_sales_and_invoice.goods_no
         try:
             spec_goods = SpecGoods.objects.get(spec_no=goods_model)
-            print(spec_goods.spec_no, '是单品', spec_goods.goods_name)
+            # print(spec_goods.spec_no, '是单品', spec_goods.goods_name)
+            finance_sales_and_invoice.u9_no = self.goods_no_to_material_no(spec_goods.spec_no)
             finance_sales_and_invoice.goods_name = spec_goods.goods_name
             finance_sales_and_invoice.save()
-            print()
+            # print()
         except SpecGoods.DoesNotExist:
             suite_goods = SuiteGoodsRec.objects.filter(suite_no=goods_model)
             if len(suite_goods) > 0:
-                print(goods_model, '是组合装，包括以下单品：')
+                # print(goods_model, '是组合装，包括以下单品：')
                 for goods in suite_goods:
-                    print(goods.spec_no, goods.goods_name, goods.num, goods.ratio)
-                    f = FinanceSalesAndInvoice(invoice_time=finance_sales_and_invoice.invoice_time, shop_name=finance_sales_and_invoice.shop_name, goods_no=goods.spec_no, goods_name=goods.goods_name, num=finance_sales_and_invoice.num*goods.num, price_with_tax=finance_sales_and_invoice.price_with_tax*goods.ratio)
+                    # print(goods.spec_no, goods.goods_name, goods.num, goods.ratio)
+                    u9_no = self.goods_no_to_material_no(goods.spec_no)
+                    f = FinanceSalesAndInvoice(invoice_time=finance_sales_and_invoice.invoice_time, shop_name=finance_sales_and_invoice.shop_name, u9_no=u9_no, goods_no=goods.spec_no, goods_name=goods.goods_name, num=finance_sales_and_invoice.num*goods.num, price_with_tax=finance_sales_and_invoice.price_with_tax*goods.ratio)
                     f.save()
-                print()
+                # print()
             else:
                 print('该商品不存在', goods_model)
                 # 作为单品处理
@@ -46,8 +49,24 @@ class Command(BaseCommand):
             num = invoice['goods_num__sum']
             price_with_tax = invoice['goods_total_amount__sum']
 
-            print(invoice_time, shop_name, goods_no, num, price_with_tax)
+            # print(invoice_time, shop_name, goods_no, num, price_with_tax)
             f = FinanceSalesAndInvoice(invoice_time=invoice_time, shop_name=shop_name, goods_no=goods_no, num=num, price_with_tax=price_with_tax)
             result.append(f)
-        print()
+        # print()
         return result
+
+    def goods_no_to_material_no(self, goods_no):
+        # try:
+        #     material = PDMaterialNOList.objects.get(barcode=goods_no)
+        #     # print(material)
+        #     return material.material_no
+        # except PDMaterialNOList.DoesNotExist as e:
+        #     print(e)
+        # except PDMaterialNOList.MultipleObjectsReturned as e:
+        #     print(e)
+        
+        result = []
+        materials = PDMaterialNOList.objects.filter(barcode=goods_no)
+        for material in materials:
+            result.append(material.material_no)
+        return '/'.join(result)
