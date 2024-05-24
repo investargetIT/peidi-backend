@@ -29,7 +29,13 @@ ExchangeManagementAPI = views.ExchangeManagementView.as_view({
 })
 
 ShopTargetAPI = views.ShopTargetView.as_view({
+    'get': 'list',
     'post': 'create',
+})
+
+ShopTargetAPI2 = views.ShopTargetView.as_view({
+    'put': 'update',
+    'delete': 'destroy',
 })
 
 getCustomerPurchaseCounts = views.OrdersView.as_view({
@@ -82,6 +88,7 @@ urlpatterns = [
     path("wmsshipdata", WMSShipDataAPI, name="WMSShipDataAPI"),
     path('exchange', ExchangeManagementAPI, name="ExchangeManagementAPI"),
     path('shop_target', ShopTargetAPI, name="ShopTargetAPI"),
+    re_path("shop_target/(?P<pk>\d+)/", ShopTargetAPI2, name='ShopTargetAPI2'),
     path("testcount", testGroupByCount, name="testGroupByCount"),
     path("testamount", testGroupByAmount, name="testGroupByAmount"),
 ]
