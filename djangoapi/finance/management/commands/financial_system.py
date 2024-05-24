@@ -16,11 +16,11 @@ class Command(BaseCommand):
         #     for invoice in merged_invoice:
         #         self.goods_model_to_spec_goods(invoice)
 
-        # self.finance_sales_invoice_summary('2024-04-01', '2024-04-25')
+        self.finance_sales_invoice_summary('2024-04-01', '2024-04-25')
 
         # self.goods_sales_summary("2024-03-26", "2024-04-25")
 
-        self.extend_douyin_refund("2024012614376926537769282508767")
+        # self.extend_douyin_refund("2024012614376926537769282508767")
     
     def goods_model_to_spec_goods(self, finance_sales_and_invoice):
         goods_model = finance_sales_and_invoice.goods_no
@@ -97,15 +97,15 @@ class Command(BaseCommand):
         details = FinanceSalesAndInvoice.objects.values(
             "shop_name",
             "goods_no",
-            "u9_no",
+            "material_no",
             "goods_name",
         ).filter(
-            invoice_time__gte=start_date, 
-            invoice_time__lte=end_date,
+            date__gte=start_date, 
+            date__lte=end_date,
         ).annotate(
-            details_sum_num=Sum("num"),
-            details_price=Sum("price_with_tax") / Sum("num"),
-            details_sum_amount=Sum("price_with_tax"),
+            details_sum_num=Sum("invoice_num"),
+            details_price=Sum("invoice_amount") / Sum("invoice_num"),
+            details_sum_amount=Sum("invoice_amount"),
         )
         for i in details:
             print(i)
