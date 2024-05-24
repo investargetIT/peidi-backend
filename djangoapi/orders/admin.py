@@ -446,5 +446,9 @@ class ShopTargetAdmin(admin.ModelAdmin):
         "principal",
         "year",
         "target",
+        "product_score",
+        "logistic_score",
+        "service_score",
+        "dsr_date",
     ]
     list_filter = ["year"]

@@ -413,8 +413,7 @@ class ShopTarget(models.Model):
     wdt_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='旺店通名称')
     year = models.IntegerField(blank=True, null=True, verbose_name='年份')
     target = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='年度目标')
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['shop_name', 'year'], name='shoptarget_unique_name_year')
-        ]
+    product_score = models.DecimalField(max_digits=19, decimal_places=2, blank=True, null=True, verbose_name='商品体验分')
+    logistic_score = models.DecimalField(max_digits=19, decimal_places=2, blank=True, null=True, verbose_name='物流体验分')
+    service_score = models.DecimalField(max_digits=19, decimal_places=2, blank=True, null=True, verbose_name='服务体验分')
+    dsr_date = models.DateField(blank=True, null=True, verbose_name='DSR日期')
