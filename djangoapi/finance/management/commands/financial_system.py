@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from django.db.models import Sum
 
 from goods.models import SpecGoods, SuiteGoodsRec
-from finance.models import Invoice, FinanceSalesAndInvoice, PDMaterialNOList
+from finance.models import Invoice, FinanceSalesAndInvoice, PDMaterialNOList, GoodsSalesSummary
 
 class Command(BaseCommand):
 
@@ -15,7 +15,8 @@ class Command(BaseCommand):
         #     for invoice in merged_invoice:
         #         self.goods_model_to_spec_goods(invoice)
 
-        self.finance_sales_invoice_summary('2024-04-01', '2024-04-25')
+        # self.finance_sales_invoice_summary('2024-04-01', '2024-04-25')
+        self.goods_sales_summary("2024-03-26", "2024-04-25")
     
     def goods_model_to_spec_goods(self, finance_sales_and_invoice):
         goods_model = finance_sales_and_invoice.goods_no
@@ -88,7 +89,6 @@ class Command(BaseCommand):
             details_price=Sum("price_with_tax") / Sum("num"),
             details_sum_amount=Sum("price_with_tax"),
         )
-        
         for i in details:
             print(i)
 
@@ -98,3 +98,26 @@ class Command(BaseCommand):
             total_amount=Sum("details_sum_amount"),
         )
         print(summary)
+
+    def goods_sales_summary(self, start_date, end_date):
+        details = GoodsSalesSummary.objects.values(
+            "spec_no",
+            "shop_name",
+        ).filter(
+            start_date__gte=start_date,
+            end_date__lte=end_date,
+        ).annotate(
+            details_sum_num=Sum("sales_num"),
+            details_sum_post=Sum("post_amount"),
+            details_sum_amount=Sum("actual_sales_amount"),
+        )
+        for i in details:
+            print(i)
+        
+        summary = details.aggregate(
+            total_num=Sum("details_sum_num"),
+            total_post=Sum("details_sum_post"),
+            total_amount=Sum("details_sum_amount"),
+        )
+        print(summary)
+       
