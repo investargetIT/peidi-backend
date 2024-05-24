@@ -145,13 +145,17 @@ class GoodsSalesSummaryAdmin(admin.ModelAdmin):
 @admin.register(FinanceSalesAndInvoice)
 class FinanceSalesAndInvoiceAdmin(admin.ModelAdmin):
     list_display = [
-        "invoice_time",
+        "date",
         "shop_name",
         "goods_no",
-        "u9_no",
+        "material_no",
         "goods_name",
-        "num",
-        "price_with_tax",
+        "sales_num",
+        "invoice_num",
+        "sales_amount",
+        "post_amount",
+        "refund_amount",
+        "invoice_amount",
     ]
     search_fields = ["goods_no"]
 

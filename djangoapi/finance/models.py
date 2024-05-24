@@ -158,13 +158,17 @@ class GoodsSalesSummary(models.Model):
         ]
 
 class FinanceSalesAndInvoice(models.Model):
-    invoice_time = models.DateTimeField(verbose_name='日期')
-    shop_name = models.CharField(max_length=100, verbose_name='订货客户')
-    goods_no = models.CharField(max_length=100, verbose_name='货号')
-    u9_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='料号')
-    goods_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='品名')
-    num = models.IntegerField(blank=True, null=True, verbose_name='数量')
-    price_with_tax = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='价税合计')
+    date = models.DateField(verbose_name='时间')
+    shop_name = models.CharField(max_length=100, verbose_name='店铺名称')
+    goods_no = models.CharField(max_length=100, verbose_name='商家编码')
+    material_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='料号')
+    goods_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='商品名称')
+    sales_num = models.IntegerField(blank=True, null=True, verbose_name='实际销售量')
+    invoice_num = models.IntegerField(blank=True, null=True, verbose_name='已开票数量')
+    sales_amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='实际销售额')
+    post_amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='邮费')
+    refund_amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='退款金额')
+    invoice_amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='已开票金额')
 
 class PDMaterialNOList(models.Model):
     type = models.CharField(max_length=100, blank=True, null=True, verbose_name='采购分类.分类名称')
