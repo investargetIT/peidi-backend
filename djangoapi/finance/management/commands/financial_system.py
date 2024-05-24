@@ -2,7 +2,8 @@ from django.core.management.base import BaseCommand
 from django.db.models import Sum
 
 from goods.models import SpecGoods, SuiteGoodsRec
-from finance.models import Invoice, FinanceSalesAndInvoice, PDMaterialNOList, GoodsSalesSummary
+from finance.models import Invoice, FinanceSalesAndInvoice, PDMaterialNOList, GoodsSalesSummary, DouyinRefund, PddRefund, JdRefund, TmallRefund
+from orders.models import salesOutDetails
 
 class Command(BaseCommand):
 
@@ -16,7 +17,8 @@ class Command(BaseCommand):
         #         self.goods_model_to_spec_goods(invoice)
 
         # self.finance_sales_invoice_summary('2024-04-01', '2024-04-25')
-        self.goods_sales_summary("2024-03-26", "2024-04-25")
+        # self.goods_sales_summary("2024-03-26", "2024-04-25")
+        self.extend_douyin_refund("2024020217216926772842869363881")
     
     def goods_model_to_spec_goods(self, finance_sales_and_invoice):
         goods_model = finance_sales_and_invoice.goods_no
@@ -121,3 +123,13 @@ class Command(BaseCommand):
         )
         print(summary)
        
+    def extend_douyin_refund(self, transaction_no):
+        refund_record = DouyinRefund.objects.values("trade_no", "refund", "refund_time").get(pay_transaction_no=transaction_no)
+        trade_no = refund_record['trade_no']
+        refund = refund_record['refund']
+        refund_time = refund_record['refund_time']
+        print(trade_no)
+
+        salesout_records = salesOutDetails.objects.filter(otid=trade_no)
+        for i in salesout_records:
+            print(i)
