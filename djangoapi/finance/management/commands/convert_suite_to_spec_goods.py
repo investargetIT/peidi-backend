@@ -8,11 +8,14 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # print(self.goods_no_to_material_no("6971758277324"))
-        distinct_trade_no = Invoice.objects.values("trade_no").distinct()
-        for i in distinct_trade_no:
-            merged_invoice = self.merge_original_invoice(i['trade_no'])
-            for invoice in merged_invoice:
-                self.goods_model_to_spec_goods(invoice)
+
+        # distinct_trade_no = Invoice.objects.values("trade_no").distinct()
+        # for i in distinct_trade_no:
+        #     merged_invoice = self.merge_original_invoice(i['trade_no'])
+        #     for invoice in merged_invoice:
+        #         self.goods_model_to_spec_goods(invoice)
+
+        self.finance_sales_invoice_summary('2024-04-01', '2024-04-25')
     
     def goods_model_to_spec_goods(self, finance_sales_and_invoice):
         goods_model = finance_sales_and_invoice.goods_no
@@ -70,3 +73,28 @@ class Command(BaseCommand):
         for material in materials:
             result.append(material.material_no)
         return '/'.join(result)
+
+    def finance_sales_invoice_summary(self, start_date, end_date):
+        details = FinanceSalesAndInvoice.objects.values(
+            "shop_name",
+            "goods_no",
+            "u9_no",
+            "goods_name",
+        ).filter(
+            invoice_time__gte=start_date, 
+            invoice_time__lte=end_date,
+        ).annotate(
+            details_sum_num=Sum("num"),
+            details_price=Sum("price_with_tax") / Sum("num"),
+            details_sum_amount=Sum("price_with_tax"),
+        )
+        
+        for i in details:
+            print(i)
+
+        summary = details.aggregate(
+            total_num=Sum("details_sum_num"),
+            total_price=Sum("details_sum_amount") / Sum("details_sum_num"),
+            total_amount=Sum("details_sum_amount"),
+        )
+        print(summary)
