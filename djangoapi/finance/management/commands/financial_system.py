@@ -21,13 +21,13 @@ class Command(BaseCommand):
 
         # self.goods_sales_summary("2024-03-26", "2024-04-25")
 
-        # self.extend_douyin_refund("2024-02-01", "2024-02-29")
+        # self.extend_douyin_refund("2024-02-26", "2024-03-25")
 
-        # self.extend_jd_refund("2024-02-01", "2024-02-29")
+        # self.extend_jd_refund("2024-02-26", "2024-03-25")
 
-        # self.extend_pdd_refund("2024-02-01", "2024-02-29")
+        # self.extend_pdd_refund("2024-02-26", "2024-03-25")
 
-        # self.extend_tmall_refund("2024-03-01", "2024-03-02")
+        self.extend_tmall_refund("2024-02-26", "2024-03-25")
 
         # self.refund_summary("2024-02-01", "2024-03-02")
       
@@ -187,15 +187,22 @@ class Command(BaseCommand):
         end_date += " 23:59:59" 
         refund_records = DouyinRefund.objects.filter(refund_time__range=(start_date, end_date))
         for refund_record in refund_records:
-            print(refund_record)   
+            print(refund_record)  
             trade_no = refund_record.trade_no
             refund = refund_record.refund
+            if refund == 0:
+                continue
             refund_time = refund_record.refund_time
 
             salesout_records = salesOutDetails.objects.filter(otid=trade_no)
             overall_amount = salesout_records.aggregate(Sum("deal_total_price"))
+            if overall_amount['deal_total_price__sum'] == 0:
+                continue
+            
             for i in salesout_records:
                 print(i)
+                if i.deal_total_price == 0:
+                    continue
                 f = FinanceSalesAndInvoice(
                     date=refund_time,
                     shop_name=i.shop_name,
@@ -211,12 +218,19 @@ class Command(BaseCommand):
             print(refund_record)
             trade_no = refund_record.trade_no
             refund = refund_record.refund
+            if refund == 0:
+                continue
             refund_time = refund_record.apply_time
 
             salesout_records = salesOutDetails.objects.filter(otid=trade_no)
             overall_amount = salesout_records.aggregate(Sum("deal_total_price"))
+            if overall_amount['deal_total_price__sum'] == 0:
+                continue
+
             for i in salesout_records:
                 print(i)
+                if i.deal_total_price == 0:
+                    continue
                 f = FinanceSalesAndInvoice(
                     date=refund_time,
                     shop_name=i.shop_name,
@@ -232,12 +246,20 @@ class Command(BaseCommand):
             print(refund_record)
             trade_no = refund_record.trade_no
             refund = refund_record.refund
+            if refund == 0:
+                continue
             refund_time = refund_record.apply_time
 
             salesout_records = salesOutDetails.objects.filter(otid=trade_no)
+            # TODO: What if records not found
             overall_amount = salesout_records.aggregate(Sum("deal_total_price"))
+            if overall_amount['deal_total_price__sum'] == 0:
+                continue
+
             for i in salesout_records:
                 print(i)
+                if i.deal_total_price == 0:
+                    continue
                 f = FinanceSalesAndInvoice(
                     date=refund_time,
                     shop_name=i.shop_name,
@@ -253,12 +275,21 @@ class Command(BaseCommand):
             print(refund_record)
             trade_no = refund_record.trade_no
             refund = refund_record.refund
+            if refund == 0:
+                continue
             refund_time = refund_record.refund_close_time
 
             salesout_records = salesOutDetails.objects.filter(otid=trade_no)
+            # TODO: What if records not found
             overall_amount = salesout_records.aggregate(Sum("deal_total_price"))
+            print(overall_amount["deal_total_price__sum"])
+            if overall_amount['deal_total_price__sum'] == 0:
+                continue
+
             for i in salesout_records:
                 print(i)
+                if i.deal_total_price == 0:
+                    continue
                 f = FinanceSalesAndInvoice(
                     date=refund_time,
                     shop_name=i.shop_name,
