@@ -18,7 +18,7 @@ class Command(BaseCommand):
 
         # self.finance_sales_invoice_summary('2024-03-26', '2024-04-25')
 
-        # self.goods_sales_summary("2024-03-26", "2024-04-25")
+        self.goods_sales_summary("2024-03-26", "2024-04-25")
 
         # self.extend_douyin_refund("2024-02-01", "2024-02-29")
 
@@ -26,7 +26,7 @@ class Command(BaseCommand):
 
         # self.extend_pdd_refund("2024-02-01", "2024-02-29")
 
-        self.extend_tmall_refund("2024-03-01", "2024-03-02")
+        # self.extend_tmall_refund("2024-03-01", "2024-03-02")
     
     def goods_model_to_spec_goods(self, finance_sales_and_invoice):
         goods_model = finance_sales_and_invoice.goods_no
@@ -139,13 +139,28 @@ class Command(BaseCommand):
         )
         for i in details:
             print(i)
+            shop_name = i['shop_name']
+            goods_no = i['spec_no']
+            sales_num = i['details_sum_num']
+            sales_amount = i['details_sum_amount']
+            post_amount = i['details_sum_post']
+            f = FinanceSalesAndInvoice(
+                start_date=start_date,
+                end_date=end_date,
+                shop_name=shop_name,
+                goods_no=goods_no,
+                sales_num=sales_num,
+                sales_amount=sales_amount,
+                post_amount=post_amount,
+            )
+            f.save()
         
-        summary = details.aggregate(
-            total_num=Sum("details_sum_num"),
-            total_post=Sum("details_sum_post"),
-            total_amount=Sum("details_sum_amount"),
-        )
-        print(summary)
+        # summary = details.aggregate(
+        #     total_num=Sum("details_sum_num"),
+        #     total_post=Sum("details_sum_post"),
+        #     total_amount=Sum("details_sum_amount"),
+        # )
+        # print(summary)
 
         return details
     
