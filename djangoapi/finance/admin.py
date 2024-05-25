@@ -194,6 +194,14 @@ class FinanceSalesAndInvoiceAdmin(admin.ModelAdmin):
         "invoice_amount",
     ]
     search_fields = ["goods_no"]
+    list_filter = (
+        (
+            "date",
+            DateRangeFilterBuilder(
+                title="开票/退款时间",
+            ),
+        ),
+    )
 
 @admin.register(PDMaterialNOList)
 class PDMaterialNOListAdmin(admin.ModelAdmin):

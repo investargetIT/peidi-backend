@@ -108,6 +108,8 @@ class Command(BaseCommand):
         ).filter(
             date__gte=start_date, 
             date__lte=end_date,
+            invoice_num__isnull=False,
+            invoice_amount__isnull=False,
         ).annotate(
             details_sum_num=Sum("invoice_num"),
             details_price=Sum("invoice_amount") / Sum("invoice_num"),
