@@ -16,9 +16,9 @@ class Command(BaseCommand):
         #     for invoice in merged_invoice:
         #         self.goods_model_to_spec_goods(invoice)
 
-        # self.finance_sales_invoice_summary('2024-03-26', '2024-04-25')
+        self.finance_sales_invoice_summary('2024-03-26', '2024-04-25')
 
-        self.goods_sales_summary("2024-03-26", "2024-04-25")
+        # self.goods_sales_summary("2024-03-26", "2024-04-25")
 
         # self.extend_douyin_refund("2024-02-01", "2024-02-29")
 
@@ -115,15 +115,28 @@ class Command(BaseCommand):
         )
         for i in details:
             print(i)
+            shop_name = i['shop_name']
+            goods_no = i['goods_no']
+            invoice_num = i['details_sum_num']
+            invoice_amount = i['details_sum_amount']
+            f = FinanceSalesAndInvoice(
+                start_date=start_date,
+                end_date=end_date,
+                shop_name=shop_name,
+                goods_no=goods_no,
+                invoice_num=invoice_num,
+                invoice_amount=invoice_amount,
+            )
+            f.save()
 
-        summary = details.aggregate(
-            total_num=Sum("details_sum_num"),
-            total_price=Sum("details_sum_amount") / Sum("details_sum_num"),
-            total_amount=Sum("details_sum_amount"),
-        )
-        print(summary)
+        # summary = details.aggregate(
+        #     total_num=Sum("details_sum_num"),
+        #     total_price=Sum("details_sum_amount") / Sum("details_sum_num"),
+        #     total_amount=Sum("details_sum_amount"),
+        # )
+        # print(summary)
 
-        return details
+        # return details
 
     def goods_sales_summary(self, start_date, end_date):
         details = GoodsSalesSummary.objects.values(
