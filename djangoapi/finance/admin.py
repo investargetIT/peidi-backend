@@ -48,6 +48,14 @@ class PddRefundAdmin(admin.ModelAdmin):
         "refund",
         "refund_status"
     ]
+    list_filter = (
+        (
+            "apply_time",
+            DateRangeFilterBuilder(
+                title="申请时间",
+            ),
+        ),
+    )
 
 @admin.register(JdRefund)
 class JdRefundAdmin(admin.ModelAdmin):
