@@ -87,6 +87,14 @@ class DouyinRefundAdmin(admin.ModelAdmin):
         "refund_status",
         "refund_remark",
     ]
+    list_filter = (
+        (
+            "refund_time",
+            DateRangeFilterBuilder(
+                title="打款到账时间",
+            ),
+        ),
+    )
 
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
