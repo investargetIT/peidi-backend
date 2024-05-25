@@ -158,7 +158,10 @@ class GoodsSalesSummary(models.Model):
         ]
 
 class FinanceSalesAndInvoice(models.Model):
-    date = models.DateField(verbose_name='时间')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    start_date = models.DateField(blank=True, null=True, verbose_name='开始日期（统计）')
+    end_date = models.DateField(blank=True, null=True, verbose_name='结束日期（统计）')
+    date = models.DateField(blank=True, null=True, verbose_name='开票/退款日期')
     shop_name = models.CharField(max_length=100, verbose_name='店铺名称')
     goods_no = models.CharField(max_length=100, verbose_name='商家编码')
     material_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='料号')

@@ -178,6 +178,9 @@ class GoodsSalesSummaryAdmin(admin.ModelAdmin):
 @admin.register(FinanceSalesAndInvoice)
 class FinanceSalesAndInvoiceAdmin(admin.ModelAdmin):
     list_display = [
+        "created_at",
+        "start_date",
+        "end_date",
         "date",
         "shop_name",
         "goods_no",
