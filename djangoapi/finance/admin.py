@@ -34,6 +34,14 @@ class TmallRefundAdmin(admin.ModelAdmin):
         "refund_reason",
         "refund_explanation",
     ]
+    list_filter = (
+        (
+            "refund_close_time",
+            DateRangeFilterBuilder(
+                title="退款完结时间",
+            ),
+        ),
+    )
 
 @admin.register(PddRefund)
 class PddRefundAdmin(admin.ModelAdmin):
