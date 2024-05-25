@@ -8,6 +8,7 @@ from orders.models import salesOutDetails
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
+        print("Hello")
         # print(self.goods_no_to_material_no("6971758277324"))
 
         # distinct_trade_no = Invoice.objects.values("trade_no").distinct()
@@ -16,7 +17,7 @@ class Command(BaseCommand):
         #     for invoice in merged_invoice:
         #         self.goods_model_to_spec_goods(invoice)
 
-        self.finance_sales_invoice_summary('2024-03-26', '2024-04-25')
+        # self.finance_sales_invoice_summary('2024-03-26', '2024-04-25')
 
         # self.goods_sales_summary("2024-03-26", "2024-04-25")
 
@@ -27,6 +28,9 @@ class Command(BaseCommand):
         # self.extend_pdd_refund("2024-02-01", "2024-02-29")
 
         # self.extend_tmall_refund("2024-03-01", "2024-03-02")
+
+        # self.refund_summary("2024-02-01", "2024-03-02")
+      
     
     def goods_model_to_spec_goods(self, finance_sales_and_invoice):
         goods_model = finance_sales_and_invoice.goods_no
@@ -177,7 +181,7 @@ class Command(BaseCommand):
         # )
         # print(summary)
 
-        return details
+        # return details
     
     def extend_douyin_refund(self, start_date, end_date):
         end_date += " 23:59:59" 
@@ -262,3 +266,28 @@ class Command(BaseCommand):
                     refund_amount=i.deal_total_price/overall_amount['deal_total_price__sum']*refund
                 )
                 f.save()
+    
+    def refund_summary(self, start_date, end_date):
+        details = FinanceSalesAndInvoice.objects.values(
+            "shop_name",
+            "goods_no",
+        ).filter(
+            date__gte=start_date, 
+            date__lte=end_date,
+            refund_amount__isnull=False,
+        ).annotate(
+            details_sum_amount=Sum("refund_amount"),
+        )
+        for i in details:
+            print(i)
+            shop_name = i['shop_name']
+            goods_no = i['goods_no']
+            refund_amount = i['details_sum_amount']
+            f = FinanceSalesAndInvoice(
+                start_date=start_date,
+                end_date=end_date,
+                shop_name=shop_name,
+                goods_no=goods_no,
+                refund_amount=refund_amount,
+            )
+            f.save()
