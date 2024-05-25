@@ -20,7 +20,9 @@ class Command(BaseCommand):
 
         # self.goods_sales_summary("2024-03-26", "2024-04-25")
 
-        self.extend_douyin_refund("2024-02-01", "2024-02-29")
+        # self.extend_douyin_refund("2024-02-01", "2024-02-29")
+
+        self.extend_jd_refund("2024-02-01", "2024-02-29")
     
     def goods_model_to_spec_goods(self, finance_sales_and_invoice):
         goods_model = finance_sales_and_invoice.goods_no
@@ -156,6 +158,27 @@ class Command(BaseCommand):
             salesout_records = salesOutDetails.objects.filter(otid=trade_no)
             overall_amount = salesout_records.aggregate(Sum("deal_total_price"))
             for i in salesout_records:
+                f = FinanceSalesAndInvoice(
+                    date=refund_time,
+                    shop_name=i.shop_name,
+                    goods_no=i.spec_no,
+                    refund_amount=i.deal_total_price/overall_amount['deal_total_price__sum']*refund
+                )
+                f.save()
+
+    def extend_jd_refund(self, start_date, end_date):
+        end_date += " 23:59:59" 
+        refund_records = JdRefund.objects.filter(apply_time__range=(start_date, end_date))
+        for refund_record in refund_records:
+            print(refund_record)
+            trade_no = refund_record.trade_no
+            refund = refund_record.refund
+            refund_time = refund_record.apply_time
+
+            salesout_records = salesOutDetails.objects.filter(otid=trade_no)
+            overall_amount = salesout_records.aggregate(Sum("deal_total_price"))
+            for i in salesout_records:
+                print(i)
                 f = FinanceSalesAndInvoice(
                     date=refund_time,
                     shop_name=i.shop_name,

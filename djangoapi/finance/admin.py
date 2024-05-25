@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import TmallRefund, PddRefund, JdRefund, DouyinRefund, Invoice, GoodsSalesSummary, FinanceSalesAndInvoice, PDMaterialNOList
+from rangefilter.filters import DateRangeFilterBuilder
 
 @admin.register(TmallRefund)
 class TmallRefundAdmin(admin.ModelAdmin): 
@@ -61,6 +62,14 @@ class JdRefundAdmin(admin.ModelAdmin):
         "refund_status",
         "applicant",
     ]
+    list_filter = (
+        (
+            "apply_time",
+            DateRangeFilterBuilder(
+                title="申请时间",
+            ),
+        ),
+    )
 
 @admin.register(DouyinRefund)
 class DouyinRefundAdmin(admin.ModelAdmin):
