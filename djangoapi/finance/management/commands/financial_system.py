@@ -9,15 +9,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         print("Hello")
-        # print(self.goods_no_to_material_no("6971758277324"))
 
-        # distinct_trade_no = Invoice.objects.filter().values("trade_no").distinct()
-        # for i in distinct_trade_no:
-        #     print(i)
-            # merged_invoice = self.merge_original_invoice(i['trade_no'])
-            # for invoice in merged_invoice:
-            #     self.goods_model_to_spec_goods(invoice)
-        self.merge_original_invoice("2024-04-01", "2024-04-25")
+        # print(self.goods_no_to_material_no("6971758277324"))
+        
+        # merged_invoice = self.merge_original_invoice("2024-04-03", "2024-04-03")
+        # for invoice in merged_invoice:
+        #     self.goods_model_to_spec_goods(invoice)
 
         # self.finance_sales_invoice_summary('2024-03-26', '2024-04-25')
 
@@ -39,7 +36,6 @@ class Command(BaseCommand):
         try:
             spec_goods = SpecGoods.objects.get(spec_no=goods_model)
             # print(spec_goods.spec_no, '是单品', spec_goods.goods_name)
-            finance_sales_and_invoice.material_no = self.goods_no_to_material_no(spec_goods.spec_no)
             finance_sales_and_invoice.goods_name = spec_goods.goods_name
             finance_sales_and_invoice.save()
             # print()
@@ -49,11 +45,9 @@ class Command(BaseCommand):
                 # print(goods_model, '是组合装，包括以下单品：')
                 for goods in suite_goods:
                     # print(goods.spec_no, goods.goods_name, goods.num, goods.ratio)
-                    material_no = self.goods_no_to_material_no(goods.spec_no)
                     f = FinanceSalesAndInvoice(
                         date=finance_sales_and_invoice.date,
                         shop_name=finance_sales_and_invoice.shop_name,
-                        material_no=material_no,
                         goods_no=goods.spec_no,
                         goods_name=goods.goods_name,
                         invoice_num=finance_sales_and_invoice.invoice_num*goods.num,
