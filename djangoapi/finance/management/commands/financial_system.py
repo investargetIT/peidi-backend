@@ -12,13 +12,10 @@ class Command(BaseCommand):
 
         # print(self.goods_no_to_material_no("6971758277324"))
         
-        # merged_invoice = self.merge_original_invoice("2024-04-03", "2024-04-03")
+        # merged_invoice = self.merge_original_invoice("2024-02-26", "2024-03-25")
         # for invoice in merged_invoice:
         #     self.goods_model_to_spec_goods(invoice)
 
-        # self.finance_sales_invoice_summary('2024-03-26', '2024-04-25')
-
-        # self.goods_sales_summary("2024-03-26", "2024-04-25")
 
         # self.extend_douyin_refund("2024-02-26", "2024-03-25")
 
@@ -28,8 +25,11 @@ class Command(BaseCommand):
 
         # self.extend_tmall_refund("2024-02-26", "2024-03-25")
 
-        # self.refund_summary("2024-02-01", "2024-03-02")
-      
+        # self.refund_summary("2024-02-26", "2024-03-25")
+
+        # self.sales_summary("2024-02-26", "2024-03-25")
+
+        # self.invoice_summary('2024-02-26', '2024-03-25')
     
     def goods_model_to_spec_goods(self, finance_sales_and_invoice):
         goods_model = finance_sales_and_invoice.goods_no
@@ -103,7 +103,7 @@ class Command(BaseCommand):
             result.append(material.material_no)
         return '/'.join(result)
 
-    def finance_sales_invoice_summary(self, start_date, end_date):
+    def invoice_summary(self, start_date, end_date):
         details = FinanceSalesAndInvoice.objects.values(
             "shop_name",
             "goods_no",
@@ -144,7 +144,7 @@ class Command(BaseCommand):
 
         # return details
 
-    def goods_sales_summary(self, start_date, end_date):
+    def sales_summary(self, start_date, end_date):
         details = GoodsSalesSummary.objects.values(
             "spec_no",
             "shop_name",
