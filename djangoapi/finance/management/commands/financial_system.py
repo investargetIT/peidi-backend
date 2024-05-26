@@ -30,6 +30,8 @@ class Command(BaseCommand):
         # self.sales_summary("2024-02-26", "2024-03-25")
 
         # self.invoice_summary('2024-02-26', '2024-03-25')
+
+        # self.overall_summary("2024-02-26", "2024-03-25")
     
     def goods_model_to_spec_goods(self, finance_sales_and_invoice):
         goods_model = finance_sales_and_invoice.goods_no
@@ -97,11 +99,12 @@ class Command(BaseCommand):
         # except PDMaterialNOList.MultipleObjectsReturned as e:
         #     print(e)
         
-        result = []
+        material_no, goods_name = [], []
         materials = PDMaterialNOList.objects.filter(barcode=goods_no)
         for material in materials:
-            result.append(material.material_no)
-        return '/'.join(result)
+            material_no.append(material.material_no)
+            goods_name.append(material.goods_name)
+        return ("/".join(material_no), "/".join(goods_name))
 
     def invoice_summary(self, start_date, end_date):
         details = FinanceSalesAndInvoice.objects.values(
@@ -320,5 +323,41 @@ class Command(BaseCommand):
                 shop_name=shop_name,
                 goods_no=goods_no,
                 refund_amount=refund_amount,
+            )
+            f.save()
+
+    def overall_summary(self, start_date, end_date):
+        details = FinanceSalesAndInvoice.objects.values(
+            "shop_name",
+            "goods_no",
+        ).filter(
+            start_date=start_date,
+            end_date=end_date,
+        ).annotate(
+            sales_num__sum=Sum("sales_num"),
+            invoice_num__sum=Sum("invoice_num"),
+            uninvoice_num__sum=Sum("sales_num")-Sum("invoice_num"),
+            sales_amount__sum=Sum("sales_amount"),
+            post_amount__sum=Sum("post_amount"),
+            refund_amount__sum=Sum("refund_amount"),
+            invoice_amount__sum=Sum("invoice_amount"),
+            uninvoice_amount__sum=Sum("sales_amount")+Sum("post_amount")-Sum("refund_amount")-Sum("invoice_amount"),
+        )
+        for i in details:
+            print(i)
+            material_no_and_goods_name = self.goods_no_to_material_no(i["goods_no"])
+            f = FinanceSalesAndInvoice(
+                start_date=start_date,
+                end_date=end_date,
+                shop_name=i["shop_name"],
+                goods_no=i["goods_no"],
+                material_no=material_no_and_goods_name[0],
+                goods_name=material_no_and_goods_name[1],
+                sales_num=i["sales_num__sum"],
+                invoice_num=i["invoice_num__sum"] or 0,
+                sales_amount=i["sales_amount__sum"],
+                post_amount=i["post_amount__sum"],
+                refund_amount=i["refund_amount__sum"] or 0,
+                invoice_amount=i["invoice_amount__sum"] or 0,
             )
             f.save()
