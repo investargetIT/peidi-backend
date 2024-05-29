@@ -67,7 +67,10 @@ class Command(BaseCommand):
         result = []
         end_date += " 23:59:59" 
         distinct_trade_no = Invoice.objects.filter(invoice_time__range=(start_date, end_date)).values("trade_no").distinct()
+        print("阿里发票原始单号", len(distinct_trade_no))
         for i in distinct_trade_no:
+            if i["trade_no"] is None:
+                continue
             print(i)
             # 以订单id、商品型号、开票日期和店铺名称为唯一数据，合并发票总金额，即对冲掉优惠返现等负的发票总金额
             invoices = Invoice.objects.values("trade_no", "goods_model", "invoice_time", "shop_name").filter(trade_no=i['trade_no']).annotate(Sum("goods_total_amount"), Sum("goods_num"))
@@ -88,6 +91,28 @@ class Command(BaseCommand):
                 )
                 result.append(f)
             print()
+        
+        # 财务手动创建的发票是没有订单号的
+        manual_invoices = Invoice.objects.filter(invoice_time__range=(start_date, end_date), trade_no__isnull=True).values()
+        print("人工发票", len(manual_invoices))
+        for invoice in manual_invoices:
+            date = invoice['invoice_time']
+            shop_name = invoice['shop_name']
+            goods_no = invoice['goods_model']
+            invoice_num = invoice['goods_num']
+            invoice_amount = invoice['goods_total_amount']
+            print(date, shop_name, goods_no, invoice_num, invoice_amount)
+
+            f = FinanceSalesAndInvoice(
+                date=date,
+                shop_name=shop_name,
+                goods_no=goods_no,
+                invoice_num=invoice_num,
+                invoice_amount=invoice_amount
+            )
+            result.append(f)
+        print()
+                        
         return result
 
     def goods_no_to_material_no(self, goods_no):
