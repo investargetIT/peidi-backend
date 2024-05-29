@@ -141,6 +141,7 @@ class InvoiceAdmin(admin.ModelAdmin):
         "tax_rate",
     ]
     search_fields = ["trade_no", "goods_model"]
+    list_filter = ["shop_name"]
 
 @admin.register(GoodsSalesSummary)
 class GoodsSalesSummaryAdmin(admin.ModelAdmin):

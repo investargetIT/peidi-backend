@@ -88,6 +88,17 @@ def saveOrders(excel_path):
             if row[float_field]:
                 row[float_field] = "{:.4f}".format(float(row[float_field]))
         
+        if row['店铺名称'] == 'smartbones旗舰店':
+            row['店铺名称'] = '杭州-天猫-smartbones旗舰店'
+        elif row['店铺名称'] == '哈宠宠物用品专营店':
+            row['店铺名称'] = '上海-天猫-哈宠宠物用品专营店'
+        elif row['店铺名称'] == '好适嘉旗舰店':
+            row['店铺名称'] = '杭州-天猫-好适嘉旗舰店'
+        elif row['店铺名称'] == '佩蒂旗舰店':
+            row['店铺名称'] = '杭州-天猫-佩蒂旗舰店'
+        elif row['店铺名称'] == '千百仓宠物用品专营店':
+            row['店铺名称'] = '上海-天猫-千百仓宠物用品专营店'
+        
         data = {
                     'trade_no': row['订单id'],
                     'invoice_time': row['开票日期'],
