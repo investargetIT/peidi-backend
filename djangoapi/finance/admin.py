@@ -115,6 +115,7 @@ class DouyinRefundAdmin(admin.ModelAdmin):
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
     list_display = [
+        "created_at",
         "trade_no",
         "invoice_time",
         "shop_name",
