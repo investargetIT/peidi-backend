@@ -82,6 +82,12 @@ def saveOrders(excel_path):
                         row[time_field] = None
                 else:
                     row[time_field] = None
+        
+        float_fields = ["数量", "单价"]
+        for float_field in float_fields:
+            if row[float_field]:
+                row[float_field] = "{:.4f}".format(float(row[float_field]))
+        
         data = {
                     'trade_no': row['订单id'],
                     'invoice_time': row['开票日期'],
