@@ -181,9 +181,9 @@ class Command(BaseCommand):
             start_date__gte=start_date,
             end_date__lte=end_date,
         ).annotate(
-            details_sum_num=Sum("sales_num"),
+            details_sum_num=Sum("sales_num")+Sum("ship_refund_num"),
             details_sum_post=Sum("post_amount"),
-            details_sum_amount=Sum("actual_sales_amount"),
+            details_sum_amount=Sum("actual_sales_amount")+Sum("post_amount")+Sum("ship_refund_amount"),
         )
         for i in details:
             print(i)
@@ -203,14 +203,12 @@ class Command(BaseCommand):
             )
             f.save()
         
-        # summary = details.aggregate(
-        #     total_num=Sum("details_sum_num"),
-        #     total_post=Sum("details_sum_post"),
-        #     total_amount=Sum("details_sum_amount"),
-        # )
-        # print(summary)
-
-        # return details
+        summary = details.aggregate(
+            total_num=Sum("details_sum_num"),
+            total_post=Sum("details_sum_post"),
+            total_amount=Sum("details_sum_amount"),
+        )
+        print(summary)
     
     def extend_douyin_refund(self, start_date, end_date):
         end_date += " 23:59:59" 
