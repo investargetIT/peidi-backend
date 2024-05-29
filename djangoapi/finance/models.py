@@ -92,6 +92,7 @@ class DouyinRefund(models.Model):
 
 # 发票
 class Invoice(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='入库时间')
     trade_no = models.CharField(max_length=100, verbose_name='订单id')
     invoice_time = models.DateTimeField(blank=True, null=True, verbose_name='开票日期')
     shop_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='店铺名称')
@@ -115,11 +116,6 @@ class Invoice(models.Model):
     goods_tax = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='税额')
     goods_total_amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='总金额')
     tax_rate = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='税率')
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['trade_no', 'goods_model', 'goods_total_amount'], name='unique_tradeno_goodsmodel_goodstotalamount')
-        ]
 
 class GoodsSalesSummary(models.Model):
     start_date = models.DateField(verbose_name='开始日期')
