@@ -93,7 +93,7 @@ class DouyinRefund(models.Model):
 # 阿里发票
 class Invoice(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='入库时间')
-    trade_no = models.CharField(max_length=100, verbose_name='订单id')
+    trade_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='订单id')
     invoice_time = models.DateTimeField(blank=True, null=True, verbose_name='开票日期')
     shop_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='店铺名称')
     invoice_category = models.CharField(max_length=40, blank=True, null=True, verbose_name='发票种类')
