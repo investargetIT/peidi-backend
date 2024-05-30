@@ -416,12 +416,20 @@ class Command(BaseCommand):
         #         invoice_amount=i["invoice_amount__sum"] or 0,
         #     )
         #     f.save()
-        res = requests.post(
-            url=url,
-            json={"records": records[:30]},
-            headers={"Authorization": f"Bearer {token}"},
-        )
-        res.raise_for_status()
+        print(len(records))
+        for i in range(int(len(records)/30)+1):
+            s = 30 * i
+            e = 30 * (i + 1)
+            if i == int(len(records)/30):
+                e = len(records)
+            res = requests.post(
+                url=url,
+                json={"records": records[s:e]},
+                headers={"Authorization": f"Bearer {token}"},
+            )
+            res.raise_for_status()
+            res = res.content.decode()
+            print(res)
         
         summary = details.aggregate(
             total_sales_num=Sum("sales_num__sum"),
