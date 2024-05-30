@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
 from django.db.models import Sum
-from django.db.models.functions import Coalesce
 
 from goods.models import SpecGoods, SuiteGoodsRec
 from finance.models import Invoice, FinanceSalesAndInvoice, PDMaterialNOList, GoodsSalesSummary, DouyinRefund, PddRefund, JdRefund, TmallRefund
@@ -16,7 +15,6 @@ class Command(BaseCommand):
         # merged_invoice = self.merge_original_invoice("2024-02-26", "2024-03-25")
         # for invoice in merged_invoice:
         #     self.goods_model_to_spec_goods(invoice)
-
 
         # self.extend_douyin_refund("2024-02-26", "2024-03-25")
 
@@ -214,27 +212,31 @@ class Command(BaseCommand):
         end_date += " 23:59:59" 
         refund_records = DouyinRefund.objects.filter(refund_time__range=(start_date, end_date))
         for refund_record in refund_records:
-            print(refund_record)  
             trade_no = refund_record.trade_no
             refund = refund_record.refund
             if refund == 0:
                 continue
-            refund_time = refund_record.refund_time
 
+            refund_time = refund_record.refund_time
             salesout_records = salesOutDetails.objects.filter(otid=trade_no)
-            overall_amount = salesout_records.aggregate(Sum("deal_total_price"))
-            if overall_amount['deal_total_price__sum'] == 0:
+
+            if len(salesout_records) == 0:
+                print("未找到关联订单", refund_record)
+            
+            overall_amount = 0
+            for i in salesout_records:
+                overall_amount += i.deal_total_price
+            if overall_amount == 0:
                 continue
             
             for i in salesout_records:
-                print(i)
                 if i.deal_total_price == 0:
                     continue
                 f = FinanceSalesAndInvoice(
                     date=refund_time,
                     shop_name=i.shop_name,
                     goods_no=i.spec_no,
-                    refund_amount=i.deal_total_price/overall_amount['deal_total_price__sum']*refund
+                    refund_amount=i.deal_total_price/overall_amount*refund
                 )
                 f.save()
     
@@ -242,27 +244,31 @@ class Command(BaseCommand):
         end_date += " 23:59:59" 
         refund_records = JdRefund.objects.filter(apply_time__range=(start_date, end_date))
         for refund_record in refund_records:
-            print(refund_record)
             trade_no = refund_record.trade_no
             refund = refund_record.refund
             if refund == 0:
                 continue
-            refund_time = refund_record.apply_time
 
+            refund_time = refund_record.apply_time
             salesout_records = salesOutDetails.objects.filter(otid=trade_no)
-            overall_amount = salesout_records.aggregate(Sum("deal_total_price"))
-            if overall_amount['deal_total_price__sum'] == 0:
+
+            if len(salesout_records) == 0:
+                print("未找到关联订单", refund_record)
+            
+            overall_amount = 0
+            for i in salesout_records:
+                overall_amount += i.deal_total_price
+            if overall_amount == 0:
                 continue
 
             for i in salesout_records:
-                print(i)
                 if i.deal_total_price == 0:
                     continue
                 f = FinanceSalesAndInvoice(
                     date=refund_time,
                     shop_name=i.shop_name,
                     goods_no=i.spec_no,
-                    refund_amount=i.deal_total_price/overall_amount['deal_total_price__sum']*refund
+                    refund_amount=i.deal_total_price/overall_amount*refund
                 )
                 f.save()
     
@@ -270,58 +276,63 @@ class Command(BaseCommand):
         end_date += " 23:59:59" 
         refund_records = PddRefund.objects.filter(apply_time__range=(start_date, end_date))
         for refund_record in refund_records:
-            print(refund_record)
             trade_no = refund_record.trade_no
             refund = refund_record.refund
             if refund == 0:
                 continue
-            refund_time = refund_record.apply_time
 
+            refund_time = refund_record.apply_time
             salesout_records = salesOutDetails.objects.filter(otid=trade_no)
-            # TODO: What if records not found
-            overall_amount = salesout_records.aggregate(Sum("deal_total_price"))
-            if overall_amount['deal_total_price__sum'] == 0:
+
+            if len(salesout_records) == 0:
+                print("未找到关联订单", refund_record)
+            
+            overall_amount = 0
+            for i in salesout_records:
+                overall_amount += i.deal_total_price
+            if overall_amount == 0:
                 continue
 
             for i in salesout_records:
-                print(i)
                 if i.deal_total_price == 0:
                     continue
                 f = FinanceSalesAndInvoice(
                     date=refund_time,
                     shop_name=i.shop_name,
                     goods_no=i.spec_no,
-                    refund_amount=i.deal_total_price/overall_amount['deal_total_price__sum']*refund
+                    refund_amount=i.deal_total_price/overall_amount*refund
                 )
                 f.save()
     
     def extend_tmall_refund(self, start_date, end_date):
         end_date += " 23:59:59" 
-        refund_records = TmallRefund.objects.filter(refund_close_time__range=(start_date, end_date))
+        refund_records = TmallRefund.objects.filter(refund_apply_time__range=(start_date, end_date))
         for refund_record in refund_records:
-            print(refund_record)
             trade_no = refund_record.trade_no
             refund = refund_record.refund
             if refund == 0:
                 continue
-            refund_time = refund_record.refund_close_time
 
+            refund_time = refund_record.refund_apply_time
             salesout_records = salesOutDetails.objects.filter(otid=trade_no)
-            # TODO: What if records not found
-            overall_amount = salesout_records.aggregate(Sum("deal_total_price"))
-            print(overall_amount["deal_total_price__sum"])
-            if overall_amount['deal_total_price__sum'] == 0:
+            
+            if len(salesout_records) == 0:
+                print("未找到关联订单", refund_record)
+            
+            overall_amount = 0
+            for i in salesout_records:
+                overall_amount += i.deal_total_price
+            if overall_amount == 0:
                 continue
 
             for i in salesout_records:
-                print(i)
                 if i.deal_total_price == 0:
                     continue
                 f = FinanceSalesAndInvoice(
                     date=refund_time,
                     shop_name=i.shop_name,
                     goods_no=i.spec_no,
-                    refund_amount=i.deal_total_price/overall_amount['deal_total_price__sum']*refund
+                    refund_amount=i.deal_total_price/overall_amount*refund
                 )
                 f.save()
     

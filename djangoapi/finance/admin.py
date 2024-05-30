@@ -36,9 +36,9 @@ class TmallRefundAdmin(admin.ModelAdmin):
     ]
     list_filter = (
         (
-            "refund_close_time",
+            "refund_apply_time",
             DateRangeFilterBuilder(
-                title="退款完结时间",
+                title="退款的申请时间",
             ),
         ),
     )
