@@ -183,7 +183,7 @@ class Command(BaseCommand):
         ).annotate(
             details_sum_num=Sum("sales_num")+Sum("ship_refund_num"),
             details_sum_post=Sum("post_amount"),
-            details_sum_amount=Sum("actual_sales_amount")+Sum("post_amount")+Sum("ship_refund_amount"),
+            details_sum_amount=Sum("actual_sales_amount")+Sum("ship_refund_amount"),
         )
         for i in details:
             print(i)
