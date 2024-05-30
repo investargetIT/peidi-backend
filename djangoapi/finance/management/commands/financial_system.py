@@ -1,3 +1,4 @@
+import requests, os
 from django.core.management.base import BaseCommand
 from django.db.models import Sum
 
@@ -372,15 +373,34 @@ class Command(BaseCommand):
             sales_num__sum=Sum("sales_num"),
             invoice_num__sum=Sum("invoice_num"),
             uninvoice_num__sum=Sum("sales_num", default=0)-Sum("invoice_num", default=0),
-            sales_amount__sum=Sum("sales_amount"),
-            post_amount__sum=Sum("post_amount"),
-            refund_amount__sum=Sum("refund_amount"),
-            invoice_amount__sum=Sum("invoice_amount"),
+            sales_amount__sum=Sum("sales_amount", default=0),
+            post_amount__sum=Sum("post_amount", default=0),
+            refund_amount__sum=Sum("refund_amount", default=0),
+            invoice_amount__sum=Sum("invoice_amount", default=0),
             uninvoice_amount__sum=Sum("sales_amount", default=0)+Sum("post_amount", default=0)-Sum("refund_amount", default=0)-Sum("invoice_amount", default=0),
         )
-        # for i in details:
-        #     print(i)
-        #     material_no_and_goods_name = self.goods_no_to_material_no(i["goods_no"])
+        url = os.getenv("APITABLE_BASE_URL") + "/fusion/v1/datasheets/dstG0kXVLwywl4U6Bq/records"
+        token = os.getenv("APITABLE_TOKEN")
+        records = []
+        for i in details:
+            print(i)
+            material_no_and_goods_name = self.goods_no_to_material_no(i["goods_no"])
+            r = {
+                "时间": end_date,
+                "店铺名称": i["shop_name"],
+                "商家编码": i["goods_no"],
+                "料号": material_no_and_goods_name[0],
+                "实际销售量": i["sales_num__sum"],
+                "已开票数量": i["invoice_num__sum"],
+                "未开票数量": i["uninvoice_num__sum"],
+                "实际销售额": float(i["sales_amount__sum"]),
+                "邮费": float(i["post_amount__sum"]),
+                "退款金额": float(i["refund_amount__sum"]),
+                "已开票金额": float(i["invoice_amount__sum"]),
+                "未开票金额": float(i["uninvoice_amount__sum"]),
+            }
+            records.append({ "fields": r })
+
         #     f = FinanceSalesAndInvoice(
         #         start_date=start_date,
         #         end_date=end_date,
@@ -396,6 +416,12 @@ class Command(BaseCommand):
         #         invoice_amount=i["invoice_amount__sum"] or 0,
         #     )
         #     f.save()
+        res = requests.post(
+            url=url,
+            json={"records": records[:30]},
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        res.raise_for_status()
         
         summary = details.aggregate(
             total_sales_num=Sum("sales_num__sum"),

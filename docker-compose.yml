@@ -46,6 +46,8 @@ services:
       - ALIYUNSMS_SECRET=${ALIYUNSMS_SECRET}
       - DJANGO_AUTH_TOKEN=${DJANGO_AUTH_TOKEN}
       - DINGTALK_IMROBOT_WEBHOOK=${DINGTALK_IMROBOT_WEBHOOK}
+      - APITABLE_BASE_URL=${APITABLE_BASE_URL}
+      - APITABLE_TOKEN=${APITABLE_TOKEN}
     depends_on:
       redis:
         condition: service_started
