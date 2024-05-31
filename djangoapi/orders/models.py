@@ -215,6 +215,9 @@ class salesOutDetails(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['oid', 'stockout_no', 'spec_no', 'goods_no', 'num'], name='unique_oid_stockoutno_specno_goodsno_num')
         ]
+        indexes = [
+            models.Index(fields=["otid"])
+        ]
 
 class historySalesOutDetails(models.Model):
     trade_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='订单编号')
