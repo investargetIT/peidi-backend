@@ -13,9 +13,7 @@ class Command(BaseCommand):
 
         # print(self.goods_no_to_material_no("6971758277324"))
         
-        # merged_invoice = self.merge_original_invoice("2024-02-26", "2024-03-25")
-        # for invoice in merged_invoice:
-        #     self.goods_model_to_spec_goods(invoice)
+        # self.invoice_created_by_ali("2024-02-26", "2024-03-25")
 
         # self.invoice_created_manually("2024-02-26", "2024-03-25")
 
@@ -36,12 +34,14 @@ class Command(BaseCommand):
         # self.overall_summary("2024-02-26", "2024-03-25")
     
     def goods_model_to_spec_goods(self, finance_sales_and_invoice):
+        records = []
         goods_model = finance_sales_and_invoice.goods_no
         try:
             spec_goods = SpecGoods.objects.get(spec_no=goods_model)
             # print(spec_goods.spec_no, '是单品', spec_goods.goods_name)
             finance_sales_and_invoice.goods_name = spec_goods.goods_name
             finance_sales_and_invoice.save()
+            records.append(finance_sales_and_invoice)
             # print()
         except SpecGoods.DoesNotExist:
             suite_goods = SuiteGoodsRec.objects.filter(suite_no=goods_model)
@@ -58,11 +58,14 @@ class Command(BaseCommand):
                         invoice_amount=finance_sales_and_invoice.invoice_amount*goods.ratio
                     )
                     f.save()
+                    records.append(f)
                 # print()
             else:
                 print('该商品不存在', goods_model)
                 # 作为单品处理
                 finance_sales_and_invoice.save()
+                records.append(finance_sales_and_invoice)
+        return records
 
     def merge_original_invoice(self, start_date, end_date):
         result = []
@@ -94,6 +97,40 @@ class Command(BaseCommand):
             print()
                  
         return result
+
+    def invoice_created_by_ali(self, start_date, end_date):
+        url = os.getenv("APITABLE_BASE_URL") + "/fusion/v1/datasheets/dstpdLsvjo1Nr6iti6/records"
+        token = os.getenv("APITABLE_TOKEN")
+        merged_invoice = self.merge_original_invoice(start_date, end_date)
+        invoices, records = [], []
+        for invoice in merged_invoice:
+            f = self.goods_model_to_spec_goods(invoice)
+            invoices += f
+        for f in invoices:
+            material_no_and_goods_name = self.goods_no_to_material_no(f.goods_no)
+            invoice_amount = None
+            if f.invoice_amount:
+                invoice_amount = float(f.invoice_amount)
+            r = {
+                    "时间": f.date.strftime("%Y-%m-%d"),
+                    "店铺名称": f.shop_name,
+                    "商家编码": f.goods_no,
+                    "料号": material_no_and_goods_name[0],
+                    "价税合计": invoice_amount,
+                }
+            records.append({ "fields": r })
+        print(len(records))
+        for i in range(int(len(records)/30)+1):
+            s = 30 * i
+            e = 30 * (i + 1)
+            if i == int(len(records)/30):
+                e = len(records)
+            res = requests.post(
+                url=url,
+                json={"records": records[s:e]},
+                headers={"Authorization": f"Bearer {token}"},
+            )
+            res.raise_for_status()
 
     def invoice_created_manually(self, start_date, end_date):
         manual_invoices = Invoice.objects.filter(invoice_time__range=(start_date, end_date), trade_no__isnull=True).values()
