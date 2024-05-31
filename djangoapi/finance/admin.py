@@ -36,6 +36,7 @@ class TmallRefundAdmin(admin.ModelAdmin):
             ),
         ),
     )
+    search_fields = ["goods_name"]
 
 @admin.register(PddRefund)
 class PddRefundAdmin(admin.ModelAdmin):
