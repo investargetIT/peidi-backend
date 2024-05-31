@@ -180,10 +180,19 @@ class Command(BaseCommand):
             start_date__gte=start_date,
             end_date__lte=end_date,
         ).annotate(
-            details_sum_num=Sum("sales_num")+Sum("ship_refund_num"),
+            details_ship_refund_num=Sum("ship_refund_num"),
+            details_sales_num=Sum("sales_num"),
+            details_sum_num=Sum("sales_num",default=0)+Sum("ship_refund_num",default=0),
+            details_ship_refund_amount=Sum("ship_refund_amount"),
             details_sum_post=Sum("post_amount"),
-            details_sum_amount=Sum("actual_sales_amount")+Sum("ship_refund_amount"),
+            details_actual_sales_amount=Sum("actual_sales_amount"),
+            details_sum_amount=Sum("actual_sales_amount",default=0)+Sum("ship_refund_amount",default=0),
+            details_total_amount=Sum("actual_sales_amount",default=0)+Sum("post_amount",default=0)+Sum("ship_refund_amount",default=0),
         )
+
+        url = os.getenv("APITABLE_BASE_URL") + "/fusion/v1/datasheets/dstsvNdHbHR27VJ0WK/records"
+        token = os.getenv("APITABLE_TOKEN")
+        records = []
         for i in details:
             print(i)
             shop_name = i['shop_name']
@@ -191,6 +200,21 @@ class Command(BaseCommand):
             sales_num = i['details_sum_num']
             sales_amount = i['details_sum_amount']
             post_amount = i['details_sum_post']
+
+            r = {
+                "日期": end_date,
+                "商家编码": i["shop_name"],
+                "商家编码": goods_no,
+                "店铺": shop_name,
+                "系统发货但平台退款量": float(i["details_ship_refund_num"]),
+                "实际销售量": float(i["details_sales_num"]),
+                "系统发货但平台退款金额": float(i["details_ship_refund_amount"]),
+                "邮费": float(i["details_sum_post"]),
+                "实际销售额": float(i["details_actual_sales_amount"]),
+                "价税合计": float(i["details_total_amount"]),
+            }
+            records.append({ "fields": r })
+
             f = FinanceSalesAndInvoice(
                 start_date=start_date,
                 end_date=end_date,
@@ -201,6 +225,19 @@ class Command(BaseCommand):
                 post_amount=post_amount,
             )
             f.save()
+
+        print(len(records))
+        for i in range(int(len(records)/30)+1):
+            s = 30 * i
+            e = 30 * (i + 1)
+            if i == int(len(records)/30):
+                e = len(records)
+            res = requests.post(
+                url=url,
+                json={"records": records[s:e]},
+                headers={"Authorization": f"Bearer {token}"},
+            )
+            res.raise_for_status()
         
         summary = details.aggregate(
             total_num=Sum("details_sum_num"),
