@@ -345,6 +345,9 @@ class Command(BaseCommand):
     def extend_tmall_refund(self, start_date, end_date):
         end_date += " 23:59:59" 
         refund_records = TmallRefund.objects.filter(refund_apply_time__range=(start_date, end_date))
+        url = os.getenv("APITABLE_BASE_URL") + "/fusion/v1/datasheets/dst79PPdUTvu6FUCL8/records"
+        token = os.getenv("APITABLE_TOKEN")
+        records = []
         for refund_record in refund_records:
             trade_no = refund_record.trade_no
             refund = refund_record.refund
@@ -366,14 +369,41 @@ class Command(BaseCommand):
             for i in salesout_records:
                 if i.deal_total_price == 0:
                     continue
-                f = FinanceSalesAndInvoice(
-                    date=refund_time,
-                    shop_name=i.shop_name,
-                    goods_no=i.spec_no,
-                    refund_amount=i.deal_total_price/overall_amount*refund
-                )
-                f.save()
-    
+
+                deliver_time = None
+                if i.deliver_time:
+                    deliver_time = i.deliver_time.strftime("%Y-%m-%d")
+                r = {
+                    "时间": refund_time.strftime("%Y-%m-%d"),
+                    "店铺名称": i.shop_name,
+                    "订单编号": trade_no,
+                    "货号": i.spec_no,
+                    "发货时间": deliver_time,
+                    "买家退款金额": float(i.deal_total_price/overall_amount*refund),
+                }
+                records.append({ "fields": r })
+
+                # f = FinanceSalesAndInvoice(
+                #     date=refund_time,
+                #     shop_name=i.shop_name,
+                #     goods_no=i.spec_no,
+                #     refund_amount=i.deal_total_price/overall_amount*refund
+                # )
+                # f.save()
+
+        print(len(records))
+        for i in range(int(len(records)/30)+1):
+            s = 30 * i
+            e = 30 * (i + 1)
+            if i == int(len(records)/30):
+                e = len(records)
+            res = requests.post(
+                url=url,
+                json={"records": records[s:e]},
+                headers={"Authorization": f"Bearer {token}"},
+            )
+            res.raise_for_status()
+
     def refund_summary(self, start_date, end_date):
         details = FinanceSalesAndInvoice.objects.values(
             "shop_name",
