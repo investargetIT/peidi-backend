@@ -17,6 +17,8 @@ class Command(BaseCommand):
         # for invoice in merged_invoice:
         #     self.goods_model_to_spec_goods(invoice)
 
+        # self.invoice_created_manually("2024-02-26", "2024-03-25")
+
         # self.extend_douyin_refund("2024-02-26", "2024-03-25")
 
         # self.extend_jd_refund("2024-02-26", "2024-03-25")
@@ -90,29 +92,54 @@ class Command(BaseCommand):
                 )
                 result.append(f)
             print()
-        
-        # 财务手动创建的发票是没有订单号的
+                 
+        return result
+
+    def invoice_created_manually(self, start_date, end_date):
         manual_invoices = Invoice.objects.filter(invoice_time__range=(start_date, end_date), trade_no__isnull=True).values()
-        print("人工发票", len(manual_invoices))
+        url = os.getenv("APITABLE_BASE_URL") + "/fusion/v1/datasheets/dst6D5RicsfUPcUunq/records"
+        token = os.getenv("APITABLE_TOKEN")
+        records = []
         for invoice in manual_invoices:
             date = invoice['invoice_time']
             shop_name = invoice['shop_name']
             goods_no = invoice['goods_model']
+            goods_name = invoice["goods_name"]
             invoice_num = invoice['goods_num']
             invoice_amount = invoice['goods_total_amount']
-            print(date, shop_name, goods_no, invoice_num, invoice_amount)
+            print(date, shop_name, goods_no, goods_name, invoice_num, invoice_amount)
 
             f = FinanceSalesAndInvoice(
                 date=date,
                 shop_name=shop_name,
                 goods_no=goods_no,
+                goods_name=goods_name,
                 invoice_num=invoice_num,
                 invoice_amount=invoice_amount
             )
-            result.append(f)
-        print()
-                        
-        return result
+            f.save()
+            material_no_and_goods_name = self.goods_no_to_material_no(goods_no)
+            r = {
+                "日期": date.strftime("%Y-%m-%d"),
+                "订货客户": shop_name,
+                "货号": goods_no,
+                "料号": material_no_and_goods_name[0],
+                "价税合计": float(invoice_amount),
+            }
+            records.append({ "fields": r })
+
+        print(len(records))
+        for i in range(int(len(records)/30)+1):
+            s = 30 * i
+            e = 30 * (i + 1)
+            if i == int(len(records)/30):
+                e = len(records)
+            res = requests.post(
+                url=url,
+                json={"records": records[s:e]},
+                headers={"Authorization": f"Bearer {token}"},
+            )
+            res.raise_for_status()
 
     def goods_no_to_material_no(self, goods_no):
         # try:
