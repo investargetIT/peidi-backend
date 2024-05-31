@@ -5,8 +5,8 @@ from rangefilter.filters import DateRangeFilterBuilder
 @admin.register(TmallRefund)
 class TmallRefundAdmin(admin.ModelAdmin): 
     list_display = [
-        "trade_no",
         "refund_no",
+        "trade_no",
         "alipay_transaction_no",
         "pay_time",
         "goods_no",
@@ -20,19 +20,13 @@ class TmallRefundAdmin(admin.ModelAdmin):
         "refund_deadline",
         "refund_status",
         "goods_status",
-        "return_logistics_info",
         "deliver_logistics_info",
         "service_intervene",
         "seller_name",
         "seller_name_new",
-        "seller_return_address",
-        "seller_zip",
-        "seller_telno",
-        "seller_mobile",
-        "logistics_no",
-        "logistics_name",
         "refund_reason",
         "refund_explanation",
+        "refund_type",
     ]
     list_filter = (
         (

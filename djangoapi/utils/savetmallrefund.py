@@ -54,14 +54,14 @@ def savedatatourl(data, url, excel_path):
     if len(res['result']['fail']) > 0:
         print('导入失败', len(res['result']['fail']))
         for fail in res['result']['fail']:
-            if 'Duplicate' not in fail['errmsg']:
-                fails.append(fail)
-            else:
+            if 'already exists' in json.dumps(fail['errmsg']):
                 duplicate_fails.append(fail['errmsg'])
+            else:
+                fails.append(fail)
         if len(fails) > 0:
-            print('非重复造成的失败', len(fails), fails)
+            print('非重复造成的失败', len(fails))
         if len(duplicate_fails) > 0:
-            print('重复造成的失败', len(duplicate_fails), duplicate_fails)
+            print('重复造成的失败', len(duplicate_fails))
 
 def saveOrders(excel_path):
 
@@ -109,6 +109,7 @@ def saveOrders(excel_path):
                     'logistics_name': row['退货物流公司'],
                     'refund_reason': row['买家退款原因'],
                     'refund_explanation': row['买家退款说明'],
+                    'refund_type': row['部分退款_全部退款'],
                 }
         datalist.append(data)
     savedatatourl(datalist, base_url + 'finance/refund/tmall', excel_path)

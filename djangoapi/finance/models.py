@@ -3,7 +3,7 @@ from django.db import models
 # 天猫仅退款
 class TmallRefund(models.Model):
     trade_no = models.CharField(max_length=100, verbose_name='订单编号')
-    refund_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='退款编号')
+    refund_no = models.CharField(max_length=100, unique=True, verbose_name='退款编号')
     alipay_transaction_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='支付宝交易号')
     pay_time = models.DateTimeField(blank=True, null=True, verbose_name='订单付款时间')
     goods_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='商品编码')
@@ -17,24 +17,13 @@ class TmallRefund(models.Model):
     refund_deadline = models.DateTimeField(blank=True, null=True, verbose_name='超时时间')
     refund_status = models.CharField(max_length=40, blank=True, null=True, verbose_name='退款状态')
     goods_status = models.CharField(max_length=40, blank=True, null=True, verbose_name='货物状态')
-    return_logistics_info = models.CharField(max_length=255, blank=True, null=True, verbose_name='退货物流信息')
     deliver_logistics_info = models.CharField(max_length=255, blank=True, null=True, verbose_name='发货物流信息')
     service_intervene = models.CharField(max_length=40, blank=True, null=True, verbose_name='客服介入状态')
     seller_name = models.CharField(max_length=40, blank=True, null=True, verbose_name='卖家真实姓名')
     seller_name_new = models.CharField(max_length=40, blank=True, null=True, verbose_name='卖家真实姓名_新')
-    seller_return_address = models.CharField(max_length=255, blank=True, null=True, verbose_name='卖家退货地址')
-    seller_zip = models.CharField(max_length=20, blank=True, null=True, verbose_name='卖家邮编')    
-    seller_telno = models.CharField(max_length=40, blank=True, null=True, verbose_name='卖家电话')    
-    seller_mobile = models.CharField(max_length=40, blank=True, null=True, verbose_name='卖家手机')
-    logistics_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='退货物流单号')
-    logistics_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='退货物流公司')
     refund_reason = models.CharField(max_length=255, blank=True, null=True, verbose_name='买家退款原因')
     refund_explanation = models.CharField(max_length=1024, blank=True, null=True, verbose_name='买家退款说明')
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['trade_no', 'refund_no', 'alipay_transaction_no', 'goods_no'], name='unique_tradeno_refundno_alipaytransactionno_goodsno')
-        ]
+    refund_type = models.CharField(max_length=40, blank=True, null=True, verbose_name='部分退款_全部退款')
 
 # 拼多多仅退款
 class PddRefund(models.Model):
