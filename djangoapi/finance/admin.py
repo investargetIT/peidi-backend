@@ -36,7 +36,7 @@ class TmallRefundAdmin(admin.ModelAdmin):
             ),
         ),
     )
-    search_fields = ["goods_name"]
+    search_fields = ["trade_no", "goods_name"]
 
 @admin.register(PddRefund)
 class PddRefundAdmin(admin.ModelAdmin):
