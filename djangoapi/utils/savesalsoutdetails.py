@@ -83,6 +83,9 @@ def saveOrders(excel_path):
                 else:
                     row[time_field] = None
 
+        if row["订单邮费"] == "无权限":
+            row ["订单邮费"] = None
+
         ###  销售出库明细
         data = {
                     'trade_no': row['订单编号'],
