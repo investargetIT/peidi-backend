@@ -1,4 +1,4 @@
-import requests, os
+import requests, os, time
 from django.core.management.base import BaseCommand
 from django.db.models import Sum
 
@@ -109,7 +109,7 @@ class Command(BaseCommand):
         for f in invoices:
             material_no_and_goods_name = self.goods_no_to_material_no(f.goods_no)
             invoice_amount = None
-            if f.invoice_amount:
+            if f.invoice_amount is not None:
                 invoice_amount = float(f.invoice_amount)
             r = {
                     "时间": f.date.strftime("%Y-%m-%d"),
@@ -131,6 +131,7 @@ class Command(BaseCommand):
                 headers={"Authorization": f"Bearer {token}"},
             )
             res.raise_for_status()
+            time.sleep(1)
 
     def invoice_created_manually(self, start_date, end_date):
         manual_invoices = Invoice.objects.filter(invoice_time__range=(start_date, end_date), trade_no__isnull=True).values()
@@ -177,6 +178,7 @@ class Command(BaseCommand):
                 headers={"Authorization": f"Bearer {token}"},
             )
             res.raise_for_status()
+            time.sleep(1)
 
     def goods_no_to_material_no(self, goods_no):
         # try:
@@ -302,6 +304,7 @@ class Command(BaseCommand):
                 headers={"Authorization": f"Bearer {token}"},
             )
             res.raise_for_status()
+            time.sleep(1)
         
         summary = details.aggregate(
             total_num=Sum("details_sum_num"),
@@ -542,6 +545,7 @@ class Command(BaseCommand):
                 headers={"Authorization": f"Bearer {token}"},
             )
             res.raise_for_status()
+            time.sleep(1)
 
     def refund_summary(self, start_date, end_date):
         details = FinanceSalesAndInvoice.objects.values(
@@ -636,6 +640,7 @@ class Command(BaseCommand):
             res.raise_for_status()
             res = res.content.decode()
             print(res)
+            time.sleep(1)
         
         summary = details.aggregate(
             total_sales_num=Sum("sales_num__sum"),
