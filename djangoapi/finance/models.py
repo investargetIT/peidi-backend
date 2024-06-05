@@ -79,7 +79,7 @@ class DouyinRefund(models.Model):
             models.UniqueConstraint(fields=['pay_transaction_no', 'trade_no', 'goods_id'], name='unique_paytransactionno_tradeno_goodsid')
         ]
 
-# 阿里发票
+# 发票，包括阿里发票和财务手工调整的发票
 class Invoice(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='入库时间')
     trade_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='订单id')
