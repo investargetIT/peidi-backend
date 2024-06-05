@@ -405,7 +405,7 @@ class Command(BaseCommand):
     def extend_tmall_refund(self, start_date, end_date):
         end_date += " 23:59:59" 
         refund_records = TmallRefund.objects.filter(
-            refund_apply_time__range=(start_date, end_date),
+            apply_time__range=(start_date, end_date),
             refund_type="部分退款",
         ).exclude(goods_name__contains="购物金")
         url = os.getenv("APITABLE_BASE_URL") + "/fusion/v1/datasheets/dst79PPdUTvu6FUCL8/records"
