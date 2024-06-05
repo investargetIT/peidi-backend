@@ -288,7 +288,10 @@ class historySalesOutDetails(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['oid', 'stockout_no', 'spec_no', 'goods_no'], name='historysalesout_unique_oid_stockoutno_specno_goodsno')
+            models.UniqueConstraint(fields=['oid', 'stockout_no', 'spec_no', 'goods_no', 'num'], name='unique_history_salesout_details')
+        ]
+        indexes = [
+            models.Index(fields=["otid"])
         ]
 
 class StockDetail(models.Model):
