@@ -120,15 +120,13 @@ class Command(BaseCommand):
             invoices += f
         for f in invoices:
             material_no_and_goods_name = self.goods_no_to_material_no(f.goods_no)
-            invoice_amount = None
-            if f.invoice_amount is not None:
-                invoice_amount = float(f.invoice_amount)
             r = {
                     "时间": f.date.strftime("%Y-%m-%d"),
                     "店铺名称": f.shop_name,
                     "商家编码": f.goods_no,
                     "料号": material_no_and_goods_name[0],
-                    "价税合计": invoice_amount,
+                    "数量": int(f.invoice_num) if f.invoice_num is not None else 0,
+                    "价税合计": float(f.invoice_amount) if f.invoice_amount is not None else 0,
                 }
             records.append({ "fields": r })
         print(len(records))
@@ -174,6 +172,7 @@ class Command(BaseCommand):
                 "订货客户": shop_name,
                 "货号": goods_no,
                 "料号": material_no_and_goods_name[0],
+                "数量": int(invoice_num),
                 "价税合计": float(invoice_amount),
             }
             records.append({ "fields": r })
