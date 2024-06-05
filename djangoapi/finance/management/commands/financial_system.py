@@ -72,21 +72,32 @@ class Command(BaseCommand):
     def merge_original_invoice(self, start_date, end_date):
         result = []
         end_date += " 23:59:59" 
-        distinct_trade_no = Invoice.objects.filter(invoice_time__range=(start_date, end_date)).values("trade_no").distinct()
-        print("阿里发票原始单号", len(distinct_trade_no))
+        distinct_trade_no = Invoice.objects.filter(
+                invoice_time__range=(start_date, end_date),
+                trade_no__isnull = False,
+            ).values("trade_no").distinct()
+        
         for i in distinct_trade_no:
-            if i["trade_no"] is None:
-                continue
-            print(i)
             # 以订单id、商品型号、开票日期和店铺名称为唯一数据，合并发票总金额，即对冲掉优惠返现等负的发票总金额
-            invoices = Invoice.objects.values("trade_no", "goods_model", "invoice_time", "shop_name").filter(trade_no=i['trade_no']).annotate(Sum("goods_total_amount"), Sum("goods_num"))
+            invoices = Invoice.objects.values(
+                    "trade_no",
+                    "goods_model",
+                    "invoice_time",
+                    "shop_name",
+                ).filter(
+                    trade_no=i['trade_no'],
+                    invoice_time__range=(start_date, end_date),
+                ).annotate(
+                    Sum("goods_total_amount"),
+                    Sum("goods_num"),
+                )
+            
             for invoice in invoices:
                 date = invoice['invoice_time']
                 shop_name = invoice['shop_name']
                 goods_no = invoice['goods_model']
                 invoice_num = invoice['goods_num__sum']
                 invoice_amount = invoice['goods_total_amount__sum']
-                print(date, shop_name, goods_no, invoice_num, invoice_amount)
 
                 f = FinanceSalesAndInvoice(
                     date=date,
@@ -96,7 +107,6 @@ class Command(BaseCommand):
                     invoice_amount=invoice_amount
                 )
                 result.append(f)
-            print()
                  
         return result
 
