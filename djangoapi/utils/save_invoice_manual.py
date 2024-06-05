@@ -69,6 +69,20 @@ def saveOrders(excel_path):
     datalist = []
 
     for row in tables:
+
+        time_fields = ['日期']
+        for time_field in time_fields:
+            if time_field in row.keys():
+                if row[time_field]:
+                    if row[time_field] != '任意时间':
+                        if isinstance(row[time_field], float):
+                            row[time_field] = xldate_as_datetime(row[time_field], 0).strftime('%Y-%m-%d %H:%M:%S')
+                        else:
+                            row[time_field] = row[time_field].strip().replace('/', '-')
+                    else:
+                        row[time_field] = None
+                else:
+                    row[time_field] = None
         
         if row['订货客户'] == '抖音-佩蒂宠物专营店':
             row['订货客户'] = '杭州-抖音-佩蒂宠物专营店'
@@ -78,6 +92,8 @@ def saveOrders(excel_path):
             row['订货客户'] = '杭州-天猫-好适嘉旗舰店'
         elif row['订货客户'] == '天猫-smartbones旗舰店':
             row['订货客户'] = '杭州-天猫-smartbones旗舰店'
+        elif row['订货客户'] == '天猫-千百仓宠物用品专营店':
+            row['订货客户'] = '上海-天猫-千百仓宠物用品专营店'
         elif row['订货客户'] == '拼多多-喵汪食堂宠物用品店':
             row['订货客户'] = '上海-拼多多-喵汪食堂宠物用品店'
         elif row['订货客户'] == '抖音-哈宠抖音小店':
@@ -100,6 +116,8 @@ def saveOrders(excel_path):
             row['订货客户'] = '杭州-京东-Smartbones旗舰店'
         elif row['订货客户'] == '抖音-HEALTH好适嘉客户':
             row['订货客户'] = '杭州-抖音-HEALTH好适嘉'
+        elif row['订货客户'] == '抖音-佩蒂旗舰店':
+            row['订货客户'] = '杭州-抖音-佩蒂旗舰店'
         elif row['订货客户'] == '抖音-上海妙旺宠物专营店':
             row['订货客户'] = '上海-抖音-上海妙旺宠物专营店'
         elif row['订货客户'] == '拼多多-猫酱宠物食品官方旗舰店':
