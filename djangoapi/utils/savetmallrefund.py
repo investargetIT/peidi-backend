@@ -92,7 +92,7 @@ def saveOrders(excel_path):
                     'refund': row['买家退款金额'],
                     'refund_source': row['手工退款_系统退款'],
                     'goods_return': row['是否需要退货'],
-                    'refund_apply_time': row['退款的申请时间'],
+                    'apply_time': row['退款的申请时间'],
                     'refund_deadline': row['超时时间'],
                     'refund_status': row['退款状态'],
                     'goods_status': row['货物状态'],

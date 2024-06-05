@@ -16,7 +16,7 @@ class TmallRefundAdmin(admin.ModelAdmin):
         "refund",
         "refund_source",
         "goods_return",
-        "refund_apply_time",
+        "apply_time",
         "refund_deadline",
         "refund_status",
         "goods_status",
@@ -30,7 +30,7 @@ class TmallRefundAdmin(admin.ModelAdmin):
     ]
     list_filter = (
         (
-            "refund_apply_time",
+            "apply_time",
             DateRangeFilterBuilder(
                 title="退款的申请时间",
             ),

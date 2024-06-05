@@ -13,7 +13,7 @@ class TmallRefund(models.Model):
     refund = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='买家退款金额')
     refund_source = models.CharField(max_length=40, blank=True, null=True, verbose_name='手工退款_系统退款')
     goods_return = models.CharField(max_length=40, blank=True, null=True, verbose_name='是否需要退货')
-    refund_apply_time = models.DateTimeField(blank=True, null=True, verbose_name='退款的申请时间')
+    apply_time = models.DateTimeField(blank=True, null=True, verbose_name='退款的申请时间')
     refund_deadline = models.DateTimeField(blank=True, null=True, verbose_name='超时时间')
     refund_status = models.CharField(max_length=40, blank=True, null=True, verbose_name='退款状态')
     goods_status = models.CharField(max_length=40, blank=True, null=True, verbose_name='货物状态')
