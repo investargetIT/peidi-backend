@@ -10,8 +10,8 @@ from xlrd.xldate import xldate_as_datetime
 # from peidiexcel import base_url
 
 
-base_url = 'http://api.peidigroup.cn/'
-auth_token = "b66e429324071cc2bc3fea621c542d4c498e2aa8"
+base_url = 'http://localhost:8000/'
+auth_token = os.environ.get('DJANGO_AUTH_TOKEN')
 
 
 def open_excel(file):
