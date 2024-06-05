@@ -4,7 +4,9 @@ from django.db.models import Sum
 
 from goods.models import SpecGoods, SuiteGoodsRec
 from finance.models import Invoice, FinanceSalesAndInvoice, PDMaterialNOList, GoodsSalesSummary, DouyinRefund, PddRefund, JdRefund, TmallRefund
-from orders.models import salesOutDetails
+from orders.models import salesOutDetails, historySalesOutDetails
+
+token = os.getenv("APITABLE_TOKEN")
 
 class Command(BaseCommand):
 
@@ -23,7 +25,7 @@ class Command(BaseCommand):
 
         # self.extend_pdd_refund("2024-02-26", "2024-03-25")
 
-        # self.extend_tmall_refund("2024-02-26", "2024-03-25")
+        # self.extend_tmall_refund("2024-03-26", "2024-04-25")
 
         # self.refund_summary("2024-02-26", "2024-03-25")
 
@@ -313,6 +315,76 @@ class Command(BaseCommand):
         )
         print(summary)
     
+    def refund_basic(self, url, refund_records):
+        records = []
+        for refund_record in refund_records:
+            trade_no = refund_record.trade_no
+            refund = refund_record.refund
+            if refund == 0:
+                continue
+
+            refund_time = refund_record.refund_apply_time
+            salesout_records = salesOutDetails.objects.values(
+                    "shop_name",
+                    "spec_no",
+                ).filter(
+                    otid=trade_no,
+                    deliver_time__isnull=False,
+                    deal_total_price__gt=0,
+                ).annotate(Sum("deal_total_price"))
+            
+            # 销售出库明细里没找到的话，在历史销售出库明细里找
+            if len(salesout_records) == 0:
+                salesout_records = historySalesOutDetails.objects.filter(otid=trade_no)
+            
+            # 销售出库明细和历史销售出库明细都没找到的情况
+            if len(salesout_records) == 0:    
+                print('未找到销售出库明细', refund_record.trade_no)
+                continue
+            
+            print(len(salesout_records))
+
+            # 计算这笔订单（可能包含多个单品）的货品成交总价
+            overall_amount = 0
+            for i in salesout_records:
+                overall_amount += i["deal_total_price__sum"]
+            
+            if overall_amount == 0:
+                continue
+            print(overall_amount)
+            for i in salesout_records:
+                print(refund_time, i["shop_name"], trade_no, i["spec_no"], i["deal_total_price__sum"])
+                r = {
+                    "时间": refund_time.strftime("%Y-%m-%d"),
+                    "店铺名称": i["shop_name"],
+                    "订单编号": trade_no,
+                    "货号": i["spec_no"],
+                    "买家退款金额": float(i["deal_total_price__sum"]/overall_amount*refund),
+                }
+                records.append({ "fields": r })
+
+                f = FinanceSalesAndInvoice(
+                    date=refund_time,
+                    shop_name=i["shop_name"],
+                    goods_no=i["spec_no"],
+                    refund_amount=i["deal_total_price__sum"]/overall_amount*refund
+                )
+                f.save()
+
+        print(len(records))
+        for i in range(int(len(records)/30)+1):
+            s = 30 * i
+            e = 30 * (i + 1)
+            if i == int(len(records)/30):
+                e = len(records)
+            res = requests.post(
+                url=url,
+                json={"records": records[s:e]},
+                headers={"Authorization": f"Bearer {token}"},
+            )
+            res.raise_for_status()
+            time.sleep(1)
+
     def extend_douyin_refund(self, start_date, end_date):
         end_date += " 23:59:59" 
         refund_records = DouyinRefund.objects.filter(refund_time__range=(start_date, end_date))
@@ -488,64 +560,7 @@ class Command(BaseCommand):
             refund_type="部分退款",
         ).exclude(goods_name__contains="购物金")
         url = os.getenv("APITABLE_BASE_URL") + "/fusion/v1/datasheets/dst79PPdUTvu6FUCL8/records"
-        token = os.getenv("APITABLE_TOKEN")
-        records = []
-        for refund_record in refund_records:
-            trade_no = refund_record.trade_no
-            refund = refund_record.refund
-            if refund == 0:
-                continue
-
-            refund_time = refund_record.refund_apply_time
-            salesout_records = salesOutDetails.objects.filter(otid=trade_no)
-            
-            if len(salesout_records) == 0:
-                print("未找到关联订单", refund_record)
-            
-            overall_amount = 0
-            for i in salesout_records:
-                overall_amount += i.deal_total_price
-            if overall_amount == 0:
-                continue
-
-            for i in salesout_records:
-                if i.deal_total_price == 0:
-                    continue
-
-                deliver_time = None
-                if i.deliver_time:
-                    deliver_time = i.deliver_time.strftime("%Y-%m-%d")
-                r = {
-                    "时间": refund_time.strftime("%Y-%m-%d"),
-                    "店铺名称": i.shop_name,
-                    "订单编号": trade_no,
-                    "货号": i.spec_no,
-                    "发货时间": deliver_time,
-                    "买家退款金额": float(i.deal_total_price/overall_amount*refund),
-                }
-                records.append({ "fields": r })
-
-                f = FinanceSalesAndInvoice(
-                    date=refund_time,
-                    shop_name=i.shop_name,
-                    goods_no=i.spec_no,
-                    refund_amount=i.deal_total_price/overall_amount*refund
-                )
-                f.save()
-
-        print(len(records))
-        for i in range(int(len(records)/30)+1):
-            s = 30 * i
-            e = 30 * (i + 1)
-            if i == int(len(records)/30):
-                e = len(records)
-            res = requests.post(
-                url=url,
-                json={"records": records[s:e]},
-                headers={"Authorization": f"Bearer {token}"},
-            )
-            res.raise_for_status()
-            time.sleep(1)
+        self.refund_basic(url, refund_records)
 
     def refund_summary(self, start_date, end_date):
         details = FinanceSalesAndInvoice.objects.values(
