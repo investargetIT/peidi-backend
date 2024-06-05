@@ -19,7 +19,7 @@ class Command(BaseCommand):
 
         # self.invoice_created_manually("2024-02-26", "2024-03-25")
 
-        # self.extend_douyin_refund("2024-02-26", "2024-03-25")
+        # self.extend_douyin_refund("2024-03-26", "2024-04-25")
 
         # self.extend_jd_refund("2024-02-26", "2024-03-25")
 
@@ -322,8 +322,7 @@ class Command(BaseCommand):
             refund = refund_record.refund
             if refund == 0:
                 continue
-
-            refund_time = refund_record.refund_apply_time
+            refund_time = refund_record.apply_time
             salesout_records = salesOutDetails.objects.values(
                     "shop_name",
                     "spec_no",
@@ -356,9 +355,9 @@ class Command(BaseCommand):
                 print(refund_time, i["shop_name"], trade_no, i["spec_no"], i["deal_total_price__sum"])
                 r = {
                     "时间": refund_time.strftime("%Y-%m-%d"),
-                    "店铺名称": i["shop_name"],
                     "订单编号": trade_no,
-                    "货号": i["spec_no"],
+                    "商家编码": i["spec_no"],
+                    "店铺名称": i["shop_name"],
                     "买家退款金额": float(i["deal_total_price__sum"]/overall_amount*refund),
                 }
                 records.append({ "fields": r })
@@ -389,57 +388,7 @@ class Command(BaseCommand):
         end_date += " 23:59:59" 
         refund_records = DouyinRefund.objects.filter(refund_time__range=(start_date, end_date))
         url = os.getenv("APITABLE_BASE_URL") + "/fusion/v1/datasheets/dstDJlVoKmcEGgbk8n/records"
-        token = os.getenv("APITABLE_TOKEN")
-        records = []
-        for refund_record in refund_records:
-            trade_no = refund_record.trade_no
-            refund = refund_record.refund
-            if refund == 0:
-                continue
-
-            refund_time = refund_record.refund_time
-            salesout_records = salesOutDetails.objects.filter(otid=trade_no)
-
-            if len(salesout_records) == 0:
-                print("未找到关联订单", refund_record)
-            
-            overall_amount = 0
-            for i in salesout_records:
-                overall_amount += i.deal_total_price
-            if overall_amount == 0:
-                continue
-            
-            for i in salesout_records:
-                if i.deal_total_price == 0:
-                    continue
-                f = FinanceSalesAndInvoice(
-                    date=refund_time,
-                    shop_name=i.shop_name,
-                    goods_no=i.spec_no,
-                    refund_amount=i.deal_total_price/overall_amount*refund
-                )
-                f.save()
-                r = {
-                    "时间": refund_time.strftime("%Y-%m-%d"),
-                    "订单编号": trade_no,
-                    "商家编码": i.spec_no,
-                    "店铺名称": i.shop_name,
-                    "买家退款金额": float(i.deal_total_price/overall_amount*refund),
-                }
-                records.append({ "fields": r })
-
-        print(len(records))
-        for i in range(int(len(records)/30)+1):
-            s = 30 * i
-            e = 30 * (i + 1)
-            if i == int(len(records)/30):
-                e = len(records)
-            res = requests.post(
-                url=url,
-                json={"records": records[s:e]},
-                headers={"Authorization": f"Bearer {token}"},
-            )
-            res.raise_for_status()
+        self.refund_basic(url, refund_records)
 
     def extend_jd_refund(self, start_date, end_date):
         end_date += " 23:59:59" 
