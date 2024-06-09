@@ -492,8 +492,8 @@ class Command(BaseCommand):
             start_date=start_date,
             end_date=end_date,
         ).annotate(
-            sales_num__sum=Sum("sales_num"),
-            invoice_num__sum=Sum("invoice_num"),
+            sales_num__sum=Sum("sales_num", default=0),
+            invoice_num__sum=Sum("invoice_num", default=0),
             uninvoice_num__sum=Sum("sales_num", default=0)-Sum("invoice_num", default=0),
             sales_amount__sum=Sum("sales_amount", default=0),
             post_amount__sum=Sum("post_amount", default=0),
@@ -503,12 +503,12 @@ class Command(BaseCommand):
         )
         url = os.getenv("APITABLE_BASE_URL") + "/fusion/v1/datasheets/dstG0kXVLwywl4U6Bq/records"
         token = os.getenv("APITABLE_TOKEN")
-        records = []
+        records, uninvoiced_records = [], []
         for i in details:
             print(i)
             material_no_and_goods_name = self.goods_no_to_material_no(i["goods_no"])
             r = {
-                "时间": end_date,
+                "时间": end_date[:7],
                 "店铺名称": i["shop_name"],
                 "商家编码": i["goods_no"],
                 "料号": material_no_and_goods_name[0],
@@ -523,6 +523,22 @@ class Command(BaseCommand):
             }
             records.append({ "fields": r })
 
+            price = None
+            if i["uninvoice_num__sum"] != 0:
+                price = abs(float(i["uninvoice_amount__sum"] / i["uninvoice_num__sum"]))
+
+            uninvoiced_records.append({
+                "fields": {
+                    "时间": end_date[:7],
+                    "订货客户": i["shop_name"],
+                    "货号": i["goods_no"],
+                    "料号": material_no_and_goods_name[0],
+                    "品名": material_no_and_goods_name[1],
+                    "数量": i["uninvoice_num__sum"],
+                    "单价": price,
+                    "价税合计": float(i["uninvoice_amount__sum"]),
+                }
+            })
         #     f = FinanceSalesAndInvoice(
         #         start_date=start_date,
         #         end_date=end_date,
@@ -538,6 +554,7 @@ class Command(BaseCommand):
         #         invoice_amount=i["invoice_amount__sum"] or 0,
         #     )
         #     f.save()
+
         print(len(records))
         for i in range(int(len(records)/30)+1):
             s = 30 * i
@@ -550,8 +567,21 @@ class Command(BaseCommand):
                 headers={"Authorization": f"Bearer {token}"},
             )
             res.raise_for_status()
-            res = res.content.decode()
-            print(res)
+            time.sleep(1)
+        
+        print(len(uninvoiced_records))
+        url = base_url + "/fusion/v1/datasheets/dstBxinVoohgN131w8/records"
+        for i in range(int(len(uninvoiced_records)/30)+1):
+            s = 30 * i
+            e = 30 * (i + 1)
+            if i == int(len(uninvoiced_records)/30):
+                e = len(uninvoiced_records)
+            res = requests.post(
+                url=url,
+                json={"records": uninvoiced_records[s:e]},
+                headers={"Authorization": f"Bearer {token}"},
+            )
+            res.raise_for_status()
             time.sleep(1)
         
         summary = details.aggregate(
