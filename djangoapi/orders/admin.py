@@ -450,5 +450,6 @@ class ShopTargetAdmin(admin.ModelAdmin):
         "logistic_score",
         "service_score",
         "dsr_date",
+        "need_summary",
     ]
     list_filter = ["year"]

@@ -423,3 +423,4 @@ class ShopTarget(models.Model):
     logistic_score = models.DecimalField(max_digits=19, decimal_places=2, blank=True, null=True, verbose_name='物流体验分')
     service_score = models.DecimalField(max_digits=19, decimal_places=2, blank=True, null=True, verbose_name='服务体验分')
     dsr_date = models.DateField(blank=True, null=True, verbose_name='DSR日期')
+    need_summary = models.BooleanField(default=True, verbose_name="是否需要汇总（财务系统用）")
