@@ -4,7 +4,7 @@ from django.db.models import Sum
 
 from goods.models import SpecGoods, SuiteGoodsRec
 from finance.models import Invoice, FinanceSalesAndInvoice, PDMaterialNOList, GoodsSalesSummary, DouyinRefund, PddRefund, JdRefund, TmallRefund
-from orders.models import salesOutDetails, historySalesOutDetails
+from orders.models import salesOutDetails, historySalesOutDetails, ShopTarget
 
 token = os.getenv("APITABLE_TOKEN")
 
@@ -250,12 +250,18 @@ class Command(BaseCommand):
         # return details
 
     def sales_summary(self, start_date, end_date):
+        # 从店铺目标表中过滤出需要汇总的店铺
+        wdt_shop_name_list = ShopTarget.objects.filter(
+                need_summary = True,
+            ).values_list("wdt_name", flat=True)
+
         details = GoodsSalesSummary.objects.values(
             "spec_no",
             "shop_name",
         ).filter(
             start_date__gte=start_date,
             end_date__lte=end_date,
+            shop_name__in=list(wdt_shop_name_list)
         ).annotate(
             details_ship_refund_num=Sum("ship_refund_num"),
             details_sales_num=Sum("sales_num"),
@@ -267,8 +273,6 @@ class Command(BaseCommand):
             details_total_amount=Sum("actual_sales_amount",default=0)+Sum("post_amount",default=0)+Sum("ship_refund_amount",default=0),
         )
 
-        url = os.getenv("APITABLE_BASE_URL") + "/fusion/v1/datasheets/dstsvNdHbHR27VJ0WK/records"
-        token = os.getenv("APITABLE_TOKEN")
         records = []
         for i in details:
             print(i)
@@ -303,6 +307,8 @@ class Command(BaseCommand):
             )
             f.save()
 
+        url = os.getenv("APITABLE_BASE_URL") + "/fusion/v1/datasheets/dstsvNdHbHR27VJ0WK/records"
+        token = os.getenv("APITABLE_TOKEN")
         print(len(records))
         for i in range(int(len(records)/30)+1):
             s = 30 * i
