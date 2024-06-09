@@ -6,6 +6,7 @@ from goods.models import SpecGoods, SuiteGoodsRec
 from finance.models import Invoice, FinanceSalesAndInvoice, PDMaterialNOList, GoodsSalesSummary, DouyinRefund, PddRefund, JdRefund, TmallRefund
 from orders.models import salesOutDetails, historySalesOutDetails, ShopTarget
 
+base_url = os.getenv("APITABLE_BASE_URL")
 token = os.getenv("APITABLE_TOKEN")
 
 class Command(BaseCommand):
@@ -224,6 +225,8 @@ class Command(BaseCommand):
             details_price=Sum("invoice_amount") / Sum("invoice_num"),
             details_sum_amount=Sum("invoice_amount"),
         )
+
+        records = []
         for i in details:
             print(i)
             shop_name = i['shop_name']
@@ -240,14 +243,44 @@ class Command(BaseCommand):
             )
             f.save()
 
-        # summary = details.aggregate(
-        #     total_num=Sum("details_sum_num"),
-        #     total_price=Sum("details_sum_amount") / Sum("details_sum_num"),
-        #     total_amount=Sum("details_sum_amount"),
-        # )
-        # print(summary)
+            if invoice_amount == 0:
+                continue
+            
+            material_no_and_goods_name = self.goods_no_to_material_no(goods_no)
+            records.append({
+                "fields": {
+                    "时间": end_date[:7],
+                    "订货客户": shop_name,
+                    "货号": goods_no,
+                    "料号": material_no_and_goods_name[0],
+                    "品名": material_no_and_goods_name[1],
+                    "数量": invoice_num,
+                    "单价": float(invoice_amount/invoice_num),
+                    "价税合计": float(invoice_amount),
+                },
+            })
 
-        # return details
+        print(len(records))
+        url = base_url + "/fusion/v1/datasheets/dstayEpslFPDrHdEcC/records"
+        for i in range(int(len(records)/30)+1):
+            s = 30 * i
+            e = 30 * (i + 1)
+            if i == int(len(records)/30):
+                e = len(records)
+            res = requests.post(
+                url=url,
+                json={"records": records[s:e]},
+                headers={"Authorization": f"Bearer {token}"},
+            )
+            res.raise_for_status()
+            time.sleep(1)
+
+        summary = details.aggregate(
+            total_num=Sum("details_sum_num"),
+            total_price=Sum("details_sum_amount") / Sum("details_sum_num"),
+            total_amount=Sum("details_sum_amount"),
+        )
+        print(summary)
 
     def sales_summary(self, start_date, end_date):
         # 从店铺目标表中过滤出需要汇总的店铺
