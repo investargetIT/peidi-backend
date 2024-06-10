@@ -16,25 +16,25 @@ class Command(BaseCommand):
 
         # print(self.goods_no_to_material_no("6971758277324"))
         
-        # self.invoice_created_by_ali("2024-02-26", "2024-03-25")
+        # self.invoice_created_by_ali("2024-04-26", "2024-05-25")
 
-        # self.invoice_created_manually("2024-02-26", "2024-03-25")
+        # self.invoice_created_manually("2024-04-26", "2024-05-25")
 
-        # self.extend_douyin_refund("2024-03-26", "2024-04-25")
+        # self.invoice_summary('2024-04-26', '2024-05-25')
 
-        # self.extend_jd_refund("2024-03-26", "2024-04-25")
+        # self.extend_douyin_refund("2024-04-26", "2024-05-25")
 
-        # self.extend_pdd_refund("2024-03-26", "2024-04-25")
+        # self.extend_jd_refund("2024-04-26", "2024-05-25")
 
-        # self.extend_tmall_refund("2024-03-26", "2024-04-25")
+        # self.extend_pdd_refund("2024-04-26", "2024-05-25")
 
-        # self.refund_summary("2024-02-26", "2024-03-25")
+        # self.extend_tmall_refund("2024-04-26", "2024-05-25")
 
-        # self.sales_summary("2024-02-26", "2024-03-25")
+        # self.refund_summary("2024-04-26", "2024-05-25")
 
-        # self.invoice_summary('2024-02-26', '2024-03-25')
+        # self.sales_summary("2024-04-26", "2024-05-25")
 
-        # self.overall_summary("2024-02-26", "2024-03-25")
+        # self.overall_summary("2024-04-26", "2024-05-25")
     
     def goods_model_to_spec_goods(self, finance_sales_and_invoice):
         records = []
@@ -243,9 +243,10 @@ class Command(BaseCommand):
             )
             f.save()
 
-            if invoice_amount == 0:
-                continue
-            
+            price = None
+            if invoice_num != 0:
+                price = abs(float(invoice_amount / invoice_num))
+                
             material_no_and_goods_name = self.goods_no_to_material_no(goods_no)
             records.append({
                 "fields": {
@@ -255,7 +256,7 @@ class Command(BaseCommand):
                     "料号": material_no_and_goods_name[0],
                     "品名": material_no_and_goods_name[1],
                     "数量": invoice_num,
-                    "单价": float(invoice_amount/invoice_num),
+                    "单价": price,
                     "价税合计": float(invoice_amount),
                 },
             })
@@ -316,7 +317,7 @@ class Command(BaseCommand):
             post_amount = i['details_sum_post']
 
             r = {
-                "日期": end_date,
+                "时间": end_date[:7],
                 "商家编码": i["shop_name"],
                 "商家编码": goods_no,
                 "店铺": shop_name,
