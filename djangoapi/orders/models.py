@@ -72,6 +72,10 @@ class orders(models.Model):
     modified = models.DateTimeField(blank=True, null=True, verbose_name='修改时间')
     created = models.DateTimeField(blank=True, null=True, verbose_name='创建时间/递交时间')
 
+    class Meta:
+        verbose_name = "旺店通原始订单+历史订单"
+        verbose_name_plural = "旺店通原始订单+历史订单"
+
 class OrderDetail(models.Model):
     trade_no = models.CharField(max_length=100, verbose_name='订单编号')
     shop_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='店铺名称')
@@ -140,6 +144,8 @@ class OrderDetail(models.Model):
     distribution_oid = models.CharField(max_length=100, blank=True, null=True, verbose_name='分销原始单号')
 
     class Meta:
+        verbose_name = "旺店通订单明细"
+        verbose_name_plural = "旺店通订单明细"
         constraints = [
             models.UniqueConstraint(fields=['trade_no', 'oid', 'spec_no', 'goods_no', 'num'], name='unique_tradeno_oid_specno_goodsno_num')
         ]
@@ -212,6 +218,8 @@ class salesOutDetails(models.Model):
     distribution_oid = models.CharField(max_length=100, blank=True, null=True, verbose_name='分销原始单号')
 
     class Meta:
+        verbose_name = "旺店通销售出库明细"
+        verbose_name_plural = "旺店通销售出库明细"
         constraints = [
             models.UniqueConstraint(fields=['oid', 'stockout_no', 'spec_no', 'goods_no', 'num'], name='unique_oid_stockoutno_specno_goodsno_num')
         ]
@@ -287,6 +295,8 @@ class historySalesOutDetails(models.Model):
     distribution_oid = models.CharField(max_length=100, blank=True, null=True, verbose_name='分销原始单号')
 
     class Meta:
+        verbose_name = "旺店通历史销售出库明细"
+        verbose_name_plural = "旺店通历史销售出库明细"
         constraints = [
             models.UniqueConstraint(fields=['oid', 'stockout_no', 'spec_no', 'goods_no', 'num'], name='unique_history_salesout_details')
         ]
@@ -361,6 +371,8 @@ class StockDetail(models.Model):
     custom_stock_five = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='自定义库存5')
 
     class Meta:
+        verbose_name = "旺店通库存管理"
+        verbose_name_plural = "旺店通库存管理"
         constraints = [
             models.UniqueConstraint(fields=['spec_no', 'barcode', 'goods_no', 'qa_num'], name='stockdetail_unique_specno_barcode_goodsno_qanum')
         ]
@@ -372,6 +384,10 @@ class WMSShipData(models.Model):
     to_ship = models.IntegerField(blank=True, null=True, verbose_name='实时订单待发货')
     shipped = models.IntegerField(blank=True, null=True, verbose_name='实时今日己发货')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+
+    class Meta:
+        verbose_name = "旺店通WMS发货数据"
+        verbose_name_plural = "旺店通WMS发货数据"
 
 class ExchangeManagement(models.Model):
     exchange_no = models.CharField(unique=True, max_length=100, verbose_name='退换单号')
@@ -411,6 +427,10 @@ class ExchangeManagement(models.Model):
     error_msg = models.CharField(max_length=255, blank=True, null=True, verbose_name='错误信息')
     distributor_tid = models.CharField(max_length=100, blank=True, null=True, verbose_name='分销原始单号')
 
+    class Meta:
+        verbose_name = "旺店通退换管理"
+        verbose_name_plural = "旺店通退换管理"
+
 class ShopTarget(models.Model):
     channel = models.CharField(max_length=40, blank=True, null=True, verbose_name='渠道')
     platform = models.CharField(max_length=40, blank=True, null=True, verbose_name='平台')
@@ -424,3 +444,7 @@ class ShopTarget(models.Model):
     service_score = models.DecimalField(max_digits=19, decimal_places=2, blank=True, null=True, verbose_name='服务体验分')
     dsr_date = models.DateField(blank=True, null=True, verbose_name='DSR日期')
     need_summary = models.BooleanField(default=True, verbose_name="是否需要汇总（财务系统用）")
+
+    class Meta:
+        verbose_name = "各店铺年度目标"
+        verbose_name_plural = "各店铺年度目标"

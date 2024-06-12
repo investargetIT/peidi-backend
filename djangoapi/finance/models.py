@@ -25,6 +25,10 @@ class TmallRefund(models.Model):
     refund_explanation = models.CharField(max_length=1024, blank=True, null=True, verbose_name='买家退款说明')
     refund_type = models.CharField(max_length=40, blank=True, null=True, verbose_name='部分退款_全部退款')
 
+    class Meta:
+        verbose_name = "天猫仅退款"
+        verbose_name_plural = "天猫仅退款"
+
 # 拼多多仅退款
 class PddRefund(models.Model):
     shop_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='店铺名称')
@@ -38,6 +42,8 @@ class PddRefund(models.Model):
     refund_status = models.CharField(max_length=40, blank=True, null=True, verbose_name='打款状态')
 
     class Meta:
+        verbose_name = "拼多多仅退款"
+        verbose_name_plural = "拼多多仅退款"
         constraints = [
             models.UniqueConstraint(fields=['trade_no', 'goods_id', 'applicant'], name='unique_tradeno_goodsid_applicant')
         ]
@@ -55,6 +61,8 @@ class JdRefund(models.Model):
     applicant = models.CharField(max_length=100, blank=True, null=True, verbose_name='申请人')    
 
     class Meta:
+        verbose_name = "京东仅退款"
+        verbose_name_plural = "京东仅退款"       
         constraints = [
             models.UniqueConstraint(fields=['refund_no', 'trade_no', 'service_no'], name='unique_refundno_tradeno_serviceno')
         ]
@@ -75,6 +83,8 @@ class DouyinRefund(models.Model):
     refund_remark = models.CharField(max_length=1024, blank=True, null=True, verbose_name='打款备注')
 
     class Meta:
+        verbose_name = "抖音仅退款"
+        verbose_name_plural = "抖音仅退款"
         constraints = [
             models.UniqueConstraint(fields=['pay_transaction_no', 'trade_no', 'goods_id'], name='unique_paytransactionno_tradeno_goodsid')
         ]
@@ -106,6 +116,11 @@ class Invoice(models.Model):
     goods_total_amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='总金额')
     tax_rate = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='税率')
 
+    class Meta:
+        verbose_name = "发票"
+        verbose_name_plural = "发票"       
+
+# 旺店通货品销售汇总表
 class GoodsSalesSummary(models.Model):
     start_date = models.DateField(verbose_name='开始日期')
     end_date = models.DateField(verbose_name='结束日期')
@@ -138,6 +153,8 @@ class GoodsSalesSummary(models.Model):
     refund_stockin = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='退货总金额（入库）')
 
     class Meta:
+        verbose_name = "旺店通货品销售汇总表"
+        verbose_name_plural = "旺店通货品销售汇总表"        
         constraints = [
             models.UniqueConstraint(fields=['start_date', 'spec_no', 'shop_name'], name='unique_startdate_specno_shopname')
         ]
@@ -158,6 +175,7 @@ class FinanceSalesAndInvoice(models.Model):
     refund_amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='退款金额')
     invoice_amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='已开票金额')
 
+# 智创料号清单
 class PDMaterialNOList(models.Model):
     type = models.CharField(max_length=100, blank=True, null=True, verbose_name='采购分类.分类名称')
     material_no = models.CharField(max_length=100, unique=True, verbose_name='料号')
@@ -170,3 +188,7 @@ class PDMaterialNOList(models.Model):
     feature = models.CharField(max_length=40, blank=True, null=True, verbose_name='料品形态属性')
     brand = models.CharField(max_length=255, blank=True, null=True, verbose_name='品牌')
     weight = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='(单件重)')
+
+    class Meta:
+        verbose_name = "智创料号清单"
+        verbose_name_plural = "智创料号清单"

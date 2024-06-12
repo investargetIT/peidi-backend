@@ -30,6 +30,8 @@ class PlatformGoods(models.Model):
     hold_stock = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='平台库存占用量')
 
     class Meta:
+        verbose_name = "旺店通平台货品"
+        verbose_name_plural = "旺店通平台货品"
         constraints = [
             models.UniqueConstraint(fields=['shop_name', 'platform_goods_id', 'platform_spec_id'], name='unique_shopname_platformgoodsid_platformspecid')
         ]
@@ -85,6 +87,10 @@ class SpecGoods(models.Model):
 
     def save(self, *args, **kwargs):
         super(SpecGoods, self).save(*args, **kwargs)
+    
+    class Meta:
+        verbose_name = "旺店通单品列表"
+        verbose_name_plural = "旺店通单品列表"
 
 
 class SuiteGoodsRec(models.Model):
@@ -116,6 +122,8 @@ class SuiteGoodsRec(models.Model):
     is_fixed_price = models.CharField(max_length=100, blank=True, null=True, verbose_name='是否固定价格')
 
     class Meta:
+        verbose_name = "旺店通组合装"
+        verbose_name_plural = "旺店通组合装"
         constraints = [
             models.UniqueConstraint(fields=['suite_no', 'spec_no'], name='unique_suiteno_specno')
         ]
