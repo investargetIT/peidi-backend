@@ -22,37 +22,16 @@ from utils.customclass import SuccessResponse, PeiDiError, PeiDiErrorResponse, E
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def override_spec_goods(request):
-    SpecGoods.objects.all().delete()
-    serializer_class = SpecGoodsSerializer
     try:
-        datas = request.data
-        if isinstance(datas, list):
-            success, fail = [], []
-            for data in datas:
-                try:
-                    with transaction.atomic():
-                        serializer = serializer_class(data=data)
-                        if serializer.is_valid():
-                            serializer.save()
-                            success.append(serializer.data)
-                        else:
-                            fail.append({'data': data, 'errmsg': serializer.errors})
-                except Exception as err:
-                    fail.append({'data': data, 'errmsg': str(err)})
-            return SuccessResponse({'success': success, 'fail': fail})
-        else:
-            with transaction.atomic():
-                serializer = serializer_class(data=datas)
-                if serializer.is_valid():
-                    serializer.save()
-                else:
-                    raise PeiDiError(20071, msg='新增单品失败', detail='%s' % serializer.errors)
-            return SuccessResponse(serializer.data)
-    except PeiDiError as err:
-        return PeiDiErrorResponse(err)
+        with transaction.atomic():
+            SpecGoods.objects.all().delete()
+            serializer = SpecGoodsSerializer(data=request.data, many=True)
+            serializer.is_valid()
+            serializer.save()
+            return SuccessResponse("单品列表上传成功")
     except Exception:
         return ExceptionResponse(traceback.format_exc().split('\n')[-2])
-
+    
 class PlatformGoodsView(viewsets.ModelViewSet):
     """
     list:获取平台货品列表

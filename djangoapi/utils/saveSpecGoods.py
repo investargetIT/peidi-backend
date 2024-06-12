@@ -37,22 +37,7 @@ def savedatatourl(data):
     })
     res.raise_for_status()
     res = res.content.decode()
-    res = json.loads(res)
-    fails = []
-    duplicate_fails = []
-    if len(res['result']['success']) > 0:
-        print('导入成功', len(res['result']['success']))
-    if len(res['result']['fail']) > 0:
-        print('导入失败', len(res['result']['fail']))
-        for fail in res['result']['fail']:
-            if 'already exists' in json.dumps(fail['errmsg']):
-                duplicate_fails.append(fail['errmsg'])
-            else:
-                fails.append(fail)
-        if len(fails) > 0:
-            print('非重复造成的失败', len(fails))
-        if len(duplicate_fails) > 0:
-            print('重复造成的失败', len(duplicate_fails))
+    print(res)
 
 
 def main():
