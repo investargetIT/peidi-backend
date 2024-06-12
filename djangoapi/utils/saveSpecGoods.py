@@ -1,13 +1,10 @@
-import json
-
-import requests
-import xlrd
+import json, requests, xlrd, os
 
 # from peidiexcel import base_url
 
 # 单品列表导入
 base_url = 'http://localhost:8000/'
-
+auth_token = os.environ.get('DJANGO_AUTH_TOKEN')
 
 def open_excel(file):
     try:
@@ -34,13 +31,28 @@ def excel_table_byindex(file, colnameindex=0,by_index=0):
 
 
 def savedatatourl(data):
-    url = base_url + 'goods/specGoods'
-    res = requests.post(url, data=data).content.decode()
-    # print(json.loads(res)['code'], json.loads(res)['errormsg'])
-    code = json.loads(res)['code']
-    if code != 1000:
-        detail = json.loads(res)['detail']
-        print(detail)
+    url = base_url + 'goods/spec-goods/override'
+    res = requests.post(url, json=data, headers={
+        "Authorization": f"Token {auth_token}",
+    })
+    res.raise_for_status()
+    res = res.content.decode()
+    res = json.loads(res)
+    fails = []
+    duplicate_fails = []
+    if len(res['result']['success']) > 0:
+        print('导入成功', len(res['result']['success']))
+    if len(res['result']['fail']) > 0:
+        print('导入失败', len(res['result']['fail']))
+        for fail in res['result']['fail']:
+            if 'already exists' in json.dumps(fail['errmsg']):
+                duplicate_fails.append(fail['errmsg'])
+            else:
+                fails.append(fail)
+        if len(fails) > 0:
+            print('非重复造成的失败', len(fails))
+        if len(duplicate_fails) > 0:
+            print('重复造成的失败', len(duplicate_fails))
 
 
 def main():
@@ -48,7 +60,7 @@ def main():
     path = '/code/utils/单品列表.xlsx'
     tables = excel_table_byindex(path)
 
-
+    datalist = []
     for row in tables:
         data = {
             'spec_no': row['商家编码'],
@@ -86,7 +98,8 @@ def main():
             'spec_created': row['创建时间'],
 
         }
-        savedatatourl(data)
+        datalist.append(data)
+    savedatatourl(datalist)
 
 
 #

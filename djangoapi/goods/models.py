@@ -83,10 +83,6 @@ class SpecGoods(models.Model):
     prop6 = models.TextField(blank=True, null=True, verbose_name='单品属性6')
     spec_modified = models.DateTimeField(blank=True, null=True, help_text='修改时间')
     spec_created = models.DateTimeField(blank=True, null=True, help_text='创建时间')
-
-
-    def save(self, *args, **kwargs):
-        super(SpecGoods, self).save(*args, **kwargs)
     
     class Meta:
         verbose_name = "旺店通单品列表"

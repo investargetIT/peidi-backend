@@ -7,6 +7,9 @@ from django.shortcuts import render
 from django_filters import FilterSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 from goods.models import PlatformGoods, SpecGoods, SuiteGoodsRec, SPU
 from goods.serializer import PlatformGoodsSerializer, SpecGoodsSerializer, SuiteGoodsRecSerializer , SPUSerializer
@@ -15,6 +18,40 @@ from utils.customclass import SuccessResponse, PeiDiError, PeiDiErrorResponse, E
 
 # Create your views here.
 
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def override_spec_goods(request):
+    SpecGoods.objects.all().delete()
+    serializer_class = SpecGoodsSerializer
+    try:
+        datas = request.data
+        if isinstance(datas, list):
+            success, fail = [], []
+            for data in datas:
+                try:
+                    with transaction.atomic():
+                        serializer = serializer_class(data=data)
+                        if serializer.is_valid():
+                            serializer.save()
+                            success.append(serializer.data)
+                        else:
+                            fail.append({'data': data, 'errmsg': serializer.errors})
+                except Exception as err:
+                    fail.append({'data': data, 'errmsg': str(err)})
+            return SuccessResponse({'success': success, 'fail': fail})
+        else:
+            with transaction.atomic():
+                serializer = serializer_class(data=datas)
+                if serializer.is_valid():
+                    serializer.save()
+                else:
+                    raise PeiDiError(20071, msg='新增单品失败', detail='%s' % serializer.errors)
+            return SuccessResponse(serializer.data)
+    except PeiDiError as err:
+        return PeiDiErrorResponse(err)
+    except Exception:
+        return ExceptionResponse(traceback.format_exc().split('\n')[-2])
 
 class PlatformGoodsView(viewsets.ModelViewSet):
     """
@@ -93,85 +130,96 @@ class PlatformGoodsView(viewsets.ModelViewSet):
         except Exception:
             return ExceptionResponse(traceback.format_exc().split('\n')[-2])
 
+# class SpecGoodsView(viewsets.ModelViewSet):
+#     """
+#     list:获取单品列表
+#     create:新增单品
+#     update:修改单品信息（id）
+#     destroy:删除单品（id）
+#     """
+#     filter_backends = (DjangoFilterBackend,)
+#     queryset = SpecGoods.objects.all()
+#     filterset_fields = ('id', 'spec_no', 'goods_no', 'goods_name', 'spec_name', 'spec_code')
+#     serializer_class = SpecGoodsSerializer
 
+#     def list(self, request, *args, **kwargs):
+#         try:
+#             page_size = request.GET.get('page_size', 10)
+#             page_index = request.GET.get('page_index', 1)
+#             lang = request.GET.get('lang', 'cn')
+#             queryset = self.filter_queryset(self.get_queryset())
+#             try:
+#                 count = queryset.count()
+#                 queryset = Paginator(queryset, page_size)
+#                 queryset = queryset.page(page_index)
+#             except EmptyPage:
+#                 return SuccessResponse({'count': 0, 'data': []})
+#             serializer = self.serializer_class(queryset, many=True)
+#             return SuccessResponse({'count': count, 'data': serializer.data})
+#         except PeiDiError as err:
+#             return PeiDiErrorResponse(err)
+#         except Exception:
+#             return ExceptionResponse(traceback.format_exc().split('\n')[-2])
 
-class SpecGoodsView(viewsets.ModelViewSet):
-    """
-    list:获取单品列表
-    create:新增单品
-    update:修改单品信息（id）
-    destroy:删除单品（id）
-    """
-    filter_backends = (DjangoFilterBackend,)
-    queryset = SpecGoods.objects.all()
-    filterset_fields = ('id', 'spec_no', 'goods_no', 'goods_name', 'spec_name', 'spec_code')
-    serializer_class = SpecGoodsSerializer
+#     def create(self, request, *args, **kwargs):
+#         try:
+#             datas = request.data
+#             if isinstance(datas, list):
+#                 success, fail = [], []
+#                 for data in datas:
+#                     try:
+#                         with transaction.atomic():
+#                             serializer = self.serializer_class(data=data)
+#                             if serializer.is_valid():
+#                                 serializer.save()
+#                                 success.append(serializer.data)
+#                             else:
+#                                 fail.append({'data': data, 'errmsg': serializer.errors})
+#                     except Exception as err:
+#                         fail.append({'data': data, 'errmsg': str(err)})
+#                 return SuccessResponse({'success': success, 'fail': fail})
+#             else:
+#                 with transaction.atomic():
+#                     serializer = self.serializer_class(data=datas)
+#                     if serializer.is_valid():
+#                         serializer.save()
+#                     else:
+#                         raise PeiDiError(20071, msg='新增单品失败', detail='%s' % serializer.errors)
+#                 return SuccessResponse(serializer.data)
+#         except PeiDiError as err:
+#             return PeiDiErrorResponse(err)
+#         except Exception:
+#             return ExceptionResponse(traceback.format_exc().split('\n')[-2])
 
-    def list(self, request, *args, **kwargs):
-        try:
-            page_size = request.GET.get('page_size', 10)
-            page_index = request.GET.get('page_index', 1)
-            lang = request.GET.get('lang', 'cn')
-            queryset = self.filter_queryset(self.get_queryset())
-            try:
-                count = queryset.count()
-                queryset = Paginator(queryset, page_size)
-                queryset = queryset.page(page_index)
-            except EmptyPage:
-                return SuccessResponse({'count': 0, 'data': []})
-            serializer = self.serializer_class(queryset, many=True)
-            return SuccessResponse({'count': count, 'data': serializer.data})
-        except PeiDiError as err:
-            return PeiDiErrorResponse(err)
-        except Exception:
-            return ExceptionResponse(traceback.format_exc().split('\n')[-2])
+#     def update(self, request, *args, **kwargs):
+#         try:
+#             instance = self.get_object()
+#             data = request.data
 
-    def create(self, request, *args, **kwargs):
-        try:
-            data = request.data
-            with transaction.atomic():
-                serializer = self.serializer_class(data=data)
-                if serializer.is_valid():
-                    serializer.save()
-                else:
-                    raise PeiDiError(20071, msg='新增单品失败', detail='%s' % serializer.error_messages)
-                return SuccessResponse(serializer.data)
-        except PeiDiError as err:
-            return PeiDiErrorResponse(err)
-        except Exception:
-            return ExceptionResponse(traceback.format_exc().split('\n')[-2])
+#             with transaction.atomic():
+#                 serializer = self.serializer_class(instance, data=data)
+#                 if serializer.is_valid():
+#                     serializer.save()
+#                 else:
+#                     raise PeiDiError(20071, msg='编辑单品失败', detail='%s' % serializer.error_messages)
+#                 return SuccessResponse(serializer.data)
+#         except PeiDiError as err:
+#             return PeiDiErrorResponse(err)
+#         except Exception:
+#             return ExceptionResponse(traceback.format_exc().split('\n')[-2])
 
-    def update(self, request, *args, **kwargs):
-        try:
-            instance = self.get_object()
-            data = request.data
+#     def destroy(self, request, *args, **kwargs):
+#         try:
 
-            with transaction.atomic():
-                serializer = self.serializer_class(instance, data=data)
-                if serializer.is_valid():
-                    serializer.save()
-                else:
-                    raise PeiDiError(20071, msg='编辑单品失败', detail='%s' % serializer.error_messages)
-                return SuccessResponse(serializer.data)
-        except PeiDiError as err:
-            return PeiDiErrorResponse(err)
-        except Exception:
-            return ExceptionResponse(traceback.format_exc().split('\n')[-2])
+#             instance = self.get_object()
 
-
-    def destroy(self, request, *args, **kwargs):
-        try:
-
-            instance = self.get_object()
-
-            with transaction.atomic():
-                instance.delete()
-                return SuccessResponse({'isdeleted': 'success'})
-        except PeiDiError as err:
-            return PeiDiErrorResponse(err)
-        except Exception:
-            return ExceptionResponse(traceback.format_exc().split('\n')[-2])
-
+#             with transaction.atomic():
+#                 instance.delete()
+#                 return SuccessResponse({'isdeleted': 'success'})
+#         except PeiDiError as err:
+#             return PeiDiErrorResponse(err)
+#         except Exception:
+#             return ExceptionResponse(traceback.format_exc().split('\n')[-2])
 
 class SuiteGoodsRecView(viewsets.ModelViewSet):
     """
