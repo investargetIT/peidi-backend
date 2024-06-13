@@ -217,9 +217,9 @@ class SalesOutDetailsAdmin(admin.ModelAdmin):
     search_fields = ["trade_no", "tid", "oid", "buyer_nick"]
     list_filter = (
         (
-            "pay_time",
+            "trade_time",
             DateTimeRangeFilterBuilder(
-                title="支付时间",
+                title="下单时间",
                 default_start=datetime(2022, 1, 1),
                 default_end=datetime(2022, 12, 31, 23, 59, 59),
             ),
