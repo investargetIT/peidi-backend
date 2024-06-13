@@ -26,8 +26,8 @@ class TmallRefund(models.Model):
     refund_type = models.CharField(max_length=40, blank=True, null=True, verbose_name='部分退款_全部退款')
 
     class Meta:
-        verbose_name = "天猫仅退款"
-        verbose_name_plural = "天猫仅退款"
+        verbose_name = "仅退款天猫"
+        verbose_name_plural = "仅退款天猫"
 
 # 拼多多仅退款
 class PddRefund(models.Model):
@@ -42,8 +42,8 @@ class PddRefund(models.Model):
     refund_status = models.CharField(max_length=40, blank=True, null=True, verbose_name='打款状态')
 
     class Meta:
-        verbose_name = "拼多多仅退款"
-        verbose_name_plural = "拼多多仅退款"
+        verbose_name = "仅退款拼多多"
+        verbose_name_plural = "仅退款拼多多"
         constraints = [
             models.UniqueConstraint(fields=['trade_no', 'goods_id', 'applicant'], name='unique_tradeno_goodsid_applicant')
         ]
@@ -61,8 +61,8 @@ class JdRefund(models.Model):
     applicant = models.CharField(max_length=100, blank=True, null=True, verbose_name='申请人')    
 
     class Meta:
-        verbose_name = "京东仅退款"
-        verbose_name_plural = "京东仅退款"       
+        verbose_name = "仅退款京东"
+        verbose_name_plural = "仅退款京东"       
         constraints = [
             models.UniqueConstraint(fields=['refund_no', 'trade_no', 'service_no'], name='unique_refundno_tradeno_serviceno')
         ]
@@ -83,8 +83,8 @@ class DouyinRefund(models.Model):
     refund_remark = models.CharField(max_length=1024, blank=True, null=True, verbose_name='打款备注')
 
     class Meta:
-        verbose_name = "抖音仅退款"
-        verbose_name_plural = "抖音仅退款"
+        verbose_name = "仅退款抖音"
+        verbose_name_plural = "仅退款抖音"
         constraints = [
             models.UniqueConstraint(fields=['pay_transaction_no', 'trade_no', 'goods_id'], name='unique_paytransactionno_tradeno_goodsid')
         ]
@@ -133,8 +133,8 @@ class InvoiceManual(models.Model):
     class Meta:
         db_table = "finance_invoice_manual"
         db_table_comment = "财务手工调整的发票"
-        verbose_name = "发票财务手工调整"
-        verbose_name_plural = "发票财务手工调整" 
+        verbose_name = "发票手工"
+        verbose_name_plural = "发票手工" 
 
 # 旺店通货品销售汇总表
 class GoodsSalesSummary(models.Model):
