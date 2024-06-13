@@ -1,6 +1,12 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from .models import PlatformGoods, SpecGoods, SuiteGoodsRec, SPU
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
+
+class SpecGoodsResource(resources.ModelResource):
+    class Meta:
+        model = SpecGoods
 
 # Register your models here.
 @admin.register(PlatformGoods)
@@ -38,7 +44,7 @@ class PlatformGoodsAdmin(admin.ModelAdmin):
     list_filter = ("shop_name",)
 
 @admin.register(SpecGoods)
-class SpecGoodsAdmin(admin.ModelAdmin):
+class SpecGoodsAdmin(ImportExportModelAdmin):
     list_display = [
         "spec_no",
         "goods_no",
@@ -84,6 +90,7 @@ class SpecGoodsAdmin(admin.ModelAdmin):
     ]
     search_fields = ["spec_no", "goods_no", "goods_name"]
     list_filter = ("brand_name", "goods_type")
+    resource_classes = [SpecGoodsResource]
 
 @admin.register(SuiteGoodsRec)
 class SuiteGoodsRecAdmin(admin.ModelAdmin):

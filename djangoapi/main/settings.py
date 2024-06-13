@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'finance.apps.FinanceConfig',
     "django_apscheduler",
     "schedulers.apps.SchedulersConfig",
+    "import_export",
 ]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
