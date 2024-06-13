@@ -89,7 +89,7 @@ class DouyinRefund(models.Model):
             models.UniqueConstraint(fields=['pay_transaction_no', 'trade_no', 'goods_id'], name='unique_paytransactionno_tradeno_goodsid')
         ]
 
-# 发票，包括阿里发票和财务手工调整的发票
+# 阿里发票
 class Invoice(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='入库时间')
     trade_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='订单id')
@@ -121,14 +121,16 @@ class Invoice(models.Model):
         verbose_name = "发票阿里"
         verbose_name_plural = "发票阿里"   
 
+# 财务手工调整的发票
 class InvoiceManual(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='入库时间')
     invoice_time = models.DateTimeField(blank=True, null=True, verbose_name='日期')
     shop_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='订货客户')
     goods_model = models.CharField(max_length=100, blank=True, null=True, verbose_name='货号')
+    material_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='料号')
     goods_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='品名')
     goods_num = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='数量')
     goods_total_amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='价税合计')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='入库时间')
 
     class Meta:
         db_table = "finance_invoice_manual"

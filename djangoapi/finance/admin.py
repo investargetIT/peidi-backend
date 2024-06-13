@@ -9,6 +9,7 @@ class InvoiceManualResource(resources.ModelResource):
     invoice_time = Field(attribute='invoice_time', column_name='日期')
     shop_name = Field(attribute='shop_name', column_name='订货客户')
     goods_model = Field(attribute='goods_model', column_name='货号')
+    material_no = Field(attribute='material_no', column_name='料号')
     goods_name = Field(attribute='goods_name', column_name='品名')
     goods_num = Field(attribute='goods_num', column_name='数量')
     goods_total_amount = Field(attribute='goods_total_amount', column_name='价税合计')
@@ -226,6 +227,7 @@ class InvoiceManualAdmin(ImportExportModelAdmin):
         "invoice_time",
         "shop_name",
         "goods_model",
+        "material_no",
         "goods_name",
         "goods_num",
         "goods_total_amount",
