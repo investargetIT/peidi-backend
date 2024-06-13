@@ -23,6 +23,26 @@ class SpecGoodsResource(resources.ModelResource):
     class Meta:
         model = SpecGoods
 
+class SuiteGoodsRecResource(resources.ModelResource):
+    suite_no = Field(attribute='suite_no', column_name='商家编码')
+    suite_name = Field(attribute='suite_name', column_name='组合装名称')
+    brand_name = Field(attribute='brand_name', column_name='品牌')
+    goods_type = Field(attribute='goods_type', column_name='类别')
+    spec_no = Field(attribute='spec_no', column_name='单品商家编码')
+    goods_no = Field(attribute='goods_no', column_name='单品货品编号')
+    goods_name = Field(attribute='goods_name', column_name='单品名称')
+    spec_name = Field(attribute='spec_name', column_name='单品规格名称')
+    num = Field(attribute='num', column_name='数量')
+    fixed_price = Field(attribute='fixed_price', column_name='固定售价')
+    ratio = Field(attribute='ratio', column_name='金额占比')
+    is_fixed_price = Field(attribute='is_fixed_price', column_name='是否固定价格')
+
+    def before_import(self, dataset, **kwargs):
+        SuiteGoodsRec.objects.all().delete()
+
+    class Meta:
+        model = SuiteGoodsRec
+
 # Register your models here.
 @admin.register(PlatformGoods)
 class PlatformGoodsAdmin(admin.ModelAdmin):
@@ -108,33 +128,34 @@ class SpecGoodsAdmin(ImportExportModelAdmin):
     resource_classes = [SpecGoodsResource]
 
 @admin.register(SuiteGoodsRec)
-class SuiteGoodsRecAdmin(admin.ModelAdmin):
+class SuiteGoodsRecAdmin(ImportExportModelAdmin):
     list_display = [
         # "img_url",
         "suite_no",
         "suite_name",
-        "suite_short_name",
-        "barcode",
+        # "suite_short_name",
+        # "barcode",
         "brand_name",
         "goods_type",
         # "retail_price",
         # "wholesale_price",
         # "member_price",
         # "market_price",
-        "weight",
-        "remark",
+        # "weight",
+        # "remark",
         "goods_name",
         "goods_no",
         "spec_no",
         "spec_name",
-        "ware_code",
+        # "ware_code",
         "num",
         "fixed_price",
         "ratio",
         "is_fixed_price",
     ]
     search_fields = ["suite_name", "suite_no", "goods_name", "goods_no", "spec_no"]
-    list_filter = ("brand_name", "goods_type")
+    # list_filter = ("brand_name", "goods_type")
+    resource_classes = [SuiteGoodsRecResource]
 
 @admin.register(SPU)
 class SPUAdmin(admin.ModelAdmin):
