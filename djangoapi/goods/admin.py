@@ -3,8 +3,23 @@ from django.utils.html import format_html
 from .models import PlatformGoods, SpecGoods, SuiteGoodsRec, SPU
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
+from import_export.fields import Field
 
 class SpecGoodsResource(resources.ModelResource):
+    spec_no = Field(attribute='spec_no', column_name='商家编码')
+    goods_no = Field(attribute='goods_no', column_name='货品编号')
+    goods_name = Field(attribute='goods_name', column_name='货品名称')
+    goods_type = Field(attribute='goods_type', column_name='分类')
+    brand_name = Field(attribute='brand_name', column_name='品牌')
+    spec_name = Field(attribute='spec_name', column_name='规格名称')
+    barcode = Field(attribute='barcode', column_name='主条码')
+    validity_days = Field(attribute='validity_days', column_name='有效期天数')
+    spec_modified = Field(attribute='spec_modified', column_name='修改时间')
+    spec_created = Field(attribute='spec_created', column_name='创建时间')
+    
+    def before_import(self, dataset, **kwargs):
+        SpecGoods.objects.all().delete()
+
     class Meta:
         model = SpecGoods
 
@@ -49,11 +64,11 @@ class SpecGoodsAdmin(ImportExportModelAdmin):
         "spec_no",
         "goods_no",
         "goods_name",
-        "short_name",
+        # "short_name",
         "goods_type",
         "brand_name",
         "spec_name",
-        "spec_code",
+        # "spec_code",
         "barcode",
         # "wms_process_mask",
         # "retail_price",
@@ -63,17 +78,17 @@ class SpecGoodsAdmin(ImportExportModelAdmin):
         # "lowest_price",
         # "single_price1",
         # "single_price2",
-        "validity_days",
-        "length",
-        "width",
-        "height",
-        "weight",
-        "tax_code",
-        "sn_type",
-        "goods_label",
-        "large_type",
-        "unit_name",
-        "aux_unit_name",
+        # "validity_days",
+        # "length",
+        # "width",
+        # "height",
+        # "weight",
+        # "tax_code",
+        # "sn_type",
+        # "goods_label",
+        # "large_type",
+        # "unit_name",
+        # "aux_unit_name",
         # "u9_no",
         # "allow_below_cost_price",
         # "img_url",
@@ -89,7 +104,7 @@ class SpecGoodsAdmin(ImportExportModelAdmin):
         "spec_created",
     ]
     search_fields = ["spec_no", "goods_no", "goods_name"]
-    list_filter = ("brand_name", "goods_type")
+    # list_filter = ("brand_name", "goods_type")
     resource_classes = [SpecGoodsResource]
 
 @admin.register(SuiteGoodsRec)
