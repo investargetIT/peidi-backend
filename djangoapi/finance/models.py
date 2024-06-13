@@ -120,6 +120,21 @@ class Invoice(models.Model):
         verbose_name = "发票"
         verbose_name_plural = "发票"       
 
+class InvoiceManual(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='入库时间')
+    invoice_time = models.DateTimeField(blank=True, null=True, verbose_name='日期')
+    shop_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='订货客户')
+    goods_model = models.CharField(max_length=100, blank=True, null=True, verbose_name='货号')
+    goods_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='品名')
+    goods_num = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='数量')
+    goods_total_amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='价税合计')
+
+    class Meta:
+        db_table = "finance_invoice_manual"
+        db_table_comment = "财务手工调整的发票"
+        verbose_name = "发票财务手工调整"
+        verbose_name_plural = "发票财务手工调整" 
+
 # 旺店通货品销售汇总表
 class GoodsSalesSummary(models.Model):
     start_date = models.DateField(verbose_name='开始日期')

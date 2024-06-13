@@ -1,6 +1,70 @@
 from django.contrib import admin
-from .models import TmallRefund, PddRefund, JdRefund, DouyinRefund, Invoice, GoodsSalesSummary, FinanceSalesAndInvoice, PDMaterialNOList
+from .models import TmallRefund, PddRefund, JdRefund, DouyinRefund, Invoice, GoodsSalesSummary, FinanceSalesAndInvoice, PDMaterialNOList, InvoiceManual
 from rangefilter.filters import DateRangeFilterBuilder
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
+from import_export.fields import Field
+
+class InvoiceManualResource(resources.ModelResource):
+    invoice_time = Field(attribute='invoice_time', column_name='日期')
+    shop_name = Field(attribute='shop_name', column_name='订货客户')
+    goods_model = Field(attribute='goods_model', column_name='货号')
+    goods_name = Field(attribute='goods_name', column_name='品名')
+    goods_num = Field(attribute='goods_num', column_name='数量')
+    goods_total_amount = Field(attribute='goods_total_amount', column_name='价税合计')
+    
+    def before_import_row(self, row, **kwargs):
+        if row['订货客户'] == '抖音-佩蒂宠物专营店':
+            row['订货客户'] = '杭州-抖音-佩蒂宠物专营店'
+        elif row['订货客户'] == '天猫-佩蒂旗舰店':
+            row['订货客户'] = '杭州-天猫-佩蒂旗舰店'
+        elif row['订货客户'] == '天猫-好适嘉旗舰店':
+            row['订货客户'] = '杭州-天猫-好适嘉旗舰店'
+        elif row['订货客户'] == '天猫-smartbones旗舰店':
+            row['订货客户'] = '杭州-天猫-smartbones旗舰店'
+        elif row['订货客户'] == '天猫-千百仓宠物用品专营店':
+            row['订货客户'] = '上海-天猫-千百仓宠物用品专营店'
+        elif row['订货客户'] == '拼多多-喵汪食堂宠物用品店':
+            row['订货客户'] = '上海-拼多多-喵汪食堂宠物用品店'
+        elif row['订货客户'] == '抖音-哈宠抖音小店':
+            row['订货客户'] = '上海-抖音-哈宠抖音小店'
+        elif row['订货客户'] == '京东-CPET宠物生活旗舰店':
+            row['订货客户'] = '杭州-京东-CPET宠物生活旗舰店'
+        elif row['订货客户'] == '京东-禾仕嘉旗舰店':
+            row['订货客户'] = '杭州-京东-禾仕嘉旗舰店'
+        elif row['订货客户'] == '京东MeatyWay爵宴旗舰店':
+            row['订货客户'] = '杭州-京东-爵宴旗舰店'
+        elif row['订货客户'] == '京东好适嘉旗舰店':
+            row['订货客户'] = '杭州-京东-好适嘉旗舰店'
+        elif row['订货客户'] == '拼多多-啊猫阿狗宠物店':
+            row['订货客户'] = '上海-拼多多-啊猫阿狗宠物店'
+        elif row['订货客户'] == '拼多多-四脚星球宠物店':
+            row['订货客户'] = '上海-拼多多-四脚星球宠物店'
+        elif row['订货客户'] == '拼多多-爵宴旗舰店':
+            row['订货客户'] = '杭州-拼多多-爵宴旗舰店'
+        elif row['订货客户'] == '京东-Smartbones旗舰店':
+            row['订货客户'] = '杭州-京东-Smartbones旗舰店'
+        elif row['订货客户'] == '抖音-HEALTH好适嘉客户':
+            row['订货客户'] = '杭州-抖音-HEALTH好适嘉'
+        elif row['订货客户'] == '抖音-佩蒂旗舰店':
+            row['订货客户'] = '杭州-抖音-佩蒂旗舰店'
+        elif row['订货客户'] == '抖音-上海妙旺宠物专营店':
+            row['订货客户'] = '上海-抖音-上海妙旺宠物专营店'
+        elif row['订货客户'] == '拼多多-猫酱宠物食品官方旗舰店':
+            row['订货客户'] = '上海-拼多多-猫酱宠物食品官方旗舰店'
+        elif row['订货客户'] == '千百仓宠物用品专营店':
+            row['订货客户'] = '上海-天猫-千百仓宠物用品专营店'
+        elif row['订货客户'] == '拼多多MeatyWay爵宴旗舰店':
+            row['订货客户'] = '杭州-拼多多-爵宴旗舰店'
+        elif row['订货客户'] == '拼多多-smartbones旗舰店':
+            row['订货客户'] = '杭州-拼多多-smartbones旗舰店'
+        elif row['订货客户'] == '拼多多-好适嘉旗舰店':
+            row['订货客户'] = '杭州-拼多多-好适嘉旗舰店'
+        elif row['订货客户'] == '天猫-哈宠宠物用品专营店':
+            row['订货客户'] = '上海-天猫-哈宠宠物用品专营店'         
+
+    class Meta:
+        model = InvoiceManual
 
 @admin.register(TmallRefund)
 class TmallRefundAdmin(admin.ModelAdmin): 
@@ -106,6 +170,21 @@ class DouyinRefundAdmin(admin.ModelAdmin):
             ),
         ),
     )
+
+@admin.register(InvoiceManual)
+class InvoiceManualAdmin(ImportExportModelAdmin):
+    list_display = [
+        "invoice_time",
+        "shop_name",
+        "goods_model",
+        "goods_name",
+        "goods_num",
+        "goods_total_amount",
+        "created_at",
+    ]
+    search_fields = ["goods_model", "goods_name"]
+    list_filter = ["shop_name"]
+    resource_classes = [InvoiceManualResource]
 
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
