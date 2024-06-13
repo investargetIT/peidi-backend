@@ -117,8 +117,9 @@ class Invoice(models.Model):
     tax_rate = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='税率')
 
     class Meta:
-        verbose_name = "发票"
-        verbose_name_plural = "发票"       
+        db_table_comment = "阿里发票"
+        verbose_name = "发票阿里"
+        verbose_name_plural = "发票阿里"   
 
 class InvoiceManual(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='入库时间')

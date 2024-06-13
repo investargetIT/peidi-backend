@@ -66,6 +66,55 @@ class InvoiceManualResource(resources.ModelResource):
     class Meta:
         model = InvoiceManual
 
+class InvoiceAliResource(resources.ModelResource):
+    trade_no = Field(attribute='trade_no', column_name='订单id')
+    invoice_time = Field(attribute='invoice_time', column_name='开票日期')
+    shop_name = Field(attribute='shop_name', column_name='店铺名称')
+    invoice_category = Field(attribute='invoice_category', column_name='发票种类')
+    invoice_type = Field(attribute='invoice_type', column_name='发票类型')
+    invoice_no = Field(attribute='invoice_no', column_name='发票号码发票代码')
+    seller_tax_no = Field(attribute='seller_tax_no', column_name='税号')
+    seller_corp_name = Field(attribute='seller_corp_name', column_name='企业名称')
+    invoice_title = Field(attribute='invoice_title', column_name='发票抬头')
+    payer_tax_no = Field(attribute='payer_tax_no', column_name='付款人税号')
+    invoice_tax = Field(attribute='invoice_tax', column_name='总税额')
+    invoice_amount = Field(attribute='invoice_amount', column_name='发票总金额')
+    red_to_blue = Field(attribute='red_to_blue', column_name='红票对应蓝票')
+    remark = Field(attribute='remark', column_name='备注')
+    goods_name = Field(attribute='goods_name', column_name='商品名称')
+    goods_model = Field(attribute='goods_model', column_name='商品型号')
+    goods_unit = Field(attribute='goods_unit', column_name='商品单位')
+    goods_price = Field(attribute='goods_price', column_name='单价')
+    goods_num = Field(attribute='goods_num', column_name='数量')
+    goods_amount_without_tax = Field(attribute='goods_amount_without_tax', column_name='不含税金额')
+    goods_tax = Field(attribute='goods_tax', column_name='税额')
+    goods_total_amount = Field(attribute='goods_total_amount', column_name='总金额')
+    tax_rate = Field(attribute='tax_rate', column_name='税率')
+   
+    def before_import_row(self, row, **kwargs):
+        row['开票日期'] = row['开票日期'].strip().replace('/', '-')
+        
+        float_fields = ["数量", "单价"]
+        for float_field in float_fields:
+            if row[float_field]:
+                row[float_field] = "{:.4f}".format(float(row[float_field]))
+            else:
+                row[float_field] = None
+
+        if row['店铺名称'] == 'smartbones旗舰店':
+            row['店铺名称'] = '杭州-天猫-smartbones旗舰店'
+        elif row['店铺名称'] == '哈宠宠物用品专营店':
+            row['店铺名称'] = '上海-天猫-哈宠宠物用品专营店'
+        elif row['店铺名称'] == '好适嘉旗舰店':
+            row['店铺名称'] = '杭州-天猫-好适嘉旗舰店'
+        elif row['店铺名称'] == '佩蒂旗舰店':
+            row['店铺名称'] = '杭州-天猫-佩蒂旗舰店'
+        elif row['店铺名称'] == '千百仓宠物用品专营店':
+            row['店铺名称'] = '上海-天猫-千百仓宠物用品专营店'        
+
+    class Meta:
+        model = Invoice
+
 @admin.register(TmallRefund)
 class TmallRefundAdmin(admin.ModelAdmin): 
     list_display = [
@@ -187,9 +236,8 @@ class InvoiceManualAdmin(ImportExportModelAdmin):
     resource_classes = [InvoiceManualResource]
 
 @admin.register(Invoice)
-class InvoiceAdmin(admin.ModelAdmin):
-    list_display = [
-        "created_at",
+class InvoiceAdmin(ImportExportModelAdmin):
+    list_display = [ 
         "trade_no",
         "invoice_time",
         "shop_name",
@@ -206,16 +254,18 @@ class InvoiceAdmin(admin.ModelAdmin):
         # "remark",
         "goods_name",
         "goods_model",
-        "goods_unit",
+        # "goods_unit",
         "goods_price",
         "goods_num",
         "goods_amount_without_tax",
         "goods_tax",
         "goods_total_amount",
         "tax_rate",
+        "created_at",
     ]
     search_fields = ["trade_no", "goods_model"]
     list_filter = ["shop_name"]
+    resource_classes = [InvoiceAliResource]
 
 @admin.register(GoodsSalesSummary)
 class GoodsSalesSummaryAdmin(admin.ModelAdmin):
