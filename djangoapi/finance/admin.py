@@ -116,8 +116,34 @@ class InvoiceAliResource(resources.ModelResource):
     class Meta:
         model = Invoice
 
+class TmallRefundResource(resources.ModelResource):
+    refund_no = Field(attribute='refund_no', column_name='退款编号')
+    trade_no = Field(attribute='trade_no', column_name='订单编号')
+    alipay_transaction_no = Field(attribute='alipay_transaction_no', column_name='支付宝交易号')
+    pay_time = Field(attribute='pay_time', column_name='订单付款时间')
+    goods_no = Field(attribute='goods_no', column_name='商品编码')
+    refund_close_time = Field(attribute='refund_close_time', column_name='退款完结时间')
+    paid = Field(attribute='paid', column_name='买家实际支付金额')
+    goods_name = Field(attribute='goods_name', column_name='宝贝标题')
+    refund = Field(attribute='refund', column_name='买家退款金额')
+    refund_source = Field(attribute='refund_source', column_name='手工退款_系统退款')
+    goods_return = Field(attribute='goods_return', column_name='是否需要退货')
+    apply_time = Field(attribute='apply_time', column_name='退款的申请时间')
+    refund_status = Field(attribute='refund_status', column_name='退款状态')
+    goods_status = Field(attribute='goods_status', column_name='货物状态')
+    deliver_logistics_info = Field(attribute='deliver_logistics_info', column_name='发货物流信息')
+    service_intervene = Field(attribute='service_intervene', column_name='客服介入状态')
+    seller_name = Field(attribute='seller_name', column_name='卖家真实姓名')
+    seller_name_new = Field(attribute='seller_name_new', column_name='卖家真实姓名_新')
+    refund_reason = Field(attribute='refund_reason', column_name='买家退款原因')
+    refund_explanation = Field(attribute='refund_explanation', column_name='买家退款说明')
+    refund_type = Field(attribute='refund_type', column_name='部分退款_全部退款')
+
+    class Meta:
+        model = TmallRefund
+
 @admin.register(TmallRefund)
-class TmallRefundAdmin(admin.ModelAdmin): 
+class TmallRefundAdmin(ImportExportModelAdmin): 
     list_display = [
         "refund_no",
         "trade_no",
@@ -131,16 +157,15 @@ class TmallRefundAdmin(admin.ModelAdmin):
         "refund_source",
         "goods_return",
         "apply_time",
-        "refund_deadline",
         "refund_status",
         "goods_status",
         "deliver_logistics_info",
         "service_intervene",
         "seller_name",
         "seller_name_new",
+        "refund_type",
         "refund_reason",
         "refund_explanation",
-        "refund_type",
     ]
     list_filter = (
         (
@@ -151,6 +176,7 @@ class TmallRefundAdmin(admin.ModelAdmin):
         ),
     )
     search_fields = ["trade_no", "goods_no", "goods_name"]
+    resource_classes = [TmallRefundResource]
 
 @admin.register(PddRefund)
 class PddRefundAdmin(admin.ModelAdmin):
