@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand
 from django.db.models import Sum
 
 from goods.models import SpecGoods, SuiteGoodsRec
-from finance.models import Invoice, FinanceSalesAndInvoice, PDMaterialNOList, GoodsSalesSummary, DouyinRefund, PddRefund, JdRefund, TmallRefund
+from finance.models import Invoice, FinanceSalesAndInvoice, PDMaterialNOList, GoodsSalesSummary, DouyinRefund, PddRefund, JdRefund, TmallRefund, InvoiceManual
 from orders.models import salesOutDetails, historySalesOutDetails, ShopTarget
 
 base_url = os.getenv("APITABLE_BASE_URL")
@@ -72,7 +72,7 @@ class Command(BaseCommand):
 
     def merge_original_invoice(self, start_date, end_date):
         result = []
-        end_date += " 23:59:59" 
+        end_date += " 23:59:59"
         distinct_trade_no = Invoice.objects.filter(
                 invoice_time__range=(start_date, end_date),
                 trade_no__isnull = False,
@@ -145,7 +145,10 @@ class Command(BaseCommand):
             time.sleep(1)
 
     def invoice_created_manually(self, start_date, end_date):
-        manual_invoices = Invoice.objects.filter(invoice_time__range=(start_date, end_date), trade_no__isnull=True).values()
+        end_date += " 23:59:59"        
+        manual_invoices = InvoiceManual.objects.filter(
+            invoice_time__range=(start_date, end_date)
+        ).values()
         url = os.getenv("APITABLE_BASE_URL") + "/fusion/v1/datasheets/dst6D5RicsfUPcUunq/records"
         token = os.getenv("APITABLE_TOKEN")
         records = []
