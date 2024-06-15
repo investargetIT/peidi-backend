@@ -187,6 +187,40 @@ class PddRefundResource(resources.ModelResource):
     class Meta:
         model = PddRefund
 
+class GoodsSalesSummaryResource(resources.ModelResource):
+    start_date = Field(attribute='start_date', column_name='开始日期')
+    end_date = Field(attribute='end_date', column_name='结束日期')
+    spec_no = Field(attribute='spec_no', column_name='商家编码')
+    major_supplier = Field(attribute='major_supplier', column_name='主供应商')
+    shop_name = Field(attribute='shop_name', column_name='店铺')
+    brand_name = Field(attribute='brand_name', column_name='品牌')
+    goods_type = Field(attribute='goods_type', column_name='分类')
+    goods_no = Field(attribute='goods_no', column_name='货品编号')
+    goods_name = Field(attribute='goods_name', column_name='货品名称')
+    spec_name = Field(attribute='spec_name', column_name='规格名称')
+    goods_category = Field(attribute='goods_category', column_name='货品类别')
+    average_price = Field(attribute='average_price', column_name='均价')
+    retail_price = Field(attribute='retail_price', column_name='零售价')
+    ship_num = Field(attribute='ship_num', column_name='发货总量')
+    return_num = Field(attribute='return_num', column_name='退货入库量（原退货总量）')
+    return_count_num = Field(attribute='return_count_num', column_name='退货入库结算量')
+    sales_num = Field(attribute='sales_num', column_name='实际销售量')
+    ship_amount = Field(attribute='ship_amount', column_name='发货总金额')
+    sales_amount = Field(attribute='sales_amount', column_name='销售总金额')
+    sales_amount_unknown_cost = Field(attribute='sales_amount_unknown_cost', column_name='未知成本销售总额')
+    return_amount = Field(attribute='return_amount', column_name='退货总金额（结算）')
+    actual_sales_amount = Field(attribute='actual_sales_amount', column_name='实际销售额')
+    gift_sales_num = Field(attribute='gift_sales_num', column_name='赠品销量')
+    post_amount = Field(attribute='post_amount', column_name='邮费')
+    post_cost = Field(attribute='post_cost', column_name='邮资成本')
+    ship_refund_num = Field(attribute='ship_refund_num', column_name='系统发货但平台退款量')
+    ship_refund_amount = Field(attribute='ship_refund_amount', column_name='系统发货但平台退款金额')
+    abnormal_warehouse_sales_num = Field(attribute='abnormal_warehouse_sales_num', column_name='异常仓销量')
+    refund_stockin = Field(attribute='refund_stockin', column_name='退货总金额（入库）')
+
+    class Meta:
+        model = GoodsSalesSummary
+
 @admin.register(TmallRefund)
 class TmallRefundAdmin(ImportExportModelAdmin): 
     list_display = [
@@ -344,7 +378,7 @@ class InvoiceAdmin(ImportExportModelAdmin):
     resource_classes = [InvoiceAliResource]
 
 @admin.register(GoodsSalesSummary)
-class GoodsSalesSummaryAdmin(admin.ModelAdmin):
+class GoodsSalesSummaryAdmin(ImportExportModelAdmin):
     list_display = [
         "start_date",
         "end_date",
@@ -376,6 +410,7 @@ class GoodsSalesSummaryAdmin(admin.ModelAdmin):
         "abnormal_warehouse_sales_num",
         "refund_stockin",
     ]
+    resource_classes = [GoodsSalesSummaryResource]
 
 @admin.register(FinanceSalesAndInvoice)
 class FinanceSalesAndInvoiceAdmin(admin.ModelAdmin):
