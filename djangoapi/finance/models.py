@@ -52,7 +52,7 @@ class PddRefund(models.Model):
 class JdRefund(models.Model):
     shop_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='店铺名称')
     apply_time = models.DateTimeField(blank=True, null=True, verbose_name='申请时间')
-    refund_no = models.CharField(max_length=100, verbose_name='赔付单号')
+    refund_no = models.CharField(max_length=100, unique=True, verbose_name='赔付单号')
     trade_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='关联订单号')
     service_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='关联服务单号')
     refund = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='赔付金额')
@@ -63,9 +63,6 @@ class JdRefund(models.Model):
     class Meta:
         verbose_name = "仅退款京东"
         verbose_name_plural = "仅退款京东"       
-        constraints = [
-            models.UniqueConstraint(fields=['refund_no', 'trade_no', 'service_no'], name='unique_refundno_tradeno_serviceno')
-        ]
 
 # 抖音仅退款
 class DouyinRefund(models.Model):
