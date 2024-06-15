@@ -142,6 +142,51 @@ class TmallRefundResource(resources.ModelResource):
     class Meta:
         model = TmallRefund
 
+class JdRefundResource(resources.ModelResource):
+    shop_name = Field(attribute='shop_name', column_name='店铺名称')
+    apply_time = Field(attribute='apply_time', column_name='申请时间')
+    refund_no = Field(attribute='refund_no', column_name='赔付单号')
+    trade_no = Field(attribute='trade_no', column_name='关联订单号')
+    service_no = Field(attribute='service_no', column_name='关联服务单号')
+    refund = Field(attribute='refund', column_name='赔付金额')
+    refund_reason = Field(attribute='refund_reason', column_name='赔付原因')
+    refund_status = Field(attribute='refund_status', column_name='赔付状态')
+    applicant = Field(attribute='applicant', column_name='申请人')
+
+    class Meta:
+        model = JdRefund 
+
+class DouyinRefundResource(resources.ModelResource):
+    shop_name = Field(attribute='shop_name', column_name='店铺名称')
+    pay_transaction_no = Field(attribute='pay_transaction_no', column_name='支付流水号')
+    trade_no = Field(attribute='trade_no', column_name='订单编号')
+    goods_name = Field(attribute='goods_name', column_name='商品名称')
+    goods_id = Field(attribute='goods_id', column_name='商品ID')
+    refund_reason = Field(attribute='refund_reason', column_name='打款类型')
+    refund = Field(attribute='refund', column_name='打款金额')
+    applicant = Field(attribute='applicant', column_name='打款申请人')
+    apply_time = Field(attribute='apply_time', column_name='打款申请时间')
+    refund_time = Field(attribute='refund_time', column_name='打款到账时间')
+    refund_status = Field(attribute='refund_status', column_name='打款状态')
+    refund_remark = Field(attribute='refund_remark', column_name='打款备注')
+
+    class Meta:
+        model = DouyinRefund
+
+class PddRefundResource(resources.ModelResource):
+    shop_name = Field(attribute='shop_name', column_name='店铺名称')
+    trade_no = Field(attribute='trade_no', column_name='订单号')
+    goods_id = Field(attribute='goods_id', column_name='商品ID')
+    goods_name = Field(attribute='goods_name', column_name='商品名称')
+    refund_reason = Field(attribute='refund_reason', column_name='扣款原因')
+    applicant = Field(attribute='applicant', column_name='申请人')
+    apply_time = Field(attribute='apply_time', column_name='申请时间')
+    refund = Field(attribute='refund', column_name='申请扣款金额')
+    refund_status = Field(attribute='refund_status', column_name='打款状态')
+
+    class Meta:
+        model = PddRefund
+
 @admin.register(TmallRefund)
 class TmallRefundAdmin(ImportExportModelAdmin): 
     list_display = [
@@ -179,7 +224,7 @@ class TmallRefundAdmin(ImportExportModelAdmin):
     resource_classes = [TmallRefundResource]
 
 @admin.register(PddRefund)
-class PddRefundAdmin(admin.ModelAdmin):
+class PddRefundAdmin(ImportExportModelAdmin):
     list_display = [
         "shop_name",
         "trade_no",
@@ -199,9 +244,10 @@ class PddRefundAdmin(admin.ModelAdmin):
             ),
         ),
     )
+    resource_classes = [PddRefundResource]
 
 @admin.register(JdRefund)
-class JdRefundAdmin(admin.ModelAdmin):
+class JdRefundAdmin(ImportExportModelAdmin):
     list_display = [
         "shop_name",
         "apply_time",
@@ -221,9 +267,10 @@ class JdRefundAdmin(admin.ModelAdmin):
             ),
         ),
     )
+    resource_classes = [JdRefundResource]
 
 @admin.register(DouyinRefund)
-class DouyinRefundAdmin(admin.ModelAdmin):
+class DouyinRefundAdmin(ImportExportModelAdmin):
     list_display = [
         "shop_name",
         "pay_transaction_no",
@@ -246,6 +293,7 @@ class DouyinRefundAdmin(admin.ModelAdmin):
             ),
         ),
     )
+    resource_classes = [DouyinRefundResource]
 
 @admin.register(InvoiceManual)
 class InvoiceManualAdmin(ImportExportModelAdmin):
