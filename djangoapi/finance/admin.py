@@ -234,6 +234,9 @@ class PDMaterialNoListResource(resources.ModelResource):
     brand = Field(attribute='brand', column_name='品牌')
     weight = Field(attribute='weight', column_name='(单件重)')
 
+    def before_import(self, dataset, **kwargs):
+        PDMaterialNOList.objects.all().delete()
+
     class Meta:
         model = PDMaterialNOList 
 
