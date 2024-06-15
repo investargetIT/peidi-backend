@@ -221,6 +221,22 @@ class GoodsSalesSummaryResource(resources.ModelResource):
     class Meta:
         model = GoodsSalesSummary
 
+class PDMaterialNoListResource(resources.ModelResource):
+    type = Field(attribute='type', column_name='采购分类.分类名称')
+    material_no = Field(attribute='material_no', column_name='料号')
+    goods_name = Field(attribute='goods_name', column_name='品名')
+    invoice_goods_name = Field(attribute='invoice_goods_name', column_name='开票品名')
+    goods_no = Field(attribute='goods_no', column_name='货号')
+    no_product_series = Field(attribute='no_product_series', column_name='重编编号(产品系列)')
+    barcode = Field(attribute='barcode', column_name='条码')
+    unit = Field(attribute='unit', column_name='库存单位.名称')
+    feature = Field(attribute='feature', column_name='料品形态属性')
+    brand = Field(attribute='brand', column_name='品牌')
+    weight = Field(attribute='weight', column_name='(单件重)')
+
+    class Meta:
+        model = PDMaterialNOList 
+
 @admin.register(TmallRefund)
 class TmallRefundAdmin(ImportExportModelAdmin): 
     list_display = [
@@ -441,7 +457,7 @@ class FinanceSalesAndInvoiceAdmin(admin.ModelAdmin):
     )
 
 @admin.register(PDMaterialNOList)
-class PDMaterialNOListAdmin(admin.ModelAdmin):
+class PDMaterialNOListAdmin(ImportExportModelAdmin):
     list_display = [
         "material_no",
         "type",
@@ -456,3 +472,4 @@ class PDMaterialNOListAdmin(admin.ModelAdmin):
         "weight",
     ]
     search_fields = ["material_no", "goods_name", "goods_no", "barcode"]
+    resource_classes = [PDMaterialNoListResource]
