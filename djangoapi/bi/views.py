@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from utils.customclass import SuccessResponse, PeiDiError, ExceptionResponse, PeiDiErrorResponse
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def call_procedure(request):
