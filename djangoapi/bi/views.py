@@ -6,6 +6,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 from utils.customclass import SuccessResponse, PeiDiError, ExceptionResponse, PeiDiErrorResponse
+from utils.util import get_mysql_process_response_with_redis
 
 
 @api_view(['POST'])
@@ -13,16 +14,16 @@ from utils.customclass import SuccessResponse, PeiDiError, ExceptionResponse, Pe
 @permission_classes([IsAuthenticated])
 def call_procedure(request):
     try:
-        name = request.query_params.get('name')
-        parameters_list = request.data
-
-        with connection.cursor() as cursor:
-            result = []
-            cursor.callproc(name, tuple(parameters_list))
-            rows = cursor.fetchall()
-            for row in rows:
-                result.append(row)
-            return SuccessResponse(result)
+        proc_name = request.data.get('name')
+        parameters_list = request.data.get('params')
+        
+        redis_key = '{}#{}'.format(proc_name, "/".join(parameters_list))
+        result = get_mysql_process_response_with_redis(
+            redis_key=redis_key,
+            proc_name=proc_name,
+            args=tuple(parameters_list)
+        )
+        return SuccessResponse(result)
         
     except Exception:
         return ExceptionResponse(traceback.format_exc().split('\n')[-2])
