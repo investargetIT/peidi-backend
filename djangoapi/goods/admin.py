@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import PlatformGoods, SpecGoods, SuiteGoodsRec, SPU
+from .models import PlatformGoods, SpecGoods, SuiteGoodsRec, SPU, GoodsSalesTarget
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from import_export.fields import Field
@@ -167,3 +167,14 @@ class SPUAdmin(admin.ModelAdmin):
     ]
     search_fields = ["suite_no", "u9_name"]
     list_filter = ("brand", "spu")
+
+@admin.register(GoodsSalesTarget)
+class GoodsSalesTargetAdmin(admin.ModelAdmin):
+    list_display = [
+        "spu",
+        "time",
+        "num",
+        "amount",
+        "created_at",
+        "updated_at",
+    ]

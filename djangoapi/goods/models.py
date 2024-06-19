@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import RegexValidator
 
 # Create your models here.
 class PlatformGoods(models.Model):
@@ -88,7 +89,6 @@ class SpecGoods(models.Model):
         verbose_name = "旺店通单品列表"
         verbose_name_plural = "旺店通单品列表"
 
-
 class SuiteGoodsRec(models.Model):
     '''
     组合装明细
@@ -132,3 +132,32 @@ class SPU(models.Model):
     spu = models.CharField(max_length=255, blank=True,  null=True, verbose_name='SPU')
     suite_no = models.CharField(max_length=255, blank=True, null=True, verbose_name='商家编码/条码')
     u9_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='料品名称（U9）')
+
+    def __str__(self):
+        return f"{self.suite_no} {self.u9_name}"
+    
+    class Meta:
+        verbose_name = "商品SPU转换表"
+        verbose_name_plural = "商品SPU转换表"
+
+class GoodsSalesTarget(models.Model):
+    time = models.CharField(max_length=40, verbose_name='目标时间', validators=[
+        RegexValidator(
+            regex=r'^\d{4}(-\d{2})?$',
+            message="年度目标时间格式为YYYY，月度目标时间格式为YYYY-MM",
+        ),
+    ])
+    num = models.IntegerField(verbose_name='目标销量')
+    amount = models.DecimalField(max_digits=19, decimal_places=4, verbose_name='目标销售额')
+    spu = models.ForeignKey(SPU, on_delete=models.CASCADE, verbose_name='SPU')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "bi_goods_sales_target"
+        db_table_comment = "商品销售目标"
+        verbose_name = "商品销售目标"
+        verbose_name_plural = "商品销售目标"
+        constraints = [
+            models.UniqueConstraint(fields=['time', 'spu'], name='unique_time_spu')
+        ]
