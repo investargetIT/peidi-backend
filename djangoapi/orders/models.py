@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import RegexValidator
 
 class orders(models.Model):
     trade_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='订单编号')
@@ -435,6 +436,30 @@ class ShopTarget(models.Model):
     dsr_date = models.DateField(blank=True, null=True, verbose_name='DSR日期')
     need_summary = models.BooleanField(default=True, verbose_name="是否需要汇总（财务系统用）")
 
+    def __str__(self):
+        return self.wdt_name
+    
     class Meta:
-        verbose_name = "各店铺年度目标"
-        verbose_name_plural = "各店铺年度目标"
+        verbose_name = "店铺"
+        verbose_name_plural = "店铺"
+
+class ShopSalesTarget(models.Model):
+    time = models.CharField(max_length=40, verbose_name='目标时间', validators=[
+        RegexValidator(
+            regex=r'^\d{4}(-\d{2})?$',
+            message="年度目标时间格式为YYYY，月度目标时间格式为YYYY-MM",
+        ),
+    ])
+    amount = models.DecimalField(max_digits=19, decimal_places=4, verbose_name='目标销售额')
+    shop = models.ForeignKey(ShopTarget, on_delete=models.CASCADE, verbose_name='店铺')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "bi_shop_sales_target"
+        db_table_comment = "店铺销售目标"
+        verbose_name = "店铺销售目标"
+        verbose_name_plural = "店铺销售目标"
+        constraints = [
+            models.UniqueConstraint(fields=['time', 'shop'], name='unique_time_shop')
+        ]

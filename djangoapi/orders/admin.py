@@ -8,7 +8,7 @@ from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from import_export.fields import Field
 
-from .models import orders, salesOutDetails, historySalesOutDetails, OrderDetail, WMSShipData, StockDetail, ExchangeManagement, ShopTarget
+from .models import orders, salesOutDetails, historySalesOutDetails, OrderDetail, WMSShipData, StockDetail, ExchangeManagement, ShopTarget, ShopSalesTarget
 
 class StockDetailResource(resources.ModelResource):
     spec_no = Field(attribute='spec_no', column_name='商家编码')
@@ -519,3 +519,13 @@ class ShopTargetAdmin(admin.ModelAdmin):
         "need_summary",
     ]
     list_filter = ["year"]
+
+@admin.register(ShopSalesTarget)
+class ShopSalesTarget(admin.ModelAdmin):
+    list_display = [
+        "shop",
+        "time",
+        "amount",
+        "created_at",
+        "updated_at",
+    ]
