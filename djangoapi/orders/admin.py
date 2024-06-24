@@ -448,6 +448,7 @@ class StockDetailAdmin(ImportExportModelAdmin):
         "custom_stock_four",
         "custom_stock_five",
     ]
+    search_fields = ["spec_no"]
     resource_classes = [StockDetailResource]
 
 @admin.register(WMSShipData)
