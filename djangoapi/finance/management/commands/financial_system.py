@@ -539,6 +539,13 @@ class Command(BaseCommand):
             if i["uninvoice_num__sum"] != 0:
                 price = abs(float(i["uninvoice_amount__sum"] / i["uninvoice_num__sum"]))
 
+            tax_rate = None
+            untax_amount = None
+            if material_no_and_goods_name[2]:
+                tax_rate = float(material_no_and_goods_name[2])
+                untax_amount = i["uninvoice_amount__sum"] / (1 + material_no_and_goods_name[2])
+                untax_amount = float(untax_amount)
+
             uninvoiced_records.append({
                 "fields": {
                     "时间": end_date[:7],
@@ -549,6 +556,8 @@ class Command(BaseCommand):
                     "数量": i["uninvoice_num__sum"],
                     "单价": price,
                     "价税合计": float(i["uninvoice_amount__sum"]),
+                    "税率": tax_rate,
+                    "未含税金额": untax_amount,
                 }
             })
         #     f = FinanceSalesAndInvoice(
