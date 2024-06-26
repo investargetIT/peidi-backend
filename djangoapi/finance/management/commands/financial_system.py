@@ -440,7 +440,10 @@ class Command(BaseCommand):
 
     def extend_pdd_refund(self, start_date, end_date):
         end_date += " 23:59:59" 
-        refund_records = PddRefund.objects.filter(apply_time__range=(start_date, end_date))
+        refund_records = PddRefund.objects.filter(
+            apply_time__range=(start_date, end_date),
+            refund_status="打款成功",
+        )
         url = os.getenv("APITABLE_BASE_URL") + "/fusion/v1/datasheets/dstc0QSDi41j7GMkYa/records"
         self.refund_basic(url, refund_records)
 
