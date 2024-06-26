@@ -384,7 +384,14 @@ class Command(BaseCommand):
             
             # 销售出库明细里没找到的话，在历史销售出库明细里找
             if len(salesout_records) == 0:
-                salesout_records = historySalesOutDetails.objects.filter(otid=trade_no)
+                salesout_records = historySalesOutDetails.objects.values(
+                    "shop_name",
+                    "spec_no",
+                ).filter(
+                    otid=trade_no,
+                    deliver_time__isnull=False,
+                    deal_total_price__gt=0,
+                ).annotate(Sum("deal_total_price"))
             
             # 销售出库明细和历史销售出库明细都没找到的情况
             if len(salesout_records) == 0:    

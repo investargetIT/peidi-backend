@@ -157,6 +157,9 @@ class JdRefundResource(resources.ModelResource):
     refund_status = Field(attribute='refund_status', column_name='赔付状态')
     applicant = Field(attribute='applicant', column_name='申请人')
 
+    def before_import_row(self, row, **kwargs):
+        row['关联订单号'] = row['关联订单号'].strip()
+
     class Meta:
         model = JdRefund 
 
