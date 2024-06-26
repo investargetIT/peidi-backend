@@ -14,12 +14,18 @@ class SpecGoodsResource(resources.ModelResource):
     spec_name = Field(attribute='spec_name', column_name='规格名称')
     barcode = Field(attribute='barcode', column_name='主条码')
     validity_days = Field(attribute='validity_days', column_name='有效期天数')
+    u9_no = Field(attribute='u9_no', column_name='U9料号')
+    tax_rate = Field(attribute='tax_rate', column_name='税率')
     spec_modified = Field(attribute='spec_modified', column_name='修改时间')
     spec_created = Field(attribute='spec_created', column_name='创建时间')
     
     def before_import(self, dataset, **kwargs):
         SpecGoods.objects.all().delete()
 
+    def before_import_row(self, row, **kwargs):
+        if not row['税率']:
+            row['税率'] = None
+            
     class Meta:
         model = SpecGoods
 
@@ -109,11 +115,11 @@ class SpecGoodsAdmin(ImportExportModelAdmin):
         # "large_type",
         # "unit_name",
         # "aux_unit_name",
-        # "u9_no",
+        "u9_no",
         # "allow_below_cost_price",
         # "img_url",
         # "aux_box_volume",
-        # "tax_rate",
+        "tax_rate",
         # "remark",
         # "prop2",
         # "prop3",
