@@ -196,21 +196,11 @@ class Command(BaseCommand):
             time.sleep(1)
 
     def goods_no_to_material_no(self, goods_no):
-        # try:
-        #     material = PDMaterialNOList.objects.get(barcode=goods_no)
-        #     # print(material)
-        #     return material.material_no
-        # except PDMaterialNOList.DoesNotExist as e:
-        #     print(e)
-        # except PDMaterialNOList.MultipleObjectsReturned as e:
-        #     print(e)
-        
-        material_no, goods_name = [], []
-        materials = PDMaterialNOList.objects.filter(barcode=goods_no)
-        for material in materials:
-            material_no.append(material.material_no)
-            goods_name.append(material.goods_name)
-        return ("/".join(material_no), "/".join(goods_name))
+        try:
+            spec_goods = SpecGoods.objects.get(spec_no=goods_no)
+            return (spec_goods.u9_no, spec_goods.goods_name, spec_goods.tax_rate)
+        except:
+            return ('', '', 0)
 
     def invoice_summary(self, start_date, end_date):
         details = FinanceSalesAndInvoice.objects.values(
