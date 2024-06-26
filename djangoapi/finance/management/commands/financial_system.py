@@ -22,19 +22,19 @@ class Command(BaseCommand):
 
         # self.invoice_summary('2024-05-26', '2024-06-25')
 
-        # self.extend_douyin_refund("2024-04-26", "2024-05-25")
+        # self.extend_douyin_refund("2024-05-26", "2024-06-25")
 
-        # self.extend_jd_refund("2024-04-26", "2024-05-25")
+        # self.extend_jd_refund("2024-05-26", "2024-06-25")
 
-        # self.extend_pdd_refund("2024-04-26", "2024-05-25")
+        # self.extend_pdd_refund("2024-05-26", "2024-06-25")
 
-        # self.extend_tmall_refund("2024-04-26", "2024-05-25")
+        # self.extend_tmall_refund("2024-05-26", "2024-06-25")
 
-        # self.refund_summary("2024-04-26", "2024-05-25")
+        # self.refund_summary("2024-05-26", "2024-06-25")
 
-        # self.sales_summary("2024-04-26", "2024-05-25")
+        # self.sales_summary("2024-05-26", "2024-06-25")
 
-        # self.overall_summary("2024-04-26", "2024-05-25")
+        # self.overall_summary("2024-05-26", "2024-06-25")
     
     def goods_model_to_spec_goods(self, finance_sales_and_invoice):
         records = []
