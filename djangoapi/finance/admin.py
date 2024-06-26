@@ -62,7 +62,11 @@ class InvoiceManualResource(resources.ModelResource):
         elif row['订货客户'] == '拼多多-好适嘉旗舰店':
             row['订货客户'] = '杭州-拼多多-好适嘉旗舰店'
         elif row['订货客户'] == '天猫-哈宠宠物用品专营店':
-            row['订货客户'] = '上海-天猫-哈宠宠物用品专营店'         
+            row['订货客户'] = '上海-天猫-哈宠宠物用品专营店'
+        elif row['订货客户'] == '京东smartbones旗舰店':
+            row['订货客户'] = '杭州-京东-Smartbones旗舰店'
+        elif row['订货客户'] == '抖音-好适嘉旗舰店':
+            row['订货客户'] = '杭州-抖音-HEALTH好适嘉'
 
     class Meta:
         model = InvoiceManual
