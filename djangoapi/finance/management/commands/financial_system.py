@@ -16,11 +16,11 @@ class Command(BaseCommand):
 
         # print(self.goods_no_to_material_no("6971758277324"))
         
-        # self.invoice_created_by_ali("2024-04-26", "2024-05-25")
+        # self.invoice_created_by_ali("2024-05-26", "2024-06-25")
 
-        # self.invoice_created_manually("2024-04-26", "2024-05-25")
+        # self.invoice_created_manually("2024-05-26", "2024-06-25")
 
-        # self.invoice_summary('2024-04-26', '2024-05-25')
+        # self.invoice_summary('2024-05-26', '2024-06-25')
 
         # self.extend_douyin_refund("2024-04-26", "2024-05-25")
 
@@ -200,7 +200,7 @@ class Command(BaseCommand):
             spec_goods = SpecGoods.objects.get(spec_no=goods_no)
             return (spec_goods.u9_no, spec_goods.goods_name, spec_goods.tax_rate)
         except:
-            return ('', '', 0)
+            return (None, None, None)
 
     def invoice_summary(self, start_date, end_date):
         details = FinanceSalesAndInvoice.objects.values(
@@ -241,6 +241,12 @@ class Command(BaseCommand):
                 price = abs(float(invoice_amount / invoice_num))
                 
             material_no_and_goods_name = self.goods_no_to_material_no(goods_no)
+            tax_rate = None
+            untax_amount = None
+            if material_no_and_goods_name[2]:
+                tax_rate = float(material_no_and_goods_name[2])
+                untax_amount = invoice_amount / (1 + material_no_and_goods_name[2])
+                untax_amount = float(untax_amount)
             records.append({
                 "fields": {
                     "时间": end_date[:7],
@@ -251,6 +257,8 @@ class Command(BaseCommand):
                     "数量": invoice_num,
                     "单价": price,
                     "价税合计": float(invoice_amount),
+                    "税率": tax_rate,
+                    "未含税金额": untax_amount,
                 },
             })
 
