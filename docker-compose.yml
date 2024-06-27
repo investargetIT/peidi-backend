@@ -54,14 +54,11 @@ services:
       mysql:
         condition: service_healthy
   redis:
-    image: redis:latest
+    image: redis:7.2.5
     container_name: peidi-redis
-    command: redis-server /etc/redis/redis.conf
     volumes:
-      - ./peidi-redis/data:/var/lib/redis/
-      - ./peidi-redis/redis.conf:/etc/redis/redis.conf
+      - ./redis/data:/data
     ports:
       - "6379:6379"
     expose:
       - "6379"
-    restart: always
