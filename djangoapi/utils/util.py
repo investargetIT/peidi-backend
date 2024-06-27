@@ -52,5 +52,5 @@ def get_mysql_process_response_with_redis(redis_key, proc_name, args):
             rows = cursor.fetchall()
             for row in rows:
                 res_data.append(row)
-            write_to_cache(redis_key, res_data)
+            write_to_cache(redis_key, res_data, time_out=None)
     return res_data
