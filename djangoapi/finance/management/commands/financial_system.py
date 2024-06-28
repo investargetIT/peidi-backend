@@ -48,6 +48,10 @@ class Command(BaseCommand):
             # print()
         except SpecGoods.DoesNotExist:
             suite_goods = SuiteGoodsRec.objects.filter(suite_no=goods_model)
+            if len(suite_goods) == 0:
+                print('根据商家编码未找到组合装，尝试根据名称查找', goods_model)
+                suite_goods = SuiteGoodsRec.objects.filter(suite_name=goods_model)
+                print('结果找到了', len(suite_goods))
             if len(suite_goods) > 0:
                 # print(goods_model, '是组合装，包括以下单品：')
                 for goods in suite_goods:
