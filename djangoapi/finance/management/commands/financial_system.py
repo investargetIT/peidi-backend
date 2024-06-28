@@ -260,7 +260,7 @@ class Command(BaseCommand):
                     "品名": material_no_and_goods_name[1],
                     "数量": invoice_num,
                     "单价": price,
-                    "价税合计": float(invoice_amount),
+                    "价税合计": float("%.2f" % invoice_amount),
                     "税率": tax_rate,
                     "未含税金额": untax_amount,
                 },
@@ -559,7 +559,7 @@ class Command(BaseCommand):
                     "品名": material_no_and_goods_name[1],
                     "数量": i["uninvoice_num__sum"],
                     "单价": price,
-                    "价税合计": float(i["uninvoice_amount__sum"]),
+                    "价税合计": float("%.2f" % i["uninvoice_amount__sum"]),
                     "税率": tax_rate,
                     "未含税金额": untax_amount,
                 }
