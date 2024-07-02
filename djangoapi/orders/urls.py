@@ -15,9 +15,9 @@ orderDetailsapi = views.OrderDetailsView.as_view({
     'post': 'create',
 })
 
-# stockDetailsapi = views.StockDetailView.as_view({
-#     'post': 'create',
-# })
+stockDetailsapi = views.StockDetailView.as_view({
+    'post': 'create',
+})
 
 WMSShipDataAPI = views.WMSShipDataView.as_view({
     'post': 'create',
@@ -84,7 +84,7 @@ urlpatterns = [
     path("hissalesout", historySalesOutDetailsapi, name="historySalesOutDetailsapi"),
     re_path("hissalesout/(?P<pk>\d+)/", historySalesOutDetailsapione, name='historySalesOutDetailsapione'),
     path("orderdetails", orderDetailsapi, name="orderDetailsapi"),
-    # path("stockdetails", stockDetailsapi, name="stockDetailsapi"),
+    path("stockdetails", stockDetailsapi, name="stockDetailsapi"),
     path("wmsshipdata", WMSShipDataAPI, name="WMSShipDataAPI"),
     path('exchange', ExchangeManagementAPI, name="ExchangeManagementAPI"),
     path('shop_target', ShopTargetAPI, name="ShopTargetAPI"),

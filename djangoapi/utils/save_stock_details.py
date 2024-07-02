@@ -61,7 +61,7 @@ def savedatatourl(data, url, excel_path):
         if len(fails) > 0:
             print('非重复造成的失败', len(fails), fails)
         if len(duplicate_fails) > 0:
-            print('重复造成的失败', len(duplicate_fails), duplicate_fails)
+            print('重复造成的失败', len(duplicate_fails))
 
 def saveOrders(excel_path):
 
@@ -101,8 +101,8 @@ def saveOrders(excel_path):
                     'goods_type': row['分类'],
                     'stock': row['库存'],
                     'weight': row['单品重量'],
-                    'total_weight': row['库存总重量'],
-                    'is_defective': row['是否残次品'],
+                    # 'total_weight': row['库存总重量'],
+                    'is_defective': row['残次品'],
                     'unit_name': row['单位'],
                     'aux_unit_name': row['辅助单位'],
                     'aux_remark': row['辅助说明'],
@@ -128,13 +128,13 @@ def saveOrders(excel_path):
                     'produce_tooutstock_num': row['生产待出库量'],
                     'produce_toinstock_num': row['生产待入库量'],
                     'toqa_num': row['待质检量'],
-                    'outside_stock_num': row['外部库存'],
-                    'stock_diff': row['库存差异'],
-                    'sync_time': row['同步时间'],
+                    # 'outside_stock_num': row['外部库存'],
+                    # 'stock_diff': row['库存差异'],
+                    # 'sync_time': row['同步时间'],
                     'remark': row['备注'],
                     'goods_remark': row['货品备注'],
                     'specgoods_remark': row['单品备注'],
-                    'onsale_time': row['首销时间'],
+                    # 'onsale_time': row['首销时间'],
                     'last_inventory_time': row['最后盘点时间'],
                     'actual_stock_num': row['实际库存'],
                     'actual_todelivery_stock_num': row['实际可发库存'],
