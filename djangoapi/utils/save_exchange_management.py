@@ -59,7 +59,7 @@ def savedatatourl(data, url, excel_path):
             else:
                 duplicate_fails.append(fail['errmsg'])
         if len(fails) > 0:
-            print('非重复造成的失败', len(fails))
+            print('非重复造成的失败', len(fails), fails)
         if len(duplicate_fails) > 0:
             print('重复造成的失败', len(duplicate_fails))
 

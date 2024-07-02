@@ -388,7 +388,7 @@ class ExchangeManagement(models.Model):
     stock_status = models.CharField(max_length=40, blank=True, null=True, verbose_name='入库状态')
     tid = models.CharField(max_length=512, blank=True, null=True, verbose_name='原始订单')
     trade_no = models.CharField(max_length=512, blank=True, null=True, verbose_name='系统订单')
-    original_exchange_no = models.CharField(max_length=100, blank=True, null=True, verbose_name='原始退换单号')
+    original_exchange_no = models.CharField(max_length=512, blank=True, null=True, verbose_name='原始退换单号')
     buyer_nick = models.CharField(max_length=100, blank=True, null=True, verbose_name='网名')
     receiver_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='姓名')
     receiver_telno = models.CharField(max_length=40, blank=True, null=True, verbose_name='电话')
