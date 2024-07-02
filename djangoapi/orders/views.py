@@ -14,7 +14,7 @@ from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django_filters import rest_framework as filters
-from orders.models import orders, salesOutDetails, historySalesOutDetails, ExchangeManagement, ShopTarget, StockDetail
+from orders.models import orders, salesOutDetails, historySalesOutDetails, ExchangeManagement, ShopTarget, StockDetail, WMSShipData
 from orders.serializer import OrdersSerializer, SalesOutDetailsSerializer, HistorySalesOutDetailsSerializer, OrderDetailSerializer, StockDetailSerializer, WMSShipDataSerializer, ExchangeManagementSerializer, ShopTargetSerializer
 from utils.customclass import SuccessResponse, PeiDiError, PeiDiErrorResponse, ExceptionResponse
 
@@ -430,6 +430,7 @@ class WMSShipDataView(viewsets.ModelViewSet):
         try:
             datas = request.data
             if isinstance(datas, list):
+                WMSShipData.objects.all().delete()
                 success, fail = [], []
                 for data in datas:
                     try:
