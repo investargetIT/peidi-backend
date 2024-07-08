@@ -43,14 +43,18 @@ def getMysqlProcessResponseWithRedis(redis_key, proc_name, args):
             write_to_cache(redis_key, res_data)
     return res_data
 
+def call_db_procedure(proc_name, args):
+    res_data = []
+    with connection.cursor() as cursor:
+        cursor.callproc(proc_name, args)
+        rows = cursor.fetchall()
+        for row in rows:
+            res_data.append(row)
+    return res_data
+
 def get_mysql_process_response_with_redis(redis_key, proc_name, args):
     res_data = read_from_cache(redis_key)
     if not res_data:
-        with connection.cursor() as cursor:
-            res_data = []
-            cursor.callproc(proc_name, args)
-            rows = cursor.fetchall()
-            for row in rows:
-                res_data.append(row)
-            write_to_cache(redis_key, res_data, time_out=None)
+        res_data = call_db_procedure(proc_name, args)
+        write_to_cache(redis_key, res_data, time_out=None)
     return res_data
