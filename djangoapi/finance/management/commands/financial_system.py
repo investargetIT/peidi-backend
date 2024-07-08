@@ -242,15 +242,16 @@ class Command(BaseCommand):
 
             price = None
             if invoice_num != 0:
-                price = abs(float(invoice_amount / invoice_num))
-                
+                price = abs(float("%.2f" % (invoice_amount / invoice_num)))
+
             material_no_and_goods_name = self.goods_no_to_material_no(goods_no)
             tax_rate = None
             untax_amount = None
             if material_no_and_goods_name[2]:
                 tax_rate = float(material_no_and_goods_name[2])
                 untax_amount = invoice_amount / (1 + material_no_and_goods_name[2])
-                untax_amount = float(untax_amount)
+                untax_amount = float("%.2f" % untax_amount)
+
             records.append({
                 "fields": {
                     "时间": end_date[:7],
@@ -541,14 +542,14 @@ class Command(BaseCommand):
 
             price = None
             if i["uninvoice_num__sum"] != 0:
-                price = abs(float(i["uninvoice_amount__sum"] / i["uninvoice_num__sum"]))
+                price = abs(float("%.2f" % (i["uninvoice_amount__sum"] / i["uninvoice_num__sum"])))
 
             tax_rate = None
             untax_amount = None
             if material_no_and_goods_name[2]:
                 tax_rate = float(material_no_and_goods_name[2])
                 untax_amount = i["uninvoice_amount__sum"] / (1 + material_no_and_goods_name[2])
-                untax_amount = float(untax_amount)
+                untax_amount = float("%.2f" % untax_amount)
 
             uninvoiced_records.append({
                 "fields": {
