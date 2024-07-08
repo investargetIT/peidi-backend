@@ -61,7 +61,7 @@ def savedatatourl(data, url, excel_path):
         if len(fails) > 0:
             print('非重复造成的失败', len(fails), fails)
         if len(duplicate_fails) > 0:
-            print('重复造成的失败', len(duplicate_fails), duplicate_fails)
+            print('重复造成的失败', len(duplicate_fails))
 
 def saveOrders(excel_path):
 
