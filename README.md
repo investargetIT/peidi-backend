@@ -12,13 +12,17 @@ cp .env.example .env
 ```
 docker compose up --build
 ```
-如果需要运行 Django 相关命令，需要进入 Django 容器
+Django
 ```
 docker exec -ti peidi-django /bin/bash
 ```
-数据库操作
+MySQL
 ```
 docker exec -ti peidi-mysql mysql -uroot -p
+```
+Redis
+```
+docker exec -ti peidi-redis redis-cli
 ```
 停止并移除容器
 ```
