@@ -15,6 +15,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django_filters import rest_framework as filters
+from drf_yasg.utils import swagger_auto_schema
 from orders.models import orders, salesOutDetails, historySalesOutDetails, ExchangeManagement, ShopTarget, StockDetail, WMSShipData
 from orders.serializer import OrdersSerializer, SalesOutDetailsSerializer, HistorySalesOutDetailsSerializer, OrderDetailSerializer, StockDetailSerializer, WMSShipDataSerializer, ExchangeManagementSerializer, ShopTargetSerializer
 from utils.customclass import SuccessResponse, PeiDiError, PeiDiErrorResponse, ExceptionResponse
@@ -421,10 +422,12 @@ class HistorySalesOutDetailsView(viewsets.ModelViewSet):
 #         except Exception:
 #             return ExceptionResponse(traceback.format_exc().split('\n')[-2])
 
+@swagger_auto_schema(method='post', request_body=StockDetailSerializer)
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def override_stock_details(request):
+    """旺店通库存明细数据覆盖"""
     try:
         with transaction.atomic():
             StockDetail.objects.all().delete()
