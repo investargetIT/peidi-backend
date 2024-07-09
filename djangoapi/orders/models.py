@@ -350,7 +350,7 @@ class StockDetail(models.Model):
     remark = models.CharField(max_length=1024, blank=True, null=True, verbose_name='备注')
     goods_remark = models.CharField(max_length=1024, blank=True, null=True, verbose_name='货品备注')
     specgoods_remark = models.CharField(max_length=1024, blank=True, null=True, verbose_name='单品备注')
-    spec_created = models.DateTimeField(blank=True, null=True, help_text='单品创建时间')
+    spec_created = models.DateTimeField(blank=True, null=True, verbose_name='单品创建时间')
     last_inventory_time = models.DateTimeField(blank=True, null=True, verbose_name='最后盘点时间')
     usable_stock = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name='可用库存')
     img_url = models.CharField(max_length=1024, blank=True, null=True, verbose_name='图片链接')

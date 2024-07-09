@@ -46,22 +46,7 @@ def savedatatourl(data, url, excel_path):
     })
     res.raise_for_status()
     res = res.content.decode()
-    res = json.loads(res)
-    fails = []
-    duplicate_fails = []
-    if len(res['result']['success']) > 0:
-        print('导入成功', len(res['result']['success']))
-    if len(res['result']['fail']) > 0:
-        print('导入失败', len(res['result']['fail']))
-        for fail in res['result']['fail']:
-            if 'Duplicate' not in fail['errmsg']:
-                fails.append(fail)
-            else:
-                duplicate_fails.append(fail['errmsg'])
-        if len(fails) > 0:
-            print('非重复造成的失败', len(fails), fails)
-        if len(duplicate_fails) > 0:
-            print('重复造成的失败', len(duplicate_fails))
+    print(res)
 
 def saveOrders(excel_path):
 
@@ -134,7 +119,9 @@ def saveOrders(excel_path):
                     'remark': row['备注'],
                     'goods_remark': row['货品备注'],
                     'specgoods_remark': row['单品备注'],
+                    'tax_rate': row['税率'],
                     # 'onsale_time': row['首销时间'],
+                    'spec_created': row['单品创建时间'],
                     'last_inventory_time': row['最后盘点时间'],
                     'actual_stock_num': row['实际库存'],
                     'actual_todelivery_stock_num': row['实际可发库存'],

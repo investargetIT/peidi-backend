@@ -85,6 +85,7 @@ urlpatterns = [
     re_path("hissalesout/(?P<pk>\d+)/", historySalesOutDetailsapione, name='historySalesOutDetailsapione'),
     path("orderdetails", orderDetailsapi, name="orderDetailsapi"),
     # path("stockdetails", stockDetailsapi, name="stockDetailsapi"),
+    path("stockdetails", views.override_stock_details),
     path("wmsshipdata", WMSShipDataAPI, name="WMSShipDataAPI"),
     path('exchange', ExchangeManagementAPI, name="ExchangeManagementAPI"),
     path('shop_target', ShopTargetAPI, name="ShopTargetAPI"),
