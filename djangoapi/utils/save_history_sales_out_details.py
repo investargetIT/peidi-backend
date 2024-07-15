@@ -49,6 +49,7 @@ def savedatatourl(data, url, excel_path):
     res = json.loads(res)
     fails = []
     duplicate_fails = []
+    duplicate_salesout_failes = []
     if len(res['result']['success']) > 0:
         print('导入成功', len(res['result']['success']))
     if len(res['result']['fail']) > 0:
@@ -56,10 +57,14 @@ def savedatatourl(data, url, excel_path):
         for fail in res['result']['fail']:
             if 'Duplicate' not in fail['errmsg']:
                 fails.append(fail)
+            elif '已存在' in fail['errmsg']:
+                duplicate_salesout_failes.append(fail['errmsg'])
             else:
                 duplicate_fails.append(fail['errmsg'])
         if len(fails) > 0:
-            print('非重复造成的失败', len(fails), fails)
+            print('非重复造成的失败', len(fails))
+        if len(duplicate_salesout_failes) > 0:
+            print('重复销售出库明细造成的失败', len(duplicate_salesout_failes))
         if len(duplicate_fails) > 0:
             print('重复造成的失败', len(duplicate_fails), duplicate_fails)
 

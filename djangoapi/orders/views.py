@@ -335,8 +335,12 @@ class HistorySalesOutDetailsView(viewsets.ModelViewSet):
                         with transaction.atomic():
                             serializer = self.serializer_class(data=data)
                             if serializer.is_valid():
-                                serializer.save()
-                                success.append(serializer.data)
+                                salesout_records = salesOutDetails.objects.filter(trade_no=data['trade_no'])
+                                if len(salesout_records) == 0:
+                                    serializer.save()
+                                    success.append(serializer.data)
+                                else:
+                                    fail.append({'data': data, 'errmsg': 'Duplicate entry 已存在销售出库明细 ' + data['trade_no']})
                             else:
                                 fail.append({'data': data, 'errmsg': serializer.errors})
                     except Exception as err:
