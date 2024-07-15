@@ -225,6 +225,7 @@ class salesOutDetails(models.Model):
             models.UniqueConstraint(fields=['oid', 'stockout_no', 'spec_no', 'goods_no', 'num'], name='unique_oid_stockoutno_specno_goodsno_num')
         ]
         indexes = [
+            models.Index(fields=["trade_no"]),
             models.Index(fields=["otid"])
         ]
 
