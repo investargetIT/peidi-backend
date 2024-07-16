@@ -436,9 +436,11 @@ def override_stock_details(request):
         with transaction.atomic():
             StockDetail.objects.all().delete()
             serializer = StockDetailSerializer(data=request.data, many=True)
-            serializer.is_valid()
-            serializer.save()
-            return SuccessResponse("库存明细上传成功")
+            if serializer.is_valid():
+                serializer.save()
+                return SuccessResponse("库存明细上传成功")
+            else:
+                raise Exception(serializer.errors)
     except Exception:
         return ExceptionResponse(traceback.format_exc().split('\n')[-2])
     

@@ -26,9 +26,11 @@ def override_spec_goods(request):
         with transaction.atomic():
             SpecGoods.objects.all().delete()
             serializer = SpecGoodsSerializer(data=request.data, many=True)
-            serializer.is_valid()
-            serializer.save()
-            return SuccessResponse("单品列表上传成功")
+            if serializer.is_valid():
+                serializer.save()
+                return SuccessResponse("单品列表上传成功")
+            else:
+                raise Exception(serializer.errors)
     except Exception:
         return ExceptionResponse(traceback.format_exc().split('\n')[-2])
     
