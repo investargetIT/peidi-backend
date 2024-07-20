@@ -123,7 +123,7 @@ def saveOrders(excel_path):
                     'goods_discount': row['货品总优惠'],
                     'cod_amount': row['货到付款金额'],
                     'receivable': row['应收金额'],
-                    'ori_receivable': row['子单应收金额'],
+                    'ori_receivable': row['子单应收金额 '],
                     'buyer_nick': row['客户网名'],
                     'receiver_name': row['收货人'],
                     'receiver_area': row['收货地区'],
