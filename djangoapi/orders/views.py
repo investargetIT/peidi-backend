@@ -242,12 +242,26 @@ class SalesOutDetailsView(viewsets.ModelViewSet):
                 for data in datas:
                     try:
                         with transaction.atomic():
-                            serializer = self.serializer_class(data=data)
-                            if serializer.is_valid():
-                                serializer.save()
-                                success.append(serializer.data)
-                            else:
-                                fail.append({'data': data, 'errmsg': serializer.errors})
+                            try:
+                                obj = salesOutDetails.objects.get(
+                                    oid=data['oid'],
+                                    stockout_no=data['stockout_no'],
+                                    spec_no=data['spec_no'],
+                                    goods_no=data['goods_no'],
+                                    num=data['num'],
+                                )
+                            except salesOutDetails.DoesNotExist:
+                                obj = None
+                            finally:
+                                serializer = self.serializer_class(
+                                    obj,
+                                    data=data,
+                                )
+                                if serializer.is_valid():   
+                                    serializer.save()
+                                    success.append(serializer.data)
+                                else:
+                                    fail.append({'data': data, 'errmsg': serializer.errors})
                     except Exception as err:
                         fail.append({'data': data, 'errmsg': str(err)})
                 return SuccessResponse({'success': success, 'fail': fail})
