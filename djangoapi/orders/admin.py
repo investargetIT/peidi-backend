@@ -372,9 +372,9 @@ class HistorySalesOutDetailsAdmin(admin.ModelAdmin):
     search_fields = ["trade_no", "tid", "oid", "buyer_nick"]
     list_filter = (
         (
-            "pay_time",
+            "deliver_time",
             DateTimeRangeFilterBuilder(
-                title="支付时间",
+                title="发货时间",
                 default_start=datetime(2024, 1, 1),
                 default_end=datetime(2024, 7, 31, 23, 59, 59),
             ),
