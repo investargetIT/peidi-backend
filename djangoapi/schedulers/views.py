@@ -11,6 +11,7 @@ from apscheduler.triggers.date import DateTrigger
 from django_apscheduler.jobstores import DjangoJobStore
 
 from utils.customclass import SuccessResponse, PeiDiError, ExceptionResponse, PeiDiErrorResponse
+from utils.util import get_mysql_process_response_with_redis
 
 scheduler = BackgroundScheduler()
 scheduler.add_jobstore(DjangoJobStore(), "default")
@@ -52,6 +53,18 @@ def send_dingtalk_msg(content, mobiles):
     errcode = res.get('errcode')
     if errcode != 0:
         raise PeiDiError(20501, msg=res['errmsg'])
+    
+def read_from_cache_or_db(proc_name, parameters_list):
+    redis_key = '{}#{}'.format(proc_name, "/".join(parameters_list))
+    get_mysql_process_response_with_redis(
+        redis_key=redis_key,
+        proc_name=proc_name,
+        args=tuple(parameters_list)
+    )
+
+def get_dashboard_data(proc_name_list):
+    # TODO
+    pass
 
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
@@ -86,5 +99,22 @@ def schedule_send_dingtalk_msg(request):
             max_instances=1,
             replace_existing=True,
         )
+
+    return SuccessResponse('定时任务创建成功')
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def schedule_get_dashboard_data(request):
+    proc_name_list = request.data.get('proc_name_list')
+        
+    scheduler.add_job(
+        get_dashboard_data,
+        trigger=CronTrigger(second="*/10"), # TODO
+        id="get_dashboard_data",
+        args=[proc_name_list],
+        max_instances=1,
+        replace_existing=True,
+    )
 
     return SuccessResponse('定时任务创建成功')
