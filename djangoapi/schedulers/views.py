@@ -68,13 +68,25 @@ def read_from_cache_or_db(proc_name, parameters_list):
 
 def get_dashboard_data():
     yesterday = datetime.now() - timedelta(1)
+    thirtydays_ago = yesterday - timedelta(30)
     yesterday_str = datetime.strftime(yesterday, '%Y-%m-%d')
+    thirtydays_ago_str = datetime.strftime(thirtydays_ago, '%Y-%m-%d')
+    yesterday_year = datetime.strftime(yesterday, '%Y')
     yesterday_month = datetime.strftime(yesterday, '%Y-%m')
-    start = yesterday_month + '-01 00:00:00'
+    year_start = yesterday_year + '-01-01 00:00:00'
+    month_start = yesterday_month + '-01 00:00:00'
+    thirtydays_ago_start = thirtydays_ago_str + ' 00:00:00'
     end = yesterday_str + ' 23:59:59'
+    proc_list = [
+        { 'name': 'GetSalesAmountRanking', 'args': [month_start, end] },
+        { 'name': 'CalculateSPUPerformance', 'args': [month_start, end] },
+        { 'name': 'CalculateSPUPerformance', 'args': [year_start, end] },
+        { 'name': 'GetOrderCountByCity', 'args': [year_start, end] },
+        { 'name': 'GetOrderCountByCity', 'args': [thirtydays_ago_start, end] },
+    ]
     # TODO
-    for name in []:
-        read_from_cache_or_db(proc_name=name, parameters_list=[start, end])
+    for proc in proc_list:
+        read_from_cache_or_db(proc_name=proc['name'], parameters_list=proc['args'])
     pass
 
 @api_view(['POST'])
