@@ -1,4 +1,5 @@
 import os, json, requests
+from datetime import datetime, timedelta
 
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.authentication import TokenAuthentication
@@ -63,7 +64,13 @@ def read_from_cache_or_db(proc_name, parameters_list):
     )
 
 def get_dashboard_data(proc_name_list):
-    # TODO
+    yesterday = datetime.now() - timedelta(1)
+    yesterday_str = datetime.strftime(yesterday, '%Y-%m-%d')
+    yesterday_year = datetime.strftime(yesterday, '%Y')
+    start = yesterday_year + '-01-01 00:00:00'
+    end = yesterday_str + ' 23:59:59'
+    for name in proc_name_list:
+        read_from_cache_or_db(proc_name=name, parameters_list=[start, end])
     pass
 
 @api_view(['POST'])
@@ -110,7 +117,7 @@ def schedule_get_dashboard_data(request):
         
     scheduler.add_job(
         get_dashboard_data,
-        trigger=CronTrigger(second="*/10"), # TODO
+        trigger=CronTrigger(day="*", hour=0),
         id="get_dashboard_data",
         args=[proc_name_list],
         max_instances=1,
