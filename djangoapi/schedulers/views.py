@@ -64,7 +64,7 @@ def read_from_cache_or_db(proc_name, parameters_list):
         proc_name=proc_name,
         args=tuple(parameters_list)
     )
-    logger.info(result)
+    return result
 
 def get_dashboard_data():
     yesterday = datetime.now() - timedelta(1)
@@ -84,9 +84,13 @@ def get_dashboard_data():
         { 'name': 'GetOrderCountByCity', 'args': [year_start, end] },
         { 'name': 'GetOrderCountByCity', 'args': [thirtydays_ago_start, end] },
     ]
-    # TODO
     for proc in proc_list:
         read_from_cache_or_db(proc_name=proc['name'], parameters_list=proc['args'])
+    
+    result = read_from_cache_or_db(proc_name='CalculateSPUPerformance', parameters_list=[month_start, end])
+    for row in result:
+        data = read_from_cache_or_db(proc_name='CalculateShopBySPU', parameters_list=[row[0], year_start, end])
+        logger.info(data)
     pass
 
 @api_view(['POST'])
@@ -132,7 +136,7 @@ def schedule_get_dashboard_data(request):
     
     scheduler.add_job(
         get_dashboard_data,
-        trigger=CronTrigger(day="*", hour=0),
+        trigger=CronTrigger(day="*", hour=1),
         id="get_dashboard_data",
         max_instances=1,
         replace_existing=True,
