@@ -1,4 +1,4 @@
-import os, json, requests
+import os, json, requests, logging
 from datetime import datetime, timedelta
 
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -13,6 +13,8 @@ from django_apscheduler.jobstores import DjangoJobStore
 
 from utils.customclass import SuccessResponse, PeiDiError, ExceptionResponse, PeiDiErrorResponse
 from utils.util import get_mysql_process_response_with_redis
+
+logger = logging.getLogger('django')
 
 scheduler = BackgroundScheduler()
 scheduler.add_jobstore(DjangoJobStore(), "default")
@@ -57,17 +59,18 @@ def send_dingtalk_msg(content, mobiles):
     
 def read_from_cache_or_db(proc_name, parameters_list):
     redis_key = '{}#{}'.format(proc_name, "/".join(parameters_list))
-    get_mysql_process_response_with_redis(
+    result = get_mysql_process_response_with_redis(
         redis_key=redis_key,
         proc_name=proc_name,
         args=tuple(parameters_list)
     )
+    logger.info(result)
 
 def get_dashboard_data(proc_name_list):
     yesterday = datetime.now() - timedelta(1)
     yesterday_str = datetime.strftime(yesterday, '%Y-%m-%d')
-    yesterday_year = datetime.strftime(yesterday, '%Y')
-    start = yesterday_year + '-01-01 00:00:00'
+    yesterday_month = datetime.strftime(yesterday, '%Y-%m')
+    start = yesterday_month + '-01 00:00:00'
     end = yesterday_str + ' 23:59:59'
     for name in proc_name_list:
         read_from_cache_or_db(proc_name=name, parameters_list=[start, end])
@@ -114,7 +117,7 @@ def schedule_send_dingtalk_msg(request):
 @permission_classes([IsAuthenticated])
 def schedule_get_dashboard_data(request):
     proc_name_list = request.data.get('proc_name_list')
-        
+    
     scheduler.add_job(
         get_dashboard_data,
         trigger=CronTrigger(day="*", hour=0),
