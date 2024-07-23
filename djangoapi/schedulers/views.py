@@ -66,13 +66,14 @@ def read_from_cache_or_db(proc_name, parameters_list):
     )
     logger.info(result)
 
-def get_dashboard_data(proc_name_list):
+def get_dashboard_data():
     yesterday = datetime.now() - timedelta(1)
     yesterday_str = datetime.strftime(yesterday, '%Y-%m-%d')
     yesterday_month = datetime.strftime(yesterday, '%Y-%m')
     start = yesterday_month + '-01 00:00:00'
     end = yesterday_str + ' 23:59:59'
-    for name in proc_name_list:
+    # TODO
+    for name in []:
         read_from_cache_or_db(proc_name=name, parameters_list=[start, end])
     pass
 
@@ -116,13 +117,11 @@ def schedule_send_dingtalk_msg(request):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def schedule_get_dashboard_data(request):
-    proc_name_list = request.data.get('proc_name_list')
     
     scheduler.add_job(
         get_dashboard_data,
         trigger=CronTrigger(day="*", hour=0),
         id="get_dashboard_data",
-        args=[proc_name_list],
         max_instances=1,
         replace_existing=True,
     )
