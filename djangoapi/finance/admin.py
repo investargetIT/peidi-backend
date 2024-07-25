@@ -436,6 +436,14 @@ class GoodsSalesSummaryAdmin(ImportExportModelAdmin):
         "abnormal_warehouse_sales_num",
         "refund_stockin",
     ]
+    list_filter = (
+        (
+            "start_date",
+            DateRangeFilterBuilder(
+                title="开始日期",
+            ),
+        ),
+    )
     resource_classes = [GoodsSalesSummaryResource]
 
 @admin.register(FinanceSalesAndInvoice)
