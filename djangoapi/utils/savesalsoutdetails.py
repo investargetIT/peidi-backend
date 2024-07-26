@@ -6,6 +6,7 @@ import traceback
 import requests
 import xlrd
 from xlrd.xldate import xldate_as_datetime
+import pandas as pd
 
 # from peidiexcel import base_url
 
@@ -14,28 +15,36 @@ base_url = 'http://localhost:8000/'
 auth_token = os.environ.get('DJANGO_AUTH_TOKEN')
 
 
-def open_excel(file):
-    try:
-        data = xlrd.open_workbook(file)
-        return data
-    except Exception as e:
-        print(str(e))
+# def open_excel(file):
+#     try:
+#         data = xlrd.open_workbook(file)
+#         return data
+#     except Exception as e:
+#         print(str(e))
 
 #根据索引获取Excel表格中的数据   参数:file：Excel文件路径     colnameindex：表头列名所在行的索引  ，by_index：表的索引
 def excel_table_byindex(file, colnameindex=0,by_index=0):
-    data = open_excel(file)
-    table = data.sheets()[by_index]
-    nrows = table.nrows #行数
-    colnames =  table.row_values(colnameindex) #某一行数据
-    list =[]
-    for rownum in range(1,nrows):
-         row = table.row_values(rownum)
-         if row:
-             app = {}
-             for i in range(len(colnames)):
-                app[colnames[i]] = row[i]
-             list.append(app)
+    list = []
+    df = pd.read_excel(file, keep_default_na=False)
+    df = df.replace('_x000D_\n', '', regex=True)
+    for row in df.values:
+        data = {}
+        for idx, x in enumerate(row):
+            data[df.columns.values[idx]] = x
+        list.append(data)
     return list
+    # table = data.sheets()[by_index]
+    # nrows = table.nrows #行数
+    # colnames =  table.row_values(colnameindex) #某一行数据
+    # list =[]
+    # for rownum in range(1,nrows):
+    #      row = table.row_values(rownum)
+    #      if row:
+    #          app = {}
+    #          for i in range(len(colnames)):
+    #             app[colnames[i]] = row[i]
+    #          list.append(app)
+    # return list
 
 
 def savedatatourl(data, url, excel_path):
