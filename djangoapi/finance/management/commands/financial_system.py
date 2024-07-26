@@ -251,6 +251,7 @@ class Command(BaseCommand):
                 tax_rate = float("%.2f" % material_no_and_goods_name[2])
                 untax_amount = invoice_amount / (1 + material_no_and_goods_name[2] / 100)
                 if material_no_and_goods_name[2] < 1:
+                    tax_rate = float("%.2f" % (material_no_and_goods_name[2] * 100))
                     untax_amount = invoice_amount / (1 + material_no_and_goods_name[2])
                 untax_amount = float("%.2f" % untax_amount)
 
@@ -552,6 +553,7 @@ class Command(BaseCommand):
                 tax_rate = float("%.2f" % material_no_and_goods_name[2])
                 untax_amount = i["uninvoice_amount__sum"] / (1 + material_no_and_goods_name[2] / 100)
                 if material_no_and_goods_name[2] < 1:
+                    tax_rate = float("%.2f" % (material_no_and_goods_name[2] * 100))
                     untax_amount = i["uninvoice_amount__sum"] / (1 + material_no_and_goods_name[2])
                 untax_amount = float("%.2f" % untax_amount)
 
