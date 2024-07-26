@@ -130,7 +130,7 @@ class TmallRefundResource(resources.ModelResource):
     paid = Field(attribute='paid', column_name='买家实际支付金额')
     goods_name = Field(attribute='goods_name', column_name='宝贝标题')
     refund = Field(attribute='refund', column_name='买家退款金额')
-    refund_source = Field(attribute='refund_source', column_name='手工退款_系统退款')
+    refund_source = Field(attribute='refund_source', column_name='手工退款/系统退款')
     goods_return = Field(attribute='goods_return', column_name='是否需要退货')
     apply_time = Field(attribute='apply_time', column_name='退款的申请时间')
     refund_status = Field(attribute='refund_status', column_name='退款状态')
@@ -138,10 +138,10 @@ class TmallRefundResource(resources.ModelResource):
     deliver_logistics_info = Field(attribute='deliver_logistics_info', column_name='发货物流信息')
     service_intervene = Field(attribute='service_intervene', column_name='客服介入状态')
     seller_name = Field(attribute='seller_name', column_name='卖家真实姓名')
-    seller_name_new = Field(attribute='seller_name_new', column_name='卖家真实姓名_新')
+    seller_name_new = Field(attribute='seller_name_new', column_name='卖家真实姓名(新)')
     refund_reason = Field(attribute='refund_reason', column_name='买家退款原因')
     refund_explanation = Field(attribute='refund_explanation', column_name='买家退款说明')
-    refund_type = Field(attribute='refund_type', column_name='部分退款_全部退款')
+    refund_type = Field(attribute='refund_type', column_name='部分退款/全部退款')
 
     class Meta:
         model = TmallRefund

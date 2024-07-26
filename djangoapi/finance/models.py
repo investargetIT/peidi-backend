@@ -44,9 +44,6 @@ class PddRefund(models.Model):
     class Meta:
         verbose_name = "仅退款拼多多"
         verbose_name_plural = "仅退款拼多多"
-        constraints = [
-            models.UniqueConstraint(fields=['trade_no', 'goods_id', 'applicant'], name='unique_tradeno_goodsid_applicant')
-        ]
 
 # 京东仅退款
 class JdRefund(models.Model):
