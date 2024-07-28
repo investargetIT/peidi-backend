@@ -110,6 +110,7 @@ DATABASES = {
         'PASSWORD': os.environ.get('MYSQL_ROOT_PASSWORD'),
         'HOST': os.environ.get('MYSQL_HOST'),
         'PORT': '3306',
+        'CONN_HEALTH_CHECKS': True,
     }
 }
 
