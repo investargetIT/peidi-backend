@@ -1,4 +1,4 @@
-import requests, os, time
+import requests, os, time, math
 from django.core.management.base import BaseCommand
 from django.db.models import Sum
 
@@ -114,10 +114,22 @@ class Command(BaseCommand):
                 result.append(f)
                  
         return result
-
+    
+    def send_apitable_request(self, datasheet, records):
+        for i in range(math.ceil(len(records)/30)):
+            s = 30 * i
+            e = 30 * (i + 1)
+            if i == math.ceil(len(records)/30):
+                e = len(records)
+            res = requests.post(
+                url=f'{base_url}/fusion/v1/datasheets/{datasheet}/records',
+                json={"records": records[s:e]},
+                headers={"Authorization": f"Bearer {token}"},
+            )
+            res.raise_for_status()
+            time.sleep(1)
+    
     def invoice_created_by_ali(self, start_date, end_date):
-        url = os.getenv("APITABLE_BASE_URL") + "/fusion/v1/datasheets/dstpdLsvjo1Nr6iti6/records"
-        token = os.getenv("APITABLE_TOKEN")
         merged_invoice = self.merge_original_invoice(start_date, end_date)
         invoices, records = [], []
         for invoice in merged_invoice:
@@ -135,26 +147,13 @@ class Command(BaseCommand):
                 }
             records.append({ "fields": r })
         print(len(records))
-        for i in range(int(len(records)/30)+1):
-            s = 30 * i
-            e = 30 * (i + 1)
-            if i == int(len(records)/30):
-                e = len(records)
-            res = requests.post(
-                url=url,
-                json={"records": records[s:e]},
-                headers={"Authorization": f"Bearer {token}"},
-            )
-            res.raise_for_status()
-            time.sleep(1)
+        self.send_apitable_request("dstpdLsvjo1Nr6iti6", records)
 
     def invoice_created_manually(self, start_date, end_date):
         end_date += " 23:59:59"        
         manual_invoices = InvoiceManual.objects.filter(
             invoice_time__range=(start_date, end_date)
         ).values()
-        url = os.getenv("APITABLE_BASE_URL") + "/fusion/v1/datasheets/dst6D5RicsfUPcUunq/records"
-        token = os.getenv("APITABLE_TOKEN")
         records = []
         for invoice in manual_invoices:
             date = invoice['invoice_time']
@@ -186,18 +185,7 @@ class Command(BaseCommand):
             records.append({ "fields": r })
 
         print(len(records))
-        for i in range(int(len(records)/30)+1):
-            s = 30 * i
-            e = 30 * (i + 1)
-            if i == int(len(records)/30):
-                e = len(records)
-            res = requests.post(
-                url=url,
-                json={"records": records[s:e]},
-                headers={"Authorization": f"Bearer {token}"},
-            )
-            res.raise_for_status()
-            time.sleep(1)
+        self.send_apitable_request("dst6D5RicsfUPcUunq", records)
 
     def goods_no_to_material_no(self, goods_no):
         try:
@@ -271,19 +259,7 @@ class Command(BaseCommand):
             })
 
         print(len(records))
-        url = base_url + "/fusion/v1/datasheets/dstayEpslFPDrHdEcC/records"
-        for i in range(int(len(records)/30)+1):
-            s = 30 * i
-            e = 30 * (i + 1)
-            if i == int(len(records)/30):
-                e = len(records)
-            res = requests.post(
-                url=url,
-                json={"records": records[s:e]},
-                headers={"Authorization": f"Bearer {token}"},
-            )
-            res.raise_for_status()
-            time.sleep(1)
+        self.send_apitable_request("dstayEpslFPDrHdEcC", records)
 
         summary = details.aggregate(
             total_num=Sum("details_sum_num"),
@@ -350,21 +326,8 @@ class Command(BaseCommand):
             )
             f.save()
 
-        url = os.getenv("APITABLE_BASE_URL") + "/fusion/v1/datasheets/dstsvNdHbHR27VJ0WK/records"
-        token = os.getenv("APITABLE_TOKEN")
         print(len(records))
-        for i in range(int(len(records)/30)+1):
-            s = 30 * i
-            e = 30 * (i + 1)
-            if i == int(len(records)/30):
-                e = len(records)
-            res = requests.post(
-                url=url,
-                json={"records": records[s:e]},
-                headers={"Authorization": f"Bearer {token}"},
-            )
-            res.raise_for_status()
-            time.sleep(1)
+        self.send_apitable_request("dstsvNdHbHR27VJ0WK", records)
         
         summary = details.aggregate(
             total_num=Sum("details_sum_num"),
@@ -373,7 +336,7 @@ class Command(BaseCommand):
         )
         print(summary)
     
-    def refund_basic(self, url, refund_records):
+    def refund_basic(self, datasheet, refund_records):
         records = []
         for refund_record in refund_records:
             trade_no = refund_record.trade_no
@@ -436,30 +399,17 @@ class Command(BaseCommand):
                 f.save()
 
         print(len(records))
-        for i in range(int(len(records)/30)+1):
-            s = 30 * i
-            e = 30 * (i + 1)
-            if i == int(len(records)/30):
-                e = len(records)
-            res = requests.post(
-                url=url,
-                json={"records": records[s:e]},
-                headers={"Authorization": f"Bearer {token}"},
-            )
-            res.raise_for_status()
-            time.sleep(1)
+        self.send_apitable_request(datasheet, records)
 
     def extend_douyin_refund(self, start_date, end_date):
         end_date += " 23:59:59" 
         refund_records = DouyinRefund.objects.filter(refund_time__range=(start_date, end_date))
-        url = os.getenv("APITABLE_BASE_URL") + "/fusion/v1/datasheets/dstDJlVoKmcEGgbk8n/records"
-        self.refund_basic(url, refund_records)
+        self.refund_basic("dstDJlVoKmcEGgbk8n", refund_records)
 
     def extend_jd_refund(self, start_date, end_date):
         end_date += " 23:59:59" 
         refund_records = JdRefund.objects.filter(apply_time__range=(start_date, end_date))
-        url = os.getenv("APITABLE_BASE_URL") + "/fusion/v1/datasheets/dstMTmJLFNzjg3tBtn/records"
-        self.refund_basic(url, refund_records)
+        self.refund_basic("dstMTmJLFNzjg3tBtn", refund_records)
 
     def extend_pdd_refund(self, start_date, end_date):
         end_date += " 23:59:59" 
@@ -467,8 +417,7 @@ class Command(BaseCommand):
             apply_time__range=(start_date, end_date),
             refund_status="打款成功",
         )
-        url = os.getenv("APITABLE_BASE_URL") + "/fusion/v1/datasheets/dstc0QSDi41j7GMkYa/records"
-        self.refund_basic(url, refund_records)
+        self.refund_basic("dstc0QSDi41j7GMkYa", refund_records)
 
     def extend_tmall_refund(self, start_date, end_date):
         end_date += " 23:59:59" 
@@ -476,8 +425,7 @@ class Command(BaseCommand):
             apply_time__range=(start_date, end_date),
             refund_type="部分退款",
         ).exclude(goods_name__contains="购物金")
-        url = os.getenv("APITABLE_BASE_URL") + "/fusion/v1/datasheets/dst79PPdUTvu6FUCL8/records"
-        self.refund_basic(url, refund_records)
+        self.refund_basic("dst79PPdUTvu6FUCL8", refund_records)
 
     def refund_summary(self, start_date, end_date):
         details = FinanceSalesAndInvoice.objects.values(
@@ -521,8 +469,6 @@ class Command(BaseCommand):
             invoice_amount__sum=Sum("invoice_amount", default=0),
             uninvoice_amount__sum=Sum("sales_amount", default=0)+Sum("post_amount", default=0)-Sum("refund_amount", default=0)-Sum("invoice_amount", default=0),
         )
-        url = os.getenv("APITABLE_BASE_URL") + "/fusion/v1/datasheets/dstG0kXVLwywl4U6Bq/records"
-        token = os.getenv("APITABLE_TOKEN")
         records, uninvoiced_records = [], []
         for i in details:
             print(i)
@@ -588,33 +534,10 @@ class Command(BaseCommand):
         #     f.save()
 
         print(len(records))
-        for i in range(int(len(records)/30)+1):
-            s = 30 * i
-            e = 30 * (i + 1)
-            if i == int(len(records)/30):
-                e = len(records)
-            res = requests.post(
-                url=url,
-                json={"records": records[s:e]},
-                headers={"Authorization": f"Bearer {token}"},
-            )
-            res.raise_for_status()
-            time.sleep(1)
+        self.send_apitable_request("dstG0kXVLwywl4U6Bq", records)
         
         print(len(uninvoiced_records))
-        url = base_url + "/fusion/v1/datasheets/dstBxinVoohgN131w8/records"
-        for i in range(int(len(uninvoiced_records)/30)+1):
-            s = 30 * i
-            e = 30 * (i + 1)
-            if i == int(len(uninvoiced_records)/30):
-                e = len(uninvoiced_records)
-            res = requests.post(
-                url=url,
-                json={"records": uninvoiced_records[s:e]},
-                headers={"Authorization": f"Bearer {token}"},
-            )
-            res.raise_for_status()
-            time.sleep(1)
+        self.send_apitable_request("dstBxinVoohgN131w8", uninvoiced_records)
         
         summary = details.aggregate(
             total_sales_num=Sum("sales_num__sum"),
