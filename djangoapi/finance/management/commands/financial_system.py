@@ -53,16 +53,21 @@ class Command(BaseCommand):
                 suite_goods = SuiteGoodsRec.objects.filter(suite_name=goods_model)
                 print('结果找到了', len(suite_goods))
             if len(suite_goods) > 0:
-                # print(goods_model, '是组合装，包括以下单品：')
-                for goods in suite_goods:
-                    # print(goods.spec_no, goods.goods_name, goods.num, goods.ratio)
+                total_invoice_amount = 0
+                for idx, goods in enumerate(suite_goods):
+                    if idx != len(suite_goods) - 1:
+                        invoice_amount = round(finance_sales_and_invoice.invoice_amount*goods.ratio, 2)
+                        total_invoice_amount += invoice_amount
+                    else:
+                        invoice_amount = round(finance_sales_and_invoice.invoice_amount - total_invoice_amount, 2)
+
                     f = FinanceSalesAndInvoice(
                         date=finance_sales_and_invoice.date,
                         shop_name=finance_sales_and_invoice.shop_name,
                         goods_no=goods.spec_no,
                         goods_name=goods.goods_name,
                         invoice_num=finance_sales_and_invoice.invoice_num*goods.num,
-                        invoice_amount=finance_sales_and_invoice.invoice_amount*goods.ratio
+                        invoice_amount=invoice_amount
                     )
                     f.save()
                     records.append(f)
