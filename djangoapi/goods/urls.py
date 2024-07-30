@@ -47,7 +47,7 @@ urlpatterns = [
     re_path("platformGoods/(?P<pk>\d+)/", platformGoodsapione, name='platformGoodsapione'),
     # path("specGoods", specGoodsapi, name="specGoodsapi"),
     # re_path("specGoods/(?P<pk>\d+)/", specGoodsapione, name="specGoodsapione"),
-    path("spec-goods/override", views.override_spec_goods),
+    path("spec-goods/", views.override_spec_goods),
     path("suiteGoodsRec", suiteGoodsRecapi, name="suiteGoodsRecapi"),
     re_path("suiteGoodsRec/(?P<pk>\d+)/", suiteGoodsRecapione, name="suiteGoodsRecapione"),
     path("spu", SPUapi, name="SPUapi"),
