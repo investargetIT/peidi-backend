@@ -43,14 +43,14 @@ SPUapione = views.SPUView.as_view({
 })
 
 urlpatterns = [
-    path("platformGoods", platformGoodsapi, name="PlatformGoods"),
-    re_path("platformGoods/(?P<pk>\d+)/", platformGoodsapione, name='platformGoodsapione'),
+    # path("platformGoods", platformGoodsapi, name="PlatformGoods"),
+    # re_path("platformGoods/(?P<pk>\d+)/", platformGoodsapione, name='platformGoodsapione'),
     # path("specGoods", specGoodsapi, name="specGoodsapi"),
     # re_path("specGoods/(?P<pk>\d+)/", specGoodsapione, name="specGoodsapione"),
     path("spec-goods/", views.override_spec_goods),
-    path("suiteGoodsRec", suiteGoodsRecapi, name="suiteGoodsRecapi"),
-    re_path("suiteGoodsRec/(?P<pk>\d+)/", suiteGoodsRecapione, name="suiteGoodsRecapione"),
-    path("spu", SPUapi, name="SPUapi"),
-    re_path("spu/(?P<pk>\d+)/", SPUapione, name="SPUapione"),
+    path("suite-goods-rec/", views.override_suite_goods_rec),
+    # re_path("suiteGoodsRec/(?P<pk>\d+)/", suiteGoodsRecapione, name="suiteGoodsRecapione"),
+    # path("spu", SPUapi, name="SPUapi"),
+    # re_path("spu/(?P<pk>\d+)/", SPUapione, name="SPUapione"),
 
 ]

@@ -34,6 +34,22 @@ def override_spec_goods(request):
     except Exception:
         return ExceptionResponse(traceback.format_exc().split('\n')[-2])
     
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def override_suite_goods_rec(request):
+    try:
+        with transaction.atomic():
+            SuiteGoodsRec.objects.all().delete()
+            serializer = SuiteGoodsRecSerializer(data=request.data, many=True)
+            if serializer.is_valid():
+                serializer.save()
+                return SuccessResponse("组合装上传成功")
+            else:
+                raise Exception(serializer.errors)
+    except Exception as e:
+        return ExceptionResponse(traceback.format_exc().split('\n')[-2])
+    
 class PlatformGoodsView(viewsets.ModelViewSet):
     """
     list:获取平台货品列表

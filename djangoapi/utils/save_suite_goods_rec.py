@@ -1,7 +1,7 @@
 import os, requests
 import pandas as pd
 
-# 单品列表导入
+# 组合装导入
 base_url = 'http://localhost:8000'
 auth_token = os.environ.get('DJANGO_AUTH_TOKEN')
 
@@ -17,7 +17,7 @@ def excel_table_byindex(file):
     return list
 
 def savedatatourl(data):
-    url = base_url + '/goods/spec-goods/'
+    url = base_url + '/goods/suite-goods-rec/'
     res = requests.post(url, json=data, headers={
         "Authorization": f"Token {auth_token}",
     })
@@ -26,23 +26,23 @@ def savedatatourl(data):
     print(res)
 
 def main():
-    path = '/code/utils/单品列表.xlsx'
+    path = '/code/utils/组合装.xlsx'
     tables = excel_table_byindex(path)
     datalist = []
     for row in tables:
         data = {
-            'spec_no': row['商家编码'],
-            'goods_no': row['货品编号'],
-            'goods_name': row['货品名称'],
-            'goods_type': row['分类'],
+            'suite_no': row['商家编码'],
+            'suite_name': row['组合装名称'],
             'brand_name': row['品牌'],
-            'spec_name': row['规格名称'],
-            'barcode': row['主条码'],
-            'validity_days': row['有效期天数'],
-            'u9_no': row['U9料号'],
-            'tax_rate': row['税率'],
-            'spec_modified': row['修改时间'],
-            'spec_created': row['创建时间'],
+            'goods_type': row['类别'],
+            'spec_no': row['单品商家编码'],
+            'goods_no': row['单品货品编号'],
+            'goods_name': row['单品名称'],
+            'spec_name': row['单品规格名称'],
+            'num': row['数量'],
+            'fixed_price': row['固定售价'],
+            'ratio': row['金额占比'],
+            'is_fixed_price': row['是否固定价格'],
         }
         datalist.append(data)
     savedatatourl(datalist)
