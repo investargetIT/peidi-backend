@@ -1,5 +1,4 @@
 import os, json, requests, logging
-from datetime import datetime, timedelta
 
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.authentication import TokenAuthentication
@@ -13,6 +12,9 @@ from django_apscheduler.jobstores import DjangoJobStore
 
 from utils.customclass import SuccessResponse, PeiDiError, ExceptionResponse, PeiDiErrorResponse
 from utils.util import get_mysql_process_response_with_redis
+
+base_url = 'http://localhost:8000'
+auth_token = os.environ.get('DJANGO_AUTH_TOKEN')
 
 logger = logging.getLogger('django')
 
@@ -67,30 +69,13 @@ def read_from_cache_or_db(proc_name, parameters_list):
     return result
 
 def get_dashboard_data():
-    yesterday = datetime.now() - timedelta(1)
-    thirtydays_ago = yesterday - timedelta(30)
-    yesterday_str = datetime.strftime(yesterday, '%Y-%m-%d')
-    thirtydays_ago_str = datetime.strftime(thirtydays_ago, '%Y-%m-%d')
-    yesterday_year = datetime.strftime(yesterday, '%Y')
-    yesterday_month = datetime.strftime(yesterday, '%Y-%m')
-    year_start = yesterday_year + '-01-01 00:00:00'
-    month_start = yesterday_month + '-01 00:00:00'
-    thirtydays_ago_start = thirtydays_ago_str + ' 00:00:00'
-    end = yesterday_str + ' 23:59:59'
-    proc_list = [
-        { 'name': 'GetSalesAmountRanking', 'args': [month_start, end] },
-        { 'name': 'CalculateSPUPerformance', 'args': [month_start, end] },
-        { 'name': 'CalculateSPUPerformance', 'args': [year_start, end] },
-        { 'name': 'GetOrderCountByCity', 'args': [year_start, end] },
-        { 'name': 'GetOrderCountByCity', 'args': [thirtydays_ago_start, end] },
-    ]
-    for proc in proc_list:
-        read_from_cache_or_db(proc_name=proc['name'], parameters_list=proc['args'])
-    
-    result = read_from_cache_or_db(proc_name='CalculateSPUPerformance', parameters_list=[month_start, end])
-    for row in result:
-        data = read_from_cache_or_db(proc_name='CalculateShopBySPU', parameters_list=[row[0], year_start, end])
-        logger.info(data)
+    url = base_url + '/bi/get-dashboard-data/'
+    res = requests.post(url, headers={
+        "Authorization": f"Token {auth_token}",
+    })
+    res.raise_for_status()
+    res = res.content.decode()
+    logger.info(res)
     pass
 
 @api_view(['POST'])
@@ -101,14 +86,6 @@ def schedule_send_dingtalk_msg(request):
     content = request.data.get('content')
     at_mobiles = request.data.get('at_mobiles')
     scheduled_time = request.data.get('scheduled_time')
-        
-    # scheduler.add_job(
-    #     test,
-    #     trigger=CronTrigger(second="*/10"),  # Every 10 seconds
-    #     id="my_job1",  # The `id` assigned to each job MUST be unique
-    #     max_instances=1,
-    #     replace_existing=True,
-    # )
 
     if scheduled_time:
         scheduler.add_job(
@@ -129,17 +106,13 @@ def schedule_send_dingtalk_msg(request):
 
     return SuccessResponse('定时任务创建成功')
 
-@api_view(['POST'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def schedule_get_dashboard_data(request):
-    
+def schedule_get_dashboard_data():
     scheduler.add_job(
         get_dashboard_data,
-        trigger=CronTrigger(day="*", hour=1),
+        trigger=CronTrigger(day="*", hour=0, minute=1),
         id="get_dashboard_data",
         max_instances=1,
         replace_existing=True,
     )
 
-    return SuccessResponse('定时任务创建成功')
+schedule_get_dashboard_data()
