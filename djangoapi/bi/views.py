@@ -48,7 +48,7 @@ def read_from_cache_or_db(proc_name, parameters_list):
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-def get_dashboard_data():
+def get_dashboard_data(request):
     try:
         yesterday = datetime.now() - timedelta(1)
         thirtydays_ago = yesterday - timedelta(30)
@@ -73,7 +73,7 @@ def get_dashboard_data():
         result = read_from_cache_or_db(proc_name='CalculateSPUPerformance', parameters_list=[month_start, end])
         for row in result:
             read_from_cache_or_db(proc_name='CalculateShopBySPU', parameters_list=[row[0], year_start, end])
-        return SuccessResponse()
+        return SuccessResponse(result)
     except Exception:
         return ExceptionResponse(traceback.format_exc().split('\n')[-2])
     
