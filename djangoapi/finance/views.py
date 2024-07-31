@@ -3,6 +3,7 @@ import traceback
 from django.db import transaction
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework import viewsets
 from utils.customclass import SuccessResponse, PeiDiError, PeiDiErrorResponse, ExceptionResponse
 from finance.serializer import TmallRefundSerializer, PddRefundSerializer, JdRefundSerializer, DouyinRefundSerializer, InvoiceSerializer, GoodsSalesSummarySerializer, FinanceSalesAndInvoiceSerializer, PDMaterialNOListSerializer
@@ -187,42 +188,57 @@ class InvoiceView(viewsets.ModelViewSet):
         except Exception:
             return ExceptionResponse(traceback.format_exc().split('\n')[-2])
 
-class GoodsSalesSummaryView(viewsets.ModelViewSet):
+# class GoodsSalesSummaryView(viewsets.ModelViewSet):
 
-    serializer_class = GoodsSalesSummarySerializer
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]    
+#     serializer_class = GoodsSalesSummarySerializer
+#     authentication_classes = [TokenAuthentication]
+#     permission_classes = [IsAuthenticated]    
 
-    def create(self, request, *args, **kwargs):
-        try:
-            datas = request.data
-            if isinstance(datas, list):
-                success, fail = [], []
-                for data in datas:
-                    try:
-                        with transaction.atomic():
-                            serializer = self.serializer_class(data=data)
-                            if serializer.is_valid():
-                                serializer.save()
-                                success.append(serializer.data)
-                            else:
-                                fail.append({'data': data, 'errmsg': serializer.errors})
-                    except Exception as err:
-                        fail.append({'data': data, 'errmsg': str(err)})
-                return SuccessResponse({'success': success, 'fail': fail})
+#     def create(self, request, *args, **kwargs):
+#         try:
+#             datas = request.data
+#             if isinstance(datas, list):
+#                 success, fail = [], []
+#                 for data in datas:
+#                     try:
+#                         with transaction.atomic():
+#                             serializer = self.serializer_class(data=data)
+#                             if serializer.is_valid():
+#                                 serializer.save()
+#                                 success.append(serializer.data)
+#                             else:
+#                                 fail.append({'data': data, 'errmsg': serializer.errors})
+#                     except Exception as err:
+#                         fail.append({'data': data, 'errmsg': str(err)})
+#                 return SuccessResponse({'success': success, 'fail': fail})
+#             else:
+#                 with transaction.atomic():
+#                     serializer = self.serializer_class(data=datas)
+#                     if serializer.is_valid():
+#                         serializer.save()
+#                     else:
+#                         raise PeiDiError(20071, msg='新增货品销售汇总失败', detail='%s' % serializer.errors)
+#                 return SuccessResponse(serializer.data)
+#         except PeiDiError as err:
+#             return PeiDiErrorResponse(err)
+#         except Exception:
+#             return ExceptionResponse(traceback.format_exc().split('\n')[-2])
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def add_goods_sales_summary(request):
+    try:
+        with transaction.atomic():
+            serializer = GoodsSalesSummarySerializer(data=request.data, many=True)
+            if serializer.is_valid():
+                serializer.save()
+                return SuccessResponse("上传成功")
             else:
-                with transaction.atomic():
-                    serializer = self.serializer_class(data=datas)
-                    if serializer.is_valid():
-                        serializer.save()
-                    else:
-                        raise PeiDiError(20071, msg='新增货品销售汇总失败', detail='%s' % serializer.errors)
-                return SuccessResponse(serializer.data)
-        except PeiDiError as err:
-            return PeiDiErrorResponse(err)
-        except Exception:
-            return ExceptionResponse(traceback.format_exc().split('\n')[-2])
-
+                raise Exception(serializer.errors)
+    except Exception as e:
+        return ExceptionResponse(traceback.format_exc().split('\n')[-2])
+    
 class FinanceSalesAndInvoiceView(viewsets.ModelViewSet):
 
     serializer_class = FinanceSalesAndInvoiceSerializer
