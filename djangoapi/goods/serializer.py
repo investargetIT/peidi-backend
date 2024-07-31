@@ -16,7 +16,20 @@ class SpecGoodsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SpecGoods
-        fields = '__all__'
+        fields = [
+            'spec_no',
+            'goods_no',
+            'goods_name',
+            'goods_type',
+            'brand_name',
+            'spec_name',
+            'barcode',
+            'validity_days',
+            'u9_no',
+            'tax_rate',
+            'spec_modified',
+            'spec_created',
+        ]
 
 class SuiteGoodsRecSerializer(serializers.ModelSerializer):
 

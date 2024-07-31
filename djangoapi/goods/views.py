@@ -11,6 +11,8 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
+from drf_yasg.utils import swagger_auto_schema
+
 from goods.models import PlatformGoods, SpecGoods, SuiteGoodsRec, SPU
 from goods.serializer import PlatformGoodsSerializer, SpecGoodsSerializer, SuiteGoodsRecSerializer , SPUSerializer
 from utils.customclass import SuccessResponse, PeiDiError, PeiDiErrorResponse, ExceptionResponse
@@ -18,10 +20,12 @@ from utils.customclass import SuccessResponse, PeiDiError, PeiDiErrorResponse, E
 
 # Create your views here.
 
+@swagger_auto_schema(method='post', request_body=SpecGoodsSerializer(many=True), responses={200: "单品列表上传成功"})
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def override_spec_goods(request):
+    """旺店通单品列表数据覆盖"""
     try:
         with transaction.atomic():
             SpecGoods.objects.all().delete()
