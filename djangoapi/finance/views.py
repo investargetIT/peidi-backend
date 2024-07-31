@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework import viewsets
 from utils.customclass import SuccessResponse, PeiDiError, PeiDiErrorResponse, ExceptionResponse
 from finance.serializer import TmallRefundSerializer, PddRefundSerializer, JdRefundSerializer, DouyinRefundSerializer, InvoiceSerializer, GoodsSalesSummarySerializer, FinanceSalesAndInvoiceSerializer, PDMaterialNOListSerializer
+from drf_yasg.utils import swagger_auto_schema
 
 class TmallRefundView(viewsets.ModelViewSet):
 
@@ -224,10 +225,12 @@ class InvoiceView(viewsets.ModelViewSet):
 #         except Exception:
 #             return ExceptionResponse(traceback.format_exc().split('\n')[-2])
 
+@swagger_auto_schema(method='post', request_body=GoodsSalesSummarySerializer(many=True), responses={200: "上传成功"})
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def add_goods_sales_summary(request):
+    """新增旺店通货品销售汇总数据"""
     try:
         with transaction.atomic():
             serializer = GoodsSalesSummarySerializer(data=request.data, many=True)

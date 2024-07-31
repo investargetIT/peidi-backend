@@ -29,7 +29,37 @@ class InvoiceSerializer(serializers.ModelSerializer):
 class GoodsSalesSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = GoodsSalesSummary
-        fields = '__all__'
+        fields = [
+            'start_date',
+            'end_date',
+            'spec_no',
+            'major_supplier',
+            'shop_name',
+            'brand_name',
+            'goods_type',
+            'goods_no',
+            'goods_name',
+            'spec_name',
+            'goods_category',
+            'average_price',
+            'retail_price',
+            'ship_num',
+            'return_num',
+            'return_count_num',
+            'sales_num',
+            'ship_amount',
+            'sales_amount',
+            'sales_amount_unknown_cost',
+            'return_amount',
+            'actual_sales_amount',
+            'gift_sales_num',
+            'post_amount',
+            'post_cost',
+            'ship_refund_num',
+            'ship_refund_amount',
+            'abnormal_warehouse_sales_num',
+            'refund_stockin',
+        ]
 
 class FinanceSalesAndInvoiceSerializer(serializers.ModelSerializer):
     class Meta:
