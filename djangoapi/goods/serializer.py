@@ -36,7 +36,20 @@ class SuiteGoodsRecSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SuiteGoodsRec
-        fields = '__all__'
+        fields = [
+            'suite_no',
+            'suite_name',
+            'brand_name',
+            'goods_type',
+            'spec_no',
+            'goods_no',
+            'goods_name',
+            'spec_name',
+            'num',
+            'fixed_price',
+            'ratio',
+            'is_fixed_price'
+        ]
 
 class SPUSerializer(serializers.ModelSerializer):
 

@@ -37,11 +37,13 @@ def override_spec_goods(request):
                 raise Exception(serializer.errors)
     except Exception:
         return ExceptionResponse(traceback.format_exc().split('\n')[-2])
-    
+
+@swagger_auto_schema(method='post', request_body=SuiteGoodsRecSerializer(many=True), responses={200: "组合装上传成功"})
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def override_suite_goods_rec(request):
+    """旺店通组合装数据覆盖"""
     try:
         with transaction.atomic():
             SuiteGoodsRec.objects.all().delete()
