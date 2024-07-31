@@ -1,49 +1,26 @@
-import datetime
-import json
-import os
-import traceback
-
-import requests
-import xlrd
-from xlrd.xldate import xldate_as_datetime
-
-# from peidiexcel import base_url
-
+import os, json, requests
+import pandas as pd
 
 base_url = 'http://localhost:8000/'
 auth_token = os.environ.get('DJANGO_AUTH_TOKEN')
 
-start_date = '2024-03-26'
-end_date = '2024-04-25'
+start_date = '2024-06-26'
+end_date = '2024-07-25'
 
-def open_excel(file):
-    try:
-        data = xlrd.open_workbook(file)
-        return data
-    except Exception as e:
-        print(str(e))
-
-#根据索引获取Excel表格中的数据   参数:file：Excel文件路径     colnameindex：表头列名所在行的索引  ，by_index：表的索引
-def excel_table_byindex(file, colnameindex=0,by_index=0):
-    data = open_excel(file)
-    table = data.sheets()[by_index]
-    nrows = table.nrows #行数
-    colnames =  table.row_values(colnameindex) #某一行数据
-    list =[]
-    for rownum in range(1,nrows):
-         row = table.row_values(rownum)
-         if row:
-             app = {}
-             for i in range(len(colnames)):
-                app[colnames[i]] = row[i]
-             list.append(app)
+def excel_table_byindex(file):
+    list = []
+    df = pd.read_excel(file, keep_default_na=False)
+    df = df.replace('_x000D_\n', '', regex=True)
+    for row in df.values:
+        data = {}
+        for idx, x in enumerate(row):
+            data[df.columns.values[idx]] = x
+        list.append(data)
     return list
-
 
 def savedatatourl(data, url, excel_path):
     print(excel_path, '总记录数', len(data))
-    res = requests.post(url, data=json.dumps(data), headers={
-        "Content-Type": "application/json",
+    res = requests.post(url, json=data, headers={
         "Authorization": f"Token {auth_token}",
     })
     res.raise_for_status()
@@ -61,13 +38,13 @@ def savedatatourl(data, url, excel_path):
             else:
                 duplicate_fails.append(fail['errmsg'])
         if len(fails) > 0:
-            print('非重复造成的失败', len(fails), fails)
+            print('非重复造成的失败', len(fails))
         if len(duplicate_fails) > 0:
             print('重复造成的失败', len(duplicate_fails))
 
 def saveOrders(excel_path):
 
-    tables = excel_table_byindex(excel_path, by_index=0)
+    tables = excel_table_byindex(excel_path)
     datalist = []
 
     for row in tables:
