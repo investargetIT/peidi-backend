@@ -106,7 +106,10 @@ def schedule_send_dingtalk_msg(request):
 
     return SuccessResponse('定时任务创建成功')
 
-def schedule_get_dashboard_data():
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def schedule_get_dashboard_data(request):
     scheduler.add_job(
         get_dashboard_data,
         trigger=CronTrigger(day="*", hour=0, minute=1),
@@ -114,5 +117,4 @@ def schedule_get_dashboard_data():
         max_instances=1,
         replace_existing=True,
     )
-
-schedule_get_dashboard_data()
+    return SuccessResponse('定时任务创建成功')
