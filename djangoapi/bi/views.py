@@ -70,7 +70,7 @@ def get_dashboard_data(request):
         for proc in proc_list:
             read_from_cache_or_db(proc_name=proc['name'], parameters_list=proc['args'])
 
-        result = read_from_cache_or_db(proc_name='CalculateSPUPerformance', parameters_list=[month_start, end])
+        result = read_from_cache_or_db(proc_name='CalculateSPUPerformance', parameters_list=['2024-01-01 00:00:00', '2024-01-31 23:59:59'])
         for row in result:
             read_from_cache_or_db(proc_name='CalculateShopBySPU', parameters_list=[row[0], year_start, end])
         return SuccessResponse(result)
