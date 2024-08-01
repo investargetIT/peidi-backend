@@ -458,6 +458,27 @@ def override_stock_details(request):
     except Exception:
         return ExceptionResponse(traceback.format_exc().split('\n')[-2])
     
+@swagger_auto_schema(method='post', request_body=WMSShipDataSerializer, responses={200: ""})
+@api_view(['POST'])
+def create_or_update_wms_data(request):
+    """新增或更新旺店通WMS数据"""
+    try:
+        
+        try:
+            wms_ship_data = WMSShipData.objects.latest("created_at")
+            serializer = WMSShipDataSerializer(wms_ship_data, data=request.data)
+        except WMSShipData.DoesNotExist:
+            serializer = WMSShipDataSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return SuccessResponse("")
+        else:
+            raise Exception(serializer.errors)
+        
+    except Exception:
+        return ExceptionResponse(traceback.format_exc().split('\n')[-2])
+    
 class WMSShipDataView(viewsets.ModelViewSet):
 
     serializer_class = WMSShipDataSerializer
