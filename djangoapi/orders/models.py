@@ -376,7 +376,8 @@ class WMSShipData(models.Model):
     to_ship = models.IntegerField(blank=True, null=True, verbose_name='实时订单待发货')
     shipped = models.IntegerField(blank=True, null=True, verbose_name='实时今日己发货')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
-
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='更新时间')
+    
     class Meta:
         verbose_name = "旺店通WMS发货数据"
         verbose_name_plural = "旺店通WMS发货数据"

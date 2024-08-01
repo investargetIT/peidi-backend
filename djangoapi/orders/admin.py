@@ -461,7 +461,8 @@ class WMSShipDataAdmin(admin.ModelAdmin):
         "printed",
         "to_ship",
         "shipped",
-        "created_at",
+        # "created_at",
+        "updated_at",
     ]
 
 @admin.register(ExchangeManagement)
