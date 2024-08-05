@@ -60,6 +60,7 @@ def get_dashboard_data(request):
         month_start = yesterday_month + '-01 00:00:00'
         thirtydays_ago_start = thirtydays_ago_str + ' 00:00:00'
         end = yesterday_str + ' 23:59:59'
+        
         proc_list = [
             { 'name': 'GetSalesAmountRanking', 'args': [month_start, end] },
             { 'name': 'CalculateSPUPerformance', 'args': [month_start, end] },
@@ -70,9 +71,14 @@ def get_dashboard_data(request):
         for proc in proc_list:
             read_from_cache_or_db(proc_name=proc['name'], parameters_list=proc['args'])
 
+        channels = read_from_cache_or_db(proc_name='GetSalesAmountRanking', parameters_list=['2024-01-01 00:00:00', '2024-01-31 23:59:59'])
+        for row in channels:
+            read_from_cache_or_db(proc_name='GetSalesAmountRankingByChannel', parameters_list=[row[0], month_start, end])
+            
         result = read_from_cache_or_db(proc_name='CalculateSPUPerformance', parameters_list=['2024-01-01 00:00:00', '2024-01-31 23:59:59'])
         for row in result:
             read_from_cache_or_db(proc_name='CalculateShopBySPU', parameters_list=[row[0], year_start, end])
+
         return SuccessResponse(result)
     except Exception:
         return ExceptionResponse(traceback.format_exc().split('\n')[-2])
