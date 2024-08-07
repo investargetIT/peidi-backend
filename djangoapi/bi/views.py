@@ -1,5 +1,6 @@
 import traceback
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.authentication import TokenAuthentication
@@ -45,11 +46,34 @@ def read_from_cache_or_db(proc_name, parameters_list):
     )
     return result
 
+def get_month_ranges_until_now():
+    now = datetime.now()
+    yesterday = now - timedelta(days=1)
+    month_ranges = []
+    
+    for i in range(yesterday.month):
+        start_date = (yesterday - relativedelta(months=i)).replace(day=1)
+        if i == 0:  # 当前月
+            end_date = yesterday
+        else:
+            end_date = (start_date + relativedelta(months=1)) - timedelta(days=1)
+        
+        month_ranges.append((start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d")))
+    
+    return month_ranges
+
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def get_dashboard_data(request):
     try:
+        month_ranges_until_now = get_month_ranges_until_now()
+        print(month_ranges_until_now)
+
+        for m in month_ranges_until_now:
+            read_from_cache_or_db('GetSalesAmountRanking', parameters_list=[m[0] + ' 00:00:00', m[1] + ' 23:59:59'])
+            read_from_cache_or_db('CalculateSPUPerformance', parameters_list=[m[0] + ' 00:00:00', m[1] + ' 23:59:59'])
+
         yesterday = datetime.now() - timedelta(1)
         thirtydays_ago = yesterday - timedelta(30)
         yesterday_str = datetime.strftime(yesterday, '%Y-%m-%d')
@@ -62,8 +86,6 @@ def get_dashboard_data(request):
         end = yesterday_str + ' 23:59:59'
         
         proc_list = [
-            { 'name': 'GetSalesAmountRanking', 'args': [month_start, end] },
-            { 'name': 'CalculateSPUPerformance', 'args': [month_start, end] },
             { 'name': 'CalculateSPUPerformance', 'args': [year_start, end] },
             { 'name': 'GetOrderCountByCity', 'args': [year_start, end] },
             { 'name': 'GetOrderCountByCity', 'args': [thirtydays_ago_start, end] },
@@ -73,7 +95,8 @@ def get_dashboard_data(request):
 
         channels = read_from_cache_or_db(proc_name='GetSalesAmountRanking', parameters_list=['2024-01-01 00:00:00', '2024-01-31 23:59:59'])
         for row in channels:
-            read_from_cache_or_db(proc_name='GetSalesAmountRankingByChannel', parameters_list=[row[0], month_start, end])
+            for m in month_ranges_until_now:
+                read_from_cache_or_db('GetSalesAmountRankingByChannel', parameters_list=[row[0], m[0] + ' 00:00:00', m[1] + ' 23:59:59'])
             
         result = read_from_cache_or_db(proc_name='CalculateSPUPerformance', parameters_list=['2024-01-01 00:00:00', '2024-01-31 23:59:59'])
         for row in result:
