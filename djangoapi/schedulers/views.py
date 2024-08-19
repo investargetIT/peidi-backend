@@ -112,7 +112,7 @@ def schedule_send_dingtalk_msg(request):
 def schedule_get_dashboard_data(request):
     scheduler.add_job(
         get_dashboard_data,
-        trigger=CronTrigger(day="*", hour=0, minute=1),
+        trigger=CronTrigger(day="*", hour=4, minute=1),
         id="get_dashboard_data",
         max_instances=1,
         replace_existing=True,
