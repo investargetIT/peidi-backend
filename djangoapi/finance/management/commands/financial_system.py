@@ -216,7 +216,7 @@ class Command(BaseCommand):
             details_sum_amount=Sum("invoice_amount"),
         )
 
-        records = []
+        records, records9, records13 = [], [], []
         for i in details:
             print(i)
             shop_name = i['shop_name']
@@ -247,8 +247,15 @@ class Command(BaseCommand):
                     tax_rate = float("%.2f" % (material_no_and_goods_name[2] * 100))
                     untax_amount = invoice_amount / (1 + material_no_and_goods_name[2])
                 untax_amount = float("%.2f" % untax_amount)
+    
+            if tax_rate == 9:
+                tax_rate = 'TS13'
+            elif tax_rate == 13:
+                tax_rate = '012'
+            remark = '赠品' if invoice_amount == 0  else ''
+            shop_info = ShopTarget.objects.get(wdt_name=shop_name)
 
-            records.append({
+            r = {
                 "fields": {
                     "时间": end_date[:7],
                     "订货客户": shop_name,
@@ -259,12 +266,27 @@ class Command(BaseCommand):
                     "单价": price,
                     "价税合计": float("%.2f" % invoice_amount),
                     "税率": tax_rate,
+                    "备注": remark,
                     "未含税金额": untax_amount,
-                },
-            })
+                    "单据类型": "销售单",
+                    "单据类型编码": "SO6",
+                    "客户": shop_name,
+                    "客户代码": "2.6399",
+                    "部门": "无",
+                    "业务员": shop_info.salesman,
+                    "组织": shop_info.org,
+                }
+            }
+            if tax_rate == 'TS13':
+                records9.append(r)
+            elif tax_rate == '012':
+                records13.append(r)
+            else:
+                records.append()
 
-        print(len(records))
         self.send_apitable_request("dstayEpslFPDrHdEcC", records)
+        self.send_apitable_request("dst7J5Hy9wsYpN1V63", records9)
+        self.send_apitable_request("dstQEWyEBXq4Y3Swgt", records13)
 
         summary = details.aggregate(
             total_num=Sum("details_sum_num"),
