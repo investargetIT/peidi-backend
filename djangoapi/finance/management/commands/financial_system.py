@@ -282,7 +282,7 @@ class Command(BaseCommand):
             elif tax_rate == '012':
                 records13.append(r)
             else:
-                records.append()
+                records.append(r)
 
         self.send_apitable_request("dstayEpslFPDrHdEcC", records)
         self.send_apitable_request("dst7J5Hy9wsYpN1V63", records9)
@@ -496,7 +496,7 @@ class Command(BaseCommand):
             invoice_amount__sum=Sum("invoice_amount", default=0),
             uninvoice_amount__sum=Sum("sales_amount", default=0)+Sum("post_amount", default=0)-Sum("refund_amount", default=0)-Sum("invoice_amount", default=0),
         )
-        records, uninvoiced_records = [], []
+        records, uninvoiced_records, uninvoiced_records9, uninvoiced_records13 = [], [], [], []
         for i in details:
             print(i)
             material_no_and_goods_name = self.goods_no_to_material_no(i["goods_no"])
@@ -529,8 +529,15 @@ class Command(BaseCommand):
                     tax_rate = float("%.2f" % (material_no_and_goods_name[2] * 100))
                     untax_amount = i["uninvoice_amount__sum"] / (1 + material_no_and_goods_name[2])
                 untax_amount = float("%.2f" % untax_amount)
+            
+            if tax_rate == 9:
+                tax_rate = 'TS13'
+            elif tax_rate == 13:
+                tax_rate = '012'
+            remark = '赠品' if i["uninvoice_amount__sum"] == 0  else ''
+            shop_info = ShopTarget.objects.get(wdt_name=i["shop_name"])
 
-            uninvoiced_records.append({
+            r = {
                 "fields": {
                     "时间": end_date[:7],
                     "订货客户": i["shop_name"],
@@ -541,9 +548,24 @@ class Command(BaseCommand):
                     "单价": price,
                     "价税合计": float("%.2f" % i["uninvoice_amount__sum"]),
                     "税率": tax_rate,
+                    "备注": remark,
                     "未含税金额": untax_amount,
+                    "单据类型": "销售单",
+                    "单据类型编码": "SO6",
+                    "客户": i["shop_name"],
+                    "客户代码": "2.6399",
+                    "部门": "无",
+                    "业务员": shop_info.salesman,
+                    "组织": shop_info.org,
                 }
-            })
+            }
+            if tax_rate == 'TS13':
+                uninvoiced_records9.append(r)
+            elif tax_rate == '012':
+                uninvoiced_records13.append(r)
+            else:
+                uninvoiced_records.append(r)
+
         #     f = FinanceSalesAndInvoice(
         #         start_date=start_date,
         #         end_date=end_date,
@@ -565,6 +587,9 @@ class Command(BaseCommand):
         
         print(len(uninvoiced_records))
         self.send_apitable_request("dstBxinVoohgN131w8", uninvoiced_records)
+        self.send_apitable_request("dst6QnCAZrEuMbeb0r", uninvoiced_records9)
+        self.send_apitable_request("dstkEt2iGcltW8FcmD", uninvoiced_records13)
+               
         
         summary = details.aggregate(
             total_sales_num=Sum("sales_num__sum"),
