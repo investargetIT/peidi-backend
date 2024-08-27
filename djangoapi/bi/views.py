@@ -96,11 +96,13 @@ def get_dashboard_data(request):
         channels = read_from_cache_or_db(proc_name='GetSalesAmountRanking', parameters_list=['2024-01-01 00:00:00', '2024-01-31 23:59:59'])
         for row in channels:
             for m in month_ranges_until_now:
-                read_from_cache_or_db('GetSalesAmountRankingByChannel', parameters_list=[row[0], m[0] + ' 00:00:00', m[1] + ' 23:59:59'])
+                read_from_cache_or_db(proc_name='GetSalesAmountRankingByChannel', parameters_list=[row[0], m[0] + ' 00:00:00', m[1] + ' 23:59:59'])
             
         result = read_from_cache_or_db(proc_name='CalculateSPUPerformance', parameters_list=['2024-01-01 00:00:00', '2024-01-31 23:59:59'])
         for row in result:
             read_from_cache_or_db(proc_name='CalculateShopBySPU', parameters_list=[row[0], year_start, end])
+            for m in month_ranges_until_now:
+                read_from_cache_or_db(proc_name='CalculateShopBySPU', parameters_list=[row[0], m[0] + ' 00:00:00', m[1] + ' 23:59:59'])
 
         return SuccessResponse(result)
     except Exception:
