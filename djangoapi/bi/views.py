@@ -62,6 +62,24 @@ def get_month_ranges_until_now():
     
     return month_ranges
 
+# 获取自2024年1月1日起截止到昨日的所有日期
+def get_dates_until_yesterday():
+    # 设置起始日期
+    start_date = datetime(2024, 1, 1)
+    # 获取昨天的日期
+    end_date = datetime.now() - timedelta(days=1)
+    
+    # 初始化日期列表
+    date_list = []
+    
+    # 生成日期列表
+    current_date = start_date
+    while current_date <= end_date:
+        date_list.append(current_date.strftime('%Y-%m-%d'))
+        current_date += timedelta(days=1)
+    
+    return date_list
+
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -103,6 +121,10 @@ def get_dashboard_data(request):
             read_from_cache_or_db(proc_name='CalculateShopBySPU', parameters_list=[row[0], year_start, end])
             for m in month_ranges_until_now:
                 read_from_cache_or_db(proc_name='CalculateShopBySPU', parameters_list=[row[0], m[0] + ' 00:00:00', m[1] + ' 23:59:59'])
+            
+            # SPU各店铺的日销量
+            for d in get_dates_until_yesterday():
+                read_from_cache_or_db(proc_name='CalculateShopBySPU', parameters_list=[row[0], d + ' 00:00:00', d + ' 23:59:59'])
 
         return SuccessResponse(result)
     except Exception:
