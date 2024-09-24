@@ -111,6 +111,10 @@ def get_dashboard_data(request):
         for proc in proc_list:
             read_from_cache_or_db(proc_name=proc['name'], parameters_list=proc['args'])
 
+        # SPU日销额
+        for d in get_dates_until_yesterday():
+            read_from_cache_or_db(proc_name='CalculateSPUPerformance', parameters_list=[d + ' 00:00:00', d + ' 23:59:59'])
+
         channels = read_from_cache_or_db(proc_name='GetSalesAmountRanking', parameters_list=['2024-01-01 00:00:00', '2024-01-31 23:59:59'])
         for row in channels:
             for m in month_ranges_until_now:
@@ -122,13 +126,9 @@ def get_dashboard_data(request):
             for m in month_ranges_until_now:
                 read_from_cache_or_db(proc_name='CalculateShopBySPU', parameters_list=[row[0], m[0] + ' 00:00:00', m[1] + ' 23:59:59'])
             
-            # # SPU各店铺的日销量
-            # for d in get_dates_until_yesterday():
-            #     read_from_cache_or_db(proc_name='CalculateShopBySPU', parameters_list=[row[0], d + ' 00:00:00', d + ' 23:59:59'])
-        
-        # SPU日销量
-        for d in get_dates_until_yesterday():
-            read_from_cache_or_db(proc_name='CalculateSPUPerformance', parameters_list=[d + ' 00:00:00', d + ' 23:59:59'])
+            # SPU各店铺的日销额
+            for d in get_dates_until_yesterday():
+                read_from_cache_or_db(proc_name='CalculateShopBySPU', parameters_list=[row[0], d + ' 00:00:00', d + ' 23:59:59'])
 
         return SuccessResponse(result)
     except Exception:
