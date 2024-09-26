@@ -16,25 +16,25 @@ class Command(BaseCommand):
 
         # print(self.goods_no_to_material_no("6971758277324"))
         
-        # self.invoice_created_by_ali("2024-07-26", "2024-08-25")
+        # self.invoice_created_by_ali("2024-08-26", "2024-09-25")
 
-        # self.invoice_created_manually("2024-07-26", "2024-08-25")
+        # self.invoice_created_manually("2024-08-26", "2024-09-25")
 
-        # self.invoice_summary('2024-07-26', '2024-08-25')
+        # self.invoice_summary('2024-08-26', '2024-09-25')
 
-        # self.extend_douyin_refund("2024-07-26", "2024-08-25")
+        # self.extend_douyin_refund("2024-08-26", "2024-09-25")
 
-        # self.extend_jd_refund("2024-07-26", "2024-08-25")
+        # self.extend_jd_refund("2024-08-26", "2024-09-25")
 
-        # self.extend_pdd_refund("2024-07-26", "2024-08-25")
+        # self.extend_pdd_refund("2024-08-26", "2024-09-25")
 
-        # self.extend_tmall_refund("2024-07-26", "2024-08-25")
+        # self.extend_tmall_refund("2024-08-26", "2024-09-25")
 
-        # self.refund_summary("2024-07-26", "2024-08-25")
+        # self.refund_summary("2024-08-26", "2024-09-25")
 
-        # self.sales_summary("2024-07-26", "2024-08-25")
+        # self.sales_summary("2024-08-26", "2024-09-25")
 
-        # self.overall_summary("2024-07-26", "2024-08-25")
+        # self.overall_summary("2024-08-26", "2024-09-25")
     
     def goods_model_to_spec_goods(self, finance_sales_and_invoice):
         records = []
