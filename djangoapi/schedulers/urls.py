@@ -4,4 +4,5 @@ from . import views
 urlpatterns = [
     path("send-dingtalk-msg/", views.schedule_send_dingtalk_msg),
     path("get-dashboard-data/", views.schedule_get_dashboard_data),
+    path("get-increment-data/", views.schedule_get_increment_data),
 ]

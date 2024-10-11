@@ -7,7 +7,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 from utils.customclass import SuccessResponse, PeiDiError, ExceptionResponse, PeiDiErrorResponse
-from utils.util import get_mysql_process_response_with_redis, call_db_procedure
+from utils.util import get_mysql_process_response_with_redis, call_db_procedure, call_proc_and_write_cache
 
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
@@ -41,6 +41,15 @@ def read_from_cache_or_db(proc_name, parameters_list):
     redis_key = '{}#{}'.format(proc_name, "/".join(parameters_list))
     result = get_mysql_process_response_with_redis(
         redis_key=redis_key,
+        proc_name=proc_name,
+        args=tuple(parameters_list)
+    )
+    return result
+
+def read_from_db_write_to_cache(proc_name, parameters_list):
+    redis_key = '{}#{}'.format(proc_name, "/".join(parameters_list))
+    result = call_proc_and_write_cache(
+        key=redis_key,
         proc_name=proc_name,
         args=tuple(parameters_list)
     )
@@ -133,4 +142,54 @@ def get_dashboard_data(request):
         return SuccessResponse(result)
     except Exception:
         return ExceptionResponse(traceback.format_exc().split('\n')[-2])
-    
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_increment_data(request):
+    try:
+        month_ranges_until_now = get_month_ranges_until_now()
+        m = month_ranges_until_now[0]
+        print('当前月起始日期', m)
+
+        read_from_db_write_to_cache('GetSalesAmountRanking', parameters_list=[m[0] + ' 00:00:00', m[1] + ' 23:59:59'])
+        read_from_db_write_to_cache('CalculateSPUPerformance', parameters_list=[m[0] + ' 00:00:00', m[1] + ' 23:59:59'])
+
+        yesterday = datetime.now() - timedelta(1)
+        thirtydays_ago = yesterday - timedelta(30)
+        yesterday_str = datetime.strftime(yesterday, '%Y-%m-%d')
+        thirtydays_ago_str = datetime.strftime(thirtydays_ago, '%Y-%m-%d')
+        yesterday_year = datetime.strftime(yesterday, '%Y')
+        yesterday_month = datetime.strftime(yesterday, '%Y-%m')
+        year_start = yesterday_year + '-01-01 00:00:00'
+        month_start = yesterday_month + '-01 00:00:00'
+        thirtydays_ago_start = thirtydays_ago_str + ' 00:00:00'
+        end = yesterday_str + ' 23:59:59'
+        
+        proc_list = [
+            { 'name': 'CalculateSPUPerformance', 'args': [year_start, end] },
+            { 'name': 'GetOrderCountByCity', 'args': [year_start, end] },
+            { 'name': 'GetOrderCountByCity', 'args': [thirtydays_ago_start, end] },
+        ]
+        for proc in proc_list:
+            read_from_db_write_to_cache(proc_name=proc['name'], parameters_list=proc['args'])
+
+        all_dates = get_dates_until_yesterday()
+        d = all_dates[-1]
+        print('昨天的时期是', d)
+
+        read_from_db_write_to_cache(proc_name='CalculateSPUPerformance', parameters_list=[d + ' 00:00:00', d + ' 23:59:59'])
+
+        channels = read_from_cache_or_db(proc_name='GetSalesAmountRanking', parameters_list=['2024-01-01 00:00:00', '2024-01-31 23:59:59'])
+        for row in channels:
+            read_from_db_write_to_cache(proc_name='GetSalesAmountRankingByChannel', parameters_list=[row[0], m[0] + ' 00:00:00', m[1] + ' 23:59:59'])
+            
+        result = read_from_cache_or_db(proc_name='CalculateSPUPerformance', parameters_list=['2024-01-01 00:00:00', '2024-01-31 23:59:59'])
+        for row in result:
+            read_from_db_write_to_cache(proc_name='CalculateShopBySPU', parameters_list=[row[0], year_start, end])
+            read_from_db_write_to_cache(proc_name='CalculateShopBySPU', parameters_list=[row[0], m[0] + ' 00:00:00', m[1] + ' 23:59:59'])
+            read_from_db_write_to_cache(proc_name='CalculateShopBySPU', parameters_list=[row[0], d + ' 00:00:00', d + ' 23:59:59'])
+
+        return SuccessResponse(result)
+    except Exception:
+        return ExceptionResponse(traceback.format_exc().split('\n')[-2])

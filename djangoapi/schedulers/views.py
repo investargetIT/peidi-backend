@@ -78,6 +78,16 @@ def get_dashboard_data():
     logger.info(res)
     pass
 
+def get_increment_data():
+    url = base_url + '/bi/get-increment-data/'
+    res = requests.post(url, headers={
+        "Authorization": f"Token {auth_token}",
+    })
+    res.raise_for_status()
+    res = res.content.decode()
+    logger.info(res)
+    pass
+
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -114,6 +124,19 @@ def schedule_get_dashboard_data(request):
         get_dashboard_data,
         trigger=CronTrigger(day="*", hour=4, minute=1),
         id="get_dashboard_data",
+        max_instances=1,
+        replace_existing=True,
+    )
+    return SuccessResponse('定时任务创建成功')
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def schedule_get_increment_data(request):
+    scheduler.add_job(
+        get_increment_data,
+        trigger=CronTrigger(day="*", hour=11, minute=1),
+        id="get_increment_data",
         max_instances=1,
         replace_existing=True,
     )
