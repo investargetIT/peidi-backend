@@ -1,4 +1,4 @@
-import traceback, requests, os
+import traceback, requests, os, oss2
 import pandas as pd
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
@@ -199,67 +199,71 @@ def get_increment_data(request):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def generate_spu_sales_data(request):
-    base_url = 'http://localhost:8000'
-    auth_token = os.environ.get('DJANGO_AUTH_TOKEN')
+    # Step 1: 调用 API 获取数据
+    yesterday_start = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d 00:00:00')
+    yesterday_end = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d 23:59:59')
     
-    # 定义 API 地址和请求头
-    API_URL = base_url + "/bi/call-proc"
-    HEADERS = {
+    base_url = "http://localhost:8000"
+    auth_token = os.environ.get('DJANGO_AUTH_TOKEN')
+    url = base_url + "/bi/call-proc"
+    headers = {
         "Authorization": f"Token {auth_token}",
         "Content-Type": "application/json"
     }
-
-    # 获取昨天的日期
-    yesterday = datetime.now() - timedelta(days=1)
-    start_time = yesterday.replace(hour=0, minute=0, second=0, microsecond=0).isoformat()
-    end_time = yesterday.replace(hour=23, minute=59, second=59, microsecond=999999).isoformat()
-
-    # 定义请求的数据
-    payload = {
+    data = {
         "name": "CalculateSPUPerformance",
-        "params": [
-            start_time,
-            end_time
-        ],
+        "params": [yesterday_start, yesterday_end],
         "flush": True
     }
-
-    # 定义需要匹配的产品名称
-    product_names = [
-        "鸭肉干", "鸡肉干", "薄脆鸡肉", "鲭鱼干", "姜黄鸡", "鸡肉紫薯",
-        "鸭肉红薯", "鸡肉胡萝卜", "鸡肉香蕉", "鸡肉苹果", "鸭肉梨",
-        "冻干兔耳朵", "冻干原切猪心", "冻干牛肝酥", "爵宴组合装", "爵宴礼盒",
-        "爵宴风干粮", "狗罐", "新西兰牛草胃", "新西兰鹿肺块", "新西兰羊肝块",
-        "smb其他", "编织球 & 功能卷", "缠肉卷棒", "夹心", "迷你洁齿骨",
-        "小中大号洁齿骨", "发泡棒", "迷你洁齿骨大礼包", "趣玩洁齿大礼包",
-        "一口好牙大礼包", "ok结骨", "成犬洁齿骨", "齿能其他", "健齿环",
-        "经典洁骨", "98K主食罐", "好适嘉鲜肉烘焙粮", "牛肉粒", "好适嘉狗罐头",
-        "鲭鱼罐", "黄金罐", "成长罐", "begogo鸡肉冻干", "好适嘉其他",
-        "彩虹食谱犬粮", "好适嘉护理粮", "猫砂", "猫酱其他", "彩虹食谱猫粮",
-        "begogo其他"
+    
+    response = requests.post(url, headers=headers, json=data)
+    response_data = response.json()
+    
+    # Step 2: 处理 API 返回的数据
+    result = response_data.get("result", [])
+    names_to_match = [
+        "鸭肉干", "鸡肉干", "薄脆鸡肉", "鲭鱼干", "姜黄鸡", "鸡肉紫薯", "鸭肉红薯", "鸡肉胡萝卜", "鸡肉香蕉", 
+        "鸡肉苹果", "鸭肉梨", "冻干兔耳朵", "冻干原切猪心", "冻干牛肝酥", "爵宴组合装", "爵宴礼盒", 
+        "爵宴风干粮", "狗罐", "新西兰牛草胃", "新西兰鹿肺块", "新西兰羊肝块", "smb其他", "编织球 & 功能卷", 
+        "缠肉卷棒", "夹心", "迷你洁齿骨", "小中大号洁齿骨", "发泡棒", "迷你洁齿骨大礼包", "趣玩洁齿大礼包", 
+        "一口好牙大礼包", "ok结骨", "成犬洁齿骨", "齿能其他", "健齿环", "经典洁骨", "98K主食罐", 
+        "好适嘉鲜肉烘焙粮", "牛肉粒", "好适嘉狗罐头", "鲭鱼罐", "黄金罐", "成长罐", "begogo鸡肉冻干", 
+        "好适嘉其他", "彩虹食谱犬粮", "好适嘉护理粮", "猫砂", "猫酱其他", "彩虹食谱猫粮", "begogo其他"
     ]
-
-    # 发送 POST 请求获取数据
-    response = requests.post(API_URL, headers=HEADERS, json=payload)
     
-    # 处理 API 响应
-    if response.status_code == 200:
-        data = response.json()
-        api_result = data.get("result", [])
-        api_map = {item[0]: item[1] for item in api_result}  # 创建字典以便快速查找
+    # 生成匹配结果
+    matched_data = []
+    for name in names_to_match:
+        found = False
+        for item in result:
+            if item[0] == name:
+                matched_data.append([name, item[1]])
+                found = True
+                break
+        if not found:
+            matched_data.append([name, None])
     
-        # 准备输出数据
-        output_data = []
-        for name in product_names:
-            value = api_map.get(name, None)  # 获取对应的值，如果没有则为 None
-            output_data.append([name, value])  # 将产品名称和对应的值添加到输出数据中
+    # Step 3: 将数据保存为 Excel 文件
+    df = pd.DataFrame(matched_data, columns=["SPU", "销售额"])
+    file_name = f'{yesterday_start[:10]}.xlsx'.replace('-', '')
+    df.to_excel(file_name, index=False)
     
-        # 创建 DataFrame 并保存为 Excel
-        df = pd.DataFrame(output_data, columns=["产品名称", "接口数据"])
-        df.to_excel("SPU日销售额" + start_time[:10] + ".xlsx", index=False)
+    # Step 4: 上传到阿里云 OSS
+    oss_endpoint = os.environ.get('OSS_ENDPOINT')
+    oss_accessKeyId = os.environ.get('OSS_ACCESS_KEY_ID')
+    oss_accessKeySecret = os.environ.get('OSS_ACCESS_KEY_SECRET')
+    oss_bucketName = os.environ.get('OSS_BUCKET_NAME')
     
-        print("Excel 文件已生成：产品数据.xlsx")
-        return SuccessResponse('Excel文件已生成')
-    else:
-        print(f"请求失败，状态码：{response.status_code}，消息：{response.text}")
-        return SuccessResponse('Excel文件生成失败')
+    # 创建OSS客户端
+    auth = oss2.Auth(oss_accessKeyId, oss_accessKeySecret)
+    bucket = oss2.Bucket(auth, oss_endpoint, oss_bucketName)
+    
+    # 上传文件
+    oss_file_name = f'{file_name}'
+    bucket.put_object_from_file(oss_file_name, file_name)
+    
+    # 获取文件的访问URL
+    file_url = f'https://{oss_bucketName}.oss-cn-hangzhou.aliyuncs.com/{oss_file_name}'
+    print(f'文件上传成功，访问地址为: {file_url}')
+    return SuccessResponse({ "file_name": file_name, "file_url": file_url })
+    

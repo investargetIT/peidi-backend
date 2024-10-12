@@ -58,7 +58,38 @@ def send_dingtalk_msg(content, mobiles):
     errcode = res.get('errcode')
     if errcode != 0:
         raise PeiDiError(20501, msg=res['errmsg'])
-    
+
+def send_spu_daily_report_to_dingtalk():
+    # 第一步、生成Excel报表获取文件名和下载地址
+    url = base_url + "/bi/generate-spu-sales-data/"
+    res = requests.post(url, headers={
+        "Authorization": f"Token {auth_token}",
+    })
+    response_data = res.json()
+    result = response_data.get("result", {})
+    filename = result.get("file_name")
+    fileurl = result.get("file_url")
+    print(filename, fileurl)
+
+    # 第二部、发送钉钉群消息
+    url = os.environ.get('DINGTALK_IMROBOT_SPU_DAILY_REPORT_WEBHOOK')
+
+    data = {
+        "msgtype": "link", 
+        "link": {
+            "title": filename, 
+            "text": "点击下载",
+            "picUrl": "", 
+            "messageUrl": fileurl
+        }
+    }
+    response = requests.post(url, json=data).content
+    res = json.loads(response.decode())
+    print(res)
+    errcode = res.get('errcode')
+    if errcode != 0:
+        raise PeiDiError(20501, msg=res['errmsg'])
+
 def read_from_cache_or_db(proc_name, parameters_list):
     redis_key = '{}#{}'.format(proc_name, "/".join(parameters_list))
     result = get_mysql_process_response_with_redis(
@@ -137,6 +168,19 @@ def schedule_get_increment_data(request):
         get_increment_data,
         trigger=CronTrigger(day="*", hour=11, minute=1),
         id="get_increment_data",
+        max_instances=1,
+        replace_existing=True,
+    )
+    return SuccessResponse('定时任务创建成功')
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def schedule_send_spu_daily_report(request):
+    scheduler.add_job(
+        send_spu_daily_report_to_dingtalk,
+        trigger=CronTrigger(day="*", hour=9),
+        id="send_spu_daily_report",
         max_instances=1,
         replace_existing=True,
     )
