@@ -211,7 +211,7 @@ def generate_spu_sales_data(request):
         "Content-Type": "application/json"
     }
     data = {
-        "name": "CalculateSPUPerformance",
+        "name": "CalculateSPUPerformanceDouble11",
         "params": [yesterday_start, yesterday_end],
         "flush": True
     }
