@@ -366,7 +366,7 @@ class Command(BaseCommand):
     def refund_basic(self, datasheet, refund_records):
         records = []
         for refund_record in refund_records:
-            trade_no = refund_record.trade_no
+            trade_no = refund_record.trade_no.strip()
             refund = refund_record.refund
             if refund == 0:
                 continue
