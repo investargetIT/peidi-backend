@@ -150,8 +150,10 @@ def get_dashboard_data(request):
 def get_increment_data(request):
     try:
         month_ranges_until_now = get_month_ranges_until_now()
-        m = month_ranges_until_now[0]
-        print('当前月起始日期', m)
+
+        for m in month_ranges_until_now[:2]:
+            read_from_db_write_to_cache('GetSalesAmountRanking', parameters_list=[m[0] + ' 00:00:00', m[1] + ' 23:59:59'])
+            read_from_db_write_to_cache('CalculateSPUPerformance', parameters_list=[m[0] + ' 00:00:00', m[1] + ' 23:59:59'])
 
         read_from_db_write_to_cache('GetSalesAmountRanking', parameters_list=[m[0] + ' 00:00:00', m[1] + ' 23:59:59'])
         read_from_db_write_to_cache('CalculateSPUPerformance', parameters_list=[m[0] + ' 00:00:00', m[1] + ' 23:59:59'])
@@ -179,17 +181,24 @@ def get_increment_data(request):
         d = all_dates[-1]
         print('昨天的时期是', d)
 
+        last_day_of_last_month = month_ranges_until_now[1][1]
+        print('上个月最后一天是', last_day_of_last_month)
+
         read_from_db_write_to_cache(proc_name='CalculateSPUPerformance', parameters_list=[d + ' 00:00:00', d + ' 23:59:59'])
+        read_from_db_write_to_cache(proc_name='CalculateSPUPerformance', parameters_list=[last_day_of_last_month + ' 00:00:00', last_day_of_last_month + ' 23:59:59'])
 
         channels = read_from_cache_or_db(proc_name='GetSalesAmountRanking', parameters_list=['2024-01-01 00:00:00', '2024-01-31 23:59:59'])
         for row in channels:
-            read_from_db_write_to_cache(proc_name='GetSalesAmountRankingByChannel', parameters_list=[row[0], m[0] + ' 00:00:00', m[1] + ' 23:59:59'])
-            
+            for m in month_ranges_until_now[:2]:
+                read_from_db_write_to_cache(proc_name='GetSalesAmountRankingByChannel', parameters_list=[row[0], m[0] + ' 00:00:00', m[1] + ' 23:59:59'])
+
         result = read_from_cache_or_db(proc_name='CalculateSPUPerformance', parameters_list=['2024-01-01 00:00:00', '2024-01-31 23:59:59'])
         for row in result:
             read_from_db_write_to_cache(proc_name='CalculateShopBySPU', parameters_list=[row[0], year_start, end])
-            read_from_db_write_to_cache(proc_name='CalculateShopBySPU', parameters_list=[row[0], m[0] + ' 00:00:00', m[1] + ' 23:59:59'])
+            for m in month_ranges_until_now[:2]:
+                read_from_db_write_to_cache(proc_name='CalculateShopBySPU', parameters_list=[row[0], m[0] + ' 00:00:00', m[1] + ' 23:59:59'])
             read_from_db_write_to_cache(proc_name='CalculateShopBySPU', parameters_list=[row[0], d + ' 00:00:00', d + ' 23:59:59'])
+            read_from_db_write_to_cache(proc_name='CalculateShopBySPU', parameters_list=[row[0], last_day_of_last_month + ' 00:00:00', last_day_of_last_month + ' 23:59:59'])
 
         return SuccessResponse(result)
     except Exception:
